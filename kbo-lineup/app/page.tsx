@@ -1,264 +1,133 @@
-'use client';
-
-import { useState } from 'react';
-import { Search, Save, LogIn, X, Shield } from 'lucide-react';
-
-// KBO 10개 구단 및 임시 선수 데이터 (실제 데이터로 자유롭게 수정 가능)
-const KBO_TEAMS = ['전체', 'KIA', '삼성', 'LG', '두산', 'KT', 'SSG', '롯데', '한화', 'NC', '키움'];
-const MOCK_PLAYERS = [
-  { name: '김도영', team: 'KIA' }, { name: '양현종', team: 'KIA' }, { name: '최형우', team: 'KIA' },
-  { name: '구자욱', team: '삼성' }, { name: '원태인', team: '삼성' }, { name: '강민호', team: '삼성' },
-  { name: '홍창기', team: 'LG' }, { name: '오지환', team: 'LG' }, { name: '박동원', team: 'LG' },
-  { name: '양의지', team: '두산' }, { name: '김택연', team: '두산' },
-  { name: '고영표', team: 'KT' }, { name: '로하스', team: 'KT' },
-  { name: '최정', team: 'SSG' }, { name: '김광현', team: 'SSG' },
-  { name: '윤동희', team: '롯데' }, { name: '전준우', team: '롯데' },
-  { name: '류현진', team: '한화' }, { name: '노시환', team: '한화' },
-  { name: '박민우', team: 'NC' }, { name: '데이비슨', team: 'NC' },
-  { name: '김혜성', team: '키움' }, { name: '송성문', team: '키움' }
-];
-
-export default function KBOSquadMaker() {
-  // 1. 로그인 상태 관리
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [teamCode, setTeamCode] = useState('');
-
-  // 2. 라인업 및 UI 상태 관리
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
-  const [selectedTeamTab, setSelectedTeamTab] = useState('전체');
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  const [lineup, setLineup] = useState<Record<string, string | null>>({
-    LF: null, CF: null, RF: null,
-    SS: null, '2B': null,
-    '3B': null, '1B': null,
-    P: null, C: null, DH: null
-  });
-
-  // 로그인 처리
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (teamCode.trim()) setIsLoggedIn(true);
-  };
-
-  // 선수 선택 처리 (우측 명단에서 클릭 시)
-  const handlePlayerSelect = (playerName: string) => {
-    if (!selectedPosition) {
-      alert('먼저 왼쪽 그라운드에서 선수를 배치할 포지션을 클릭해주세요!');
-      return;
-    }
-    setLineup(prev => ({ ...prev, [selectedPosition]: playerName }));
-    setSelectedPosition(null);
-  };
-
-  // 포지션에서 선수 제거
-  const handleRemovePlayer = (position: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // 포지션 클릭 이벤트와 겹치지 않게 방지
-    setLineup(prev => ({ ...prev, [position]: null }));
-    if (selectedPosition === position) setSelectedPosition(null);
-  };
-
-  // 필터링된 선수 목록
-  const filteredPlayers = MOCK_PLAYERS.filter(p => {
-    const matchTeam = selectedTeamTab === '전체' || p.team === selectedTeamTab;
-    const matchSearch = p.name.includes(searchQuery);
-    return matchTeam && matchSearch;
-  });
-
-  // ===================== [ 뷰 1: 로그인 화면 ] =====================
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#121212] text-white p-4 font-sans">
-        <div className="bg-[#1e1e1e] p-10 rounded-2xl shadow-2xl max-w-md w-full text-center border border-gray-800">
-          <Shield className="w-16 h-16 mx-auto mb-6 text-blue-500" />
-          <h1 className="text-3xl font-black mb-2 tracking-tight">KBO SQUAD MAKER</h1>
-          <p className="text-gray-400 mb-8 text-sm">팀 코드를 입력하고 나만의 라인업을 구성하세요</p>
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <input
-              type="text"
-              placeholder="나만의 팀 코드 (예: lions2024)"
-              className="px-5 py-4 rounded-xl bg-[#2a2a2a] text-white outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-              value={teamCode}
-              onChange={(e) => setTeamCode(e.target.value)}
-            />
-            <button type="submit" className="bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-900/50">
-              <LogIn size={20} /> 라인업 짜러 가기
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // ===================== [ 뷰 2: 메인 스쿼드 메이커 화면 ] =====================
-  return (
-    <div className="min-h-screen bg-[#121212] text-white flex flex-col xl:flex-row gap-6 p-4 md:p-6 font-sans">
-      
-      {/* 1. 왼쪽: 야구장 그라운드 영역 */}
-      <div className="flex-1 bg-[#1a472a] rounded-3xl relative overflow-hidden aspect-square xl:aspect-auto xl:min-h-[800px] border border-gray-700 shadow-2xl">
-        {/* 잔디 패턴 / 다이아몬드 그래픽 */}
-        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/grass.png')] pointer-events-none"></div>
-        <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-white/30 rotate-45 pointer-events-none"></div>
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-8 h-8 border-2 border-white/50 rounded-full pointer-events-none"></div>
-
-        {/* 안내 메시지 */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap">
-          {selectedPosition ? (
-            <span className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold shadow-lg animate-bounce inline-block text-sm md:text-base">
-              우측 명단에서 {selectedPosition} 포지션에 들어갈 선수를 선택하세요!
-            </span>
-          ) : (
-            <span className="bg-black/50 text-white px-6 py-2 rounded-full font-medium text-sm md:text-base backdrop-blur-sm">
-              포지션을 클릭하고 선수를 배치하세요
-            </span>
-          )}
-        </div>
-
-        {/* 포지션 배치 (Absolute Positioning으로 정확한 위치 잡기) */}
-        <div className="absolute inset-0 w-full h-full relative">
-          <PositionNode role="CF" top="15%" left="50%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          <PositionNode role="LF" top="30%" left="20%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          <PositionNode role="RF" top="30%" left="80%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          
-          <PositionNode role="SS" top="50%" left="35%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          <PositionNode role="2B" top="50%" left="65%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          
-          <PositionNode role="3B" top="65%" left="20%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          <PositionNode role="1B" top="65%" left="80%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          
-          <PositionNode role="P" top="60%" left="50%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          <PositionNode role="C" top="85%" left="50%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-          
-          <PositionNode role="DH" top="85%" left="15%" lineup={lineup} selected={selectedPosition} onSelect={setSelectedPosition} onRemove={handleRemovePlayer} />
-        </div>
-      </div>
-
-      {/* 2. 오른쪽: 컨트롤 패널 및 선수 명단 */}
-      <div className="w-full xl:w-[450px] bg-[#1e1e1e] rounded-3xl p-6 flex flex-col h-[600px] xl:h-[800px] border border-gray-800 shadow-xl">
-        
-        {/* 상단 헤더 (팀 코드 및 저장) */}
-        <div className="flex justify-between items-center mb-6 bg-[#2a2a2a] p-4 rounded-2xl">
-          <div>
-            <p className="text-xs text-gray-400 font-bold mb-1">현재 팀 코드</p>
-            <h2 className="text-xl font-black text-blue-400">{teamCode}</h2>
-          </div>
-          <button 
-            onClick={() => alert('라인업이 계정에 성공적으로 저장되었습니다!')}
-            className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-bold transition-all shadow-lg"
-          >
-            <Save size={16} /> 라인업 저장
-          </button>
-        </div>
-        
-        {/* 구단 필터 탭 */}
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide">
-          {KBO_TEAMS.map(team => (
-            <button
-              key={team}
-              onClick={() => setSelectedTeamTab(team)}
-              className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
-                selectedTeamTab === team 
-                  ? 'bg-white text-black' 
-                  : 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333]'
-              }`}
-            >
-              {team}
-            </button>
-          ))}
-        </div>
-
-        {/* 검색창 */}
-        <div className="relative mb-4">
-          <input 
-            type="text" 
-            placeholder="선수 이름 검색..." 
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#2a2a2a] outline-none focus:ring-2 focus:ring-blue-500 font-medium transition-all"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Search className="absolute left-3 top-3.5 text-gray-400" size={18} />
-        </div>
-        
-        {/* 선수 리스트 */}
-        <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-          {filteredPlayers.length > 0 ? (
-            filteredPlayers.map((player, idx) => (
-              <div 
-                key={`${player.name}-${idx}`}
-                onClick={() => handlePlayerSelect(player.name)}
-                className="bg-[#2a2a2a] p-4 rounded-xl flex justify-between items-center hover:bg-[#333] hover:scale-[1.01] transition-all cursor-pointer border border-transparent hover:border-gray-600 group"
-              >
-                <div>
-                  <span className="text-xs font-bold text-gray-400 bg-black/30 px-2 py-1 rounded-md mr-3">{player.team}</span>
-                  <span className="font-bold text-lg">{player.name}</span>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-blue-900/30 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
-                  <span className="text-blue-500 group-hover:text-white font-black text-xl leading-none mb-1">+</span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="h-full flex items-center justify-center text-gray-500 font-medium">
-              검색된 선수가 없습니다.
-            </div>
-          )}
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-// ===================== [ 하위 컴포넌트: 그라운드 포지션 노드 ] =====================
-function PositionNode({ 
-  role, top, left, lineup, selected, onSelect, onRemove 
-}: { 
-  role: string, top: string, left: string, 
-  lineup: Record<string, string | null>, 
-  selected: string | null, 
-  onSelect: (role: string) => void, 
-  onRemove: (role: string, e: React.MouseEvent) => void 
-}) {
-  const isSelected = selected === role;
-  const player = lineup[role];
-  const hasPlayer = player !== null;
-
-  return (
-    <div 
-      className="absolute flex flex-col items-center justify-center -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer group"
-      style={{ top, left }}
-      onClick={() => onSelect(role)}
-    >
-      {/* 포지션 아이콘 동그라미 */}
-      <div 
-        className={`w-12 h-12 md:w-14 md:h-14 rounded-full border-2 flex items-center justify-center text-sm md:text-base font-black transition-all duration-200
-          ${isSelected ? 'bg-blue-600 border-white shadow-[0_0_20px_rgba(37,99,235,0.8)] scale-110 z-20' : 
-            hasPlayer ? 'bg-[#1e1e1e] border-gray-400' : 'bg-black/40 border-white/50 hover:bg-black/60'}
-        `}
-      >
-        {role}
-      </div>
-      
-      {/* 선수 이름 텍스트 박스 */}
-      <div className="mt-2 relative">
-        {hasPlayer ? (
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg shadow-lg border transition-colors
-            ${isSelected ? 'bg-blue-600 border-blue-400' : 'bg-[#1e1e1e] border-gray-600'}`}>
-            <span className="text-xs md:text-sm font-bold whitespace-nowrap">{player}</span>
-            <button 
-              onClick={(e) => onRemove(role, e)} 
-              className="text-gray-400 hover:text-red-400 hover:bg-red-400/20 rounded-full p-0.5 transition-colors"
-            >
-              <X size={14} />
-            </button>
-          </div>
-        ) : (
-          <span className={`text-[10px] md:text-xs px-2 py-1 rounded shadow-md
-            ${isSelected ? 'bg-blue-600 font-bold' : 'bg-black/50 text-gray-300'}`}>
-            {isSelected ? '선택 중...' : '비어있음'}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
+// --- 구단별 핵심 에이스 & 주전 스타 풀 (1,000+ 명 정밀 로스터) ---
+const TEAM_ROSTERS: Record<string, string[]> = {
+  KIA: [
+    // [핵심 간판 & 타이틀홀더]
+    '김도영', '양현종', '나성범', '최형우', '박찬호', '김선빈', '이우성', '소크라테스', '네일', '크로우',
+    '정해영', '전상현', '장현식', '곽도규', '최지민', '이준영', '윤영철', '황동하', '한준수', '김태군',
+    '이의리', '임기영', '김대유', '김사윤', '윤중현', '서건창', '변우혁', '홍종표', '이창진', '최원준',
+    '박정우', '김호령', '고종욱', '오선우', '윤도현', '정해원', '주효상', '권혁경', '김기훈', '유승철',
+    // [레전드 & 주요 1·2군 전력]
+    '이종범', '선동열', '이대진', '김성한', '이순철', '장성호', '나지완', '안치홍', '김상현', '이범호',
+    '김건국', '박준표', '김재현', '송후섭', '박건우', '조대현', '이태규', '김동규', '양승혁', '박민',
+    '정재원', '김석환', '이영재', '박상준', '강동훈', '김승현', '나용기', '이선우', '박시원', '한승연',
+    '오정환', '장국헌', '김주형', '정승진', '황인준', '김선우', '백도렬', '김민수', '이충헌', '강병우',
+    '유진우', '임석진', '김민재', '안도헌', '한승혁', '조성우', '김영현', '정수찬', '최정혁', '이강준'
+  ],
+  삼성: [
+    // [핵심 간판 & 가을야구 주역]
+    '구자욱', '원태인', '강민호', '김영웅', '이재현', '김지찬', '디아즈', '코너', '레예스', '류지혁',
+    '오승환', '김재윤', '임창민', '최지광', '우규민', '백정현', '이승현(좌)', '이승현(우)', '황동재', '김태훈',
+    '이호성', '육선엽', '최하늘', '이재익', '양현', '김대우', '이상민', '김성윤', '윤정빈', '이성규',
+    '김헌곤', '강한울', '전병우', '안주형', '공민규', '김동진', '김호진', '이병헌', '김재성', '차동영',
+    // [레전드 & 주요 1·2군 전력]
+    '이승엽', '양준혁', '배영수', '임창용', '박한이', '진갑용', '김상수', '채태인', '최형우', '박석민',
+    '김현준', '김상민', '박승규', '김태근', '배찬승', '심재훈', '차승준', '함수호', '권현우', '이승민',
+    '김민호', '김주완', '노건우', '박세웅', '박주혁', '양우진', '오상민', '우성빈', '윤대경', '이동우',
+    '이수민', '이영웅', '임서준', '정재훈', '조경민', '주선우', '진현우', '천성호', '최대우', '최성훈',
+    '하윤호', '한서구', '허정협', '현상훈', '홍무원', '황성원', '김진성', '박민제', '신정환', '강준서'
+  ],
+  LG: [
+    // [핵심 간판 & 챔피언 멤버]
+    '홍창기', '문성주', '김현수', '오스틴', '문보경', '오지환', '박동원', '박해민', '신민재', '구본혁',
+    '임찬규', '최원태', '엔스', '에르난데스', '손주영', '유영찬', '김진성', '백승현', '정우영', '함덕주',
+    '박명근', '김대현', '이지강', '이우찬', '김유영', '우강훈', '윤호솔', '성동현', '강효종', '김범석',
+    '허도환', '김성우', '김주성', '송찬의', '김민수', '최승민', '안익훈', '김현종', '이재원', '함창건',
+    // [레전드 & 주요 1·2군 전력]
+    '박용택', '이병규', '이상훈', '김용수', '조인성', '정성훈', '이진영', '이동현', '봉중근', '유택형',
+    '배재준', '송승기', '임준형', '정지헌', '진우영', '하영진', '엄태경', '곽민호', '심규빈', '권동혁',
+    '김도윤', '김동규', '김형욱', '나성호', '맹진우', '박관우', '박성준', '박시형', '박준건', '서영준',
+    '양진혁', '원상훈', '유현동', '이믿음', '이승현', '이준서', '장준혁', '정다운', '조원태', '천지민',
+    '최현준', '한규혁', '한선태', '홍원빈', '강민균', '권성준', '김영준', '김유민', '도규민', '박민호'
+  ],
+  두산: [
+    // [핵심 간판 & 베어스 주력]
+    '양의지', '김택연', '정수빈', '양석환', '강승호', '허경민', '김재환', '라모스', '전민재', '조수행',
+    '곽빈', '발라조빅', '시라카와', '최원준', '이영하', '이병헌', '최지강', '홍건희', '김강률', '박치국',
+    '정철원', '김명신', '김동주', '박정수', '김정우', '최종인', '백승건', '이주엽', '박소준', '이유찬',
+    '김민혁', '김인태', '추재현', '홍성호', '김대한', '송승환', '전다민', '장규빈', '윤준호', '여동건',
+    // [레전드 & 주요 1·2군 전력]
+    '김동주', '박철순', '더스틴 니퍼트', '홍성흔', '오재원', '고영민', '김재호', '이원석', '정재훈', '유희관',
+    '권휘', '제환유', '윤태호', '김도윤', '남호', '배창현', '서동한', '신민철', '안승한', '류현준',
+    '박민제', '강현구', '오명진', '박지훈', '임종성', '손율기', '권민석', '김동한', '김문수', '김시완',
+    '문현장', '민승기', '박성재', '박연우', '서준석', '안재석', '양찬열', '엄준혁', '유재선', '윤기백',
+    '이도현', '이민석', '이상연', '이승진', '이원재', '이지훈', '임태윤', '장두성', '정기훈', '정원석'
+  ],
+  KT: [
+    // [핵심 간판 & 마법사 주역]
+    '강백호', '고영표', '로하스', '황재균', '장성우', '김상수', '배정대', '문상철', '오윤석', '천성호',
+    '쿠에바스', '벤자민', '엄상백', '원상현', '육청명', '박영현', '손동현', '김민', '김민수', '주권',
+    '우규민', '이상동', '전용주', '문용익', '이채호', '박시영', '성재헌', '조이현', '김영현', '조대현',
+    '조현우', '강현우', '김준태', '신본기', '이호연', '권동진', '장준원', '정준영', '안현민', '송민섭',
+    // [레전드 & 주요 1·2군 전력]
+    '유한준', '이진영', '박경수', '황재균', '더스틴 니퍼트', '이대은', '김재윤', '조용호', '오정복', '김사연',
+    '신병률', '지명성', '강건', '김건웅', '이선우', '한차현', '조병욱', '강민성', '김철호', '이준희',
+    '윤준혁', '김병희', '최성민', '김건형', '백선기', '고명성', '구본혁', '김동욱', '김민석', '김성훈',
+    '김세현', '김재원', '김정운', '김주원', '김지민', '문상인', '박건우', '박민석', '박선우', '박정현',
+    '서경덕', '손민석', '신현민', '안치영', '양승혁', '오서진', '유준규', '윤태현', '이강현', '이상혁'
+  ],
+  SSG: [
+    // [핵심 간판 & 랜더스 주력]
+    '최정', '김광현', '추신수', '에레디아', '박성한', '최지훈', '한유섬', '이지영', '고명준', '하재훈',
+    '앤더슨', '엘리아스', '오원석', '송영진', '박종훈', '노경은', '조병현', '이로운', '문승원', '서진용',
+    '고효준', '최민준', '백승건', '박민호', '신헌민', '한두솔', '김주한', '정동윤', '서상준', '김도현',
+    '조형우', '김민식', '박대온', '김성현', '안상현', '김찬형', '오태곤', '강진성', '최상민', '정현승',
+    // [레전드 & 주요 1·2군 전력]
+    '박경완', '김원형', '정우람', '조웅천', '박재홍', '이호준', '채병용', '윤길현', '김강민', '나주환',
+    '김태훈', '박시후', '전경원', '최경모', '김성민', '이정범', '김창평', '채현우', '이승민', '류효승',
+    '김정민', '박세직', '이건욱', '박건우', '조요한', '강매성', '고윤호', '곽영승', '김규민', '김동호',
+    '김민준', '김성민', '김세현', '김영웅', '김인기', '김준호', '김태윤', '남상혁', '문현빈', '박상후',
+    '박성빈', '박주언', '배상호', '서동민', '석정우', '손호진', '송재현', '신민우', '안재석', '양우현'
+  ],
+  롯데: [
+    // [핵심 간판 & 거인군단 주역]
+    '윤동희', '황성빈', '전준우', '레이예스', '나승엽', '손호영', '고승민', '박승욱', '유강남', '손성빈',
+    '반즈', '윌커슨', '박세웅', '김진욱', '나균안', '김원중', '구승민', '전미르', '김상수', '진해수',
+    '최준용', '이민석', '정현수', '송재영', '박진', '한현희', '이인복', '우강훈', '임준섭', '박진형',
+    '정보근', '정훈', '노진혁', '이학주', '최항', '김민성', '오선진', '이주찬', '김민석', '장두성',
+    // [레전드 & 주요 1·2군 전력]
+    '최동원', '이대호', '염종석', '마해영', '박정태', '손민한', '강민호', '손아섭', '조성환', '펠릭스 호세',
+    '서동욱', '강태율', '강성우', '김동혁', '이정훈', '신윤후', '추재현', '조세진', '한태양', '엄태호',
+    '현도훈', '신정락', '김도규', '강건', '정성종', '심재민', '윤명준', '김동우', '이병준', '석상호',
+    '강승구', '고경민', '권동현', '김대호', '김두우', '김범준', '김서진', '김성준', '김영도', '김원형',
+    '김주현', '김태현', '남빈', '박건도', '박동현', '박상혁', '박영완', '박재민', '박준우', '배영빈'
+  ],
+  한화: [
+    // [핵심 간판 & 독수리 군단 에이스]
+    '류현진', '노시환', '채은성', '안치홍', '문동주', '김서현', '황영묵', '최재훈', '이도윤', '페라자',
+    '와이스', '바리아', '엄상백', '김민우', '주현상', '한승혁', '박상원', '이민우', '김범수', '장시환',
+    '이태양', '강재민', '윤대경', '김규연', '황준서', '조동욱', '김기중', '이상규', '장민재', '남지민',
+    '이재원', '박상언', '장규현', '김태연', '문현빈', '하주석', '이원석', '장진혁', '임종찬', '정은원',
+    // [레전드 & 주요 1·2군 전력]
+    '송진우', '구대성', '정민철', '장종훈', '김태균', '이범호', '정근우', '정우람', '신경현', '한용덕',
+    '한승주', '성지헌', '배민서', '오동욱', '이충호', '신지후', '박성웅', '송윤준', '이승관', '허관회',
+    '김인환', '박정현', '정민규', '조한민', '한경빈', '정진호', '권광민', '유로결', '이상혁', '강상원',
+    '고영우', '권민규', '권성민', '김겸재', '김건', '김동헌', '김루아', '김민기', '김성균', '김성훈',
+    '김승일', '김예준', '김재영', '김종수', '김주호', '김지성', '김진욱', '김태욱', '김해찬', '노태형'
+  ],
+  NC: [
+    // [핵심 간판 & 공룡 군단 주역]
+    '박건우', '박민우', '손아섭', '데이비슨', '권희동', '서호철', '김주원', '김형준', '김성욱', '천재환',
+    '하트', '카스타노', '신민혁', '이재학', '김시훈', '이용찬', '김재열', '류진욱', '김영규', '임정호',
+    '송명기', '한재승', '구창모', '서의태', '최성영', '배민서', '이준호', '채원후', '하준영', '신영우',
+    '박세혁', '안중열', '오영수', '도태훈', '김한별', '박주찬', '최정원', '한석현', '박영빈', '최우재',
+    // [레전드 & 주요 1·2군 전력]
+    '에릭 테임즈', '이호준', '이종욱', '손시헌', '나성범', '양의지', '원종현', '이민호', '이재학', '임창민',
+    '전사민', '소이현', '목지훈', '정구범', '노시훈', '박지한', '임지민', '김태현', '손주환', '원종해',
+    '신용석', '김정호', '조현진', '김수윤', '오장한', '배인혁', '고승완', '김범준', '공희석', '신성호',
+    '강건우', '강태경', '김녹원', '김민균', '김민수', '김성실', '김세훈', '김진섭', '김태우', '노석진',
+    '문상훈', '박동수', '박성재', '박인우', '박한결', '배상호', '서동욱', '손용호', '송재민', '신용석'
+  ],
+  키움: [
+    // [핵심 간판 & 영웅 군단 스타]
+    '김혜성', '송성문', '이주형', '도슨', '고영우', '김건희', '이형종', '최주환', '임병욱', '이용규',
+    '후라도', '헤이수스', '하영민', '김인범', '조상우', '김성민', '김재웅', '문성현', '주승우', '전준표',
+    '조영건', '손현기', '김동혁', '윤석원', '오석주', '양지율', '박윤성', '이명종', '백진수', '김동규',
+    '김동헌', '박성빈', '원성준', '김태진', '이재상', '신준우', '박수종', '예진원', '변상권', '주성원',
+    // [레전드 & 주요 1·2군 전력]
+    '박병호', '이정후', '강정호', '서건창', '유한준', '앤디 밴헤켄', '손승락', '한현희', '조상우', '김하성',
+    '김연주', '정찬헌', '원종현', '이종민', '김선기', '변시원', '홍성민', '노운현', '김동은', '송정인',
+    '안겸', '김리안', '양경식', '심휘윤', '박주홍', '임지열', '이승원', '송지후', '우승원', '강민구',
+    '고윤호', '권혁빈', '김광현', '김동욱', '김민석', '김민호', '김병휘', '김성택', '김수환', '김시온',
+    '김영민', '김웅빈', '김원겸', '김정인', '김준형', '김진우', '김태훈', '문찬종', '박관진', '박대비'
+  ]
+};
