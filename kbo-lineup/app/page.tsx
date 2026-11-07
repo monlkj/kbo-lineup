@@ -7,9 +7,9 @@ export default function SquadMaker() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [teamCode, setTeamCode] = useState('');
   
-  // 포지션별 선택된 선수 상태 관리
+  // 포지션별 선택된 선수 상태 관리 (숫자로 시작하는 키는 따옴표로 감쌌습니다)
   const [lineup, setLineup] = useState({
-    C: null, 1B: null, 2B: null, 3B: null, SS: null,
+    C: null, '1B': null, '2B': null, '3B': null, SS: null,
     LF: null, CF: null, RF: null, P: null, DH: null
   });
 
@@ -48,12 +48,12 @@ export default function SquadMaker() {
       {/* 왼쪽: 그라운드 영역 */}
       <div className="flex-1 bg-green-800 rounded-3xl relative overflow-hidden aspect-square md:aspect-auto md:min-h-[600px] border-4 border-zinc-700 shadow-2xl p-4">
         <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/grass.png')]"></div>
-        {/* 간단한 다이아몬드 UI (CSS 위치 조정 필요) */}
+        {/* 간단한 다이아몬드 UI */}
         <div className="relative w-full h-full flex flex-col items-center justify-between">
           <div className="mt-8"><PositionBadge role="CF" player={lineup.CF} /></div>
           <div className="flex w-full justify-around px-8"><PositionBadge role="LF" player={lineup.LF} /><PositionBadge role="RF" player={lineup.RF} /></div>
-          <div className="flex w-full justify-around px-20 mt-4"><PositionBadge role="SS" player={lineup.SS} /><PositionBadge role="2B" player={lineup.2B} /></div>
-          <div className="flex w-full justify-between px-12 mt-4"><PositionBadge role="3B" player={lineup.3B} /><PositionBadge role="1B" player={lineup.1B} /></div>
+          <div className="flex w-full justify-around px-20 mt-4"><PositionBadge role="SS" player={lineup.SS} /><PositionBadge role="2B" player={lineup['2B']} /></div>
+          <div className="flex w-full justify-between px-12 mt-4"><PositionBadge role="3B" player={lineup['3B']} /><PositionBadge role="1B" player={lineup['1B']} /></div>
           <div className="mt-12"><PositionBadge role="P" player={lineup.P} /></div>
           <div className="mt-8 mb-4"><PositionBadge role="C" player={lineup.C} /></div>
         </div>
