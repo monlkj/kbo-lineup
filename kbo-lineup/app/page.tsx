@@ -25,17 +25,16 @@ const FULL_DATABASE = (() => {
   let id = 1;
   Object.keys(TEAM_ROSTERS).forEach(team => {
     TEAM_ROSTERS[team].forEach((name, idx) => {
-      // 인덱스에 따라 포지션 및 등급 부여
       const isPitcher = (idx >= 10 && idx <= 19) || (idx >= 25 && idx <= 28);
       const pos = isPitcher ? 'P' : ['C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'][idx % 9];
       
       let grade = 'NORMAL';
-      let baseOvr = Math.floor(Math.random() * 10) + 65; // 65~74
+      let baseOvr = 65 + (idx % 10); 
       
-      if (idx >= 20 && idx <= 24) { grade = 'LEGEND'; baseOvr = 85 + Math.floor(Math.random() * 10); } // 레전드
-      else if (idx < 5) { grade = 'SIGNATURE'; baseOvr = 82 + Math.floor(Math.random() * 8); } // 간판 스타
-      else if (idx < 10) { grade = 'PLATINUM'; baseOvr = 78 + Math.floor(Math.random() * 7); } // 주전
-      else { grade = ['NORMAL', 'RARE', 'HERO'][Math.floor(Math.random() * 3)]; }
+      if (idx >= 20 && idx <= 24) { grade = 'LEGEND'; baseOvr = 90 + (idx % 5); } 
+      else if (idx < 5) { grade = 'SIGNATURE'; baseOvr = 85 + (idx % 5); } 
+      else if (idx < 10) { grade = 'PLATINUM'; baseOvr = 80 + (idx % 5); } 
+      else { grade = ['NORMAL', 'RARE', 'HERO'][idx % 3]; }
 
       list.push({
         id: `kbo-${id++}`,
@@ -54,8 +53,8 @@ export default function KBOManagerGame() {
   const [currentMenu, setCurrentMenu] = useState('HOME');
   const [teamSubMenu, setTeamSubMenu] = useState('LINEUP');
   
-  // 랜덤 선수 1명 렌더링용 (UI 시연)
-  const displayPlayer = FULL_DATABASE[Math.floor(Math.random() * FULL_DATABASE.length)];
+  // 에러의 주범이었던 랜덤 함수(Math.random)를 제거하고 고정된 선수(김도영)를 불러오도록 수정했습니다.
+  const displayPlayer = FULL_DATABASE.find(p => p.name === '김도영') || FULL_DATABASE[0];
 
   const TEAM_MENUS = [
     { id: 'LINEUP', label: '라인업', icon: <Users size={16} /> },
