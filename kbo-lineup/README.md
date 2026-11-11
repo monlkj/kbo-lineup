@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KBO 올스타 매니저
 
-## Getting Started
+첨부된 구단 운영 게임을 Next.js App Router로 옮긴 브라우저 게임입니다.
 
-First, run the development server:
+## 실행
 
-```bash
+```sh
+cd kbo-lineup
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+프로덕션 확인: `npm run build` 후 `npm start`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 게임
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+구단 코드와 선호 구단을 입력해 창단합니다. 우편함에서 창단 지원금을 수령하고 보관함에서 선수팩을 개봉하세요. 팀 관리에서 라인업, 훈련, 고유능력, 레전드 스카우트, 시그니처 각성을 사용할 수 있습니다.
 
-## Learn More
+진행 기록은 구단 코드별로 현재 브라우저의 localStorage에 자동 저장됩니다. 계정 로그인이나 기기 간 동기화 기능은 없습니다. 한국 시간 기준 일일 보상은 하루 한 번 수령합니다. 선수 연도·능력치·포지션은 게임용 생성 데이터이며 실제 시즌 기록을 재현하지 않습니다. 리그 메뉴는 보상 체험용입니다.
 
-To learn more about Next.js, take a look at the following resources:
+## Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+GitHub 저장소 `monlkj/kbo-lineup`을 연결하고 다음 설정을 사용합니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Root Directory: `kbo-lineup`
+- Framework Preset: Next.js
+- Install Command: `npm ci`
+- Build Command: `npm run build`
+- Output Directory: 기본값 (`.next`)
+- 별도 환경 변수 불필요
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+연결된 프로덕션 브랜치가 `main`이면 해당 브랜치에 푸시한 뒤 Vercel의 배포 결과를 확인합니다.
