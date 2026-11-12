@@ -718,7 +718,7 @@ import {overall,eligible} from './manager-engine';
                       </div>
                   )}
 
-                  {['LEAGUE','ARCHIVE'].includes(currentMenu) && <ManagerWorkbench catalog={FULL_DATABASE} meta={catalogMeta} players={myPlayers} setPlayers={setMyPlayers} lineup={lineup} setLineup={setLineup} manager={manager} setManager={setManager} team={favTeam} showToast={showToast} onReward={(points,stars)=>setCurrency(prev=>({points:prev.points+points,stars:prev.stars+stars}))}/>}
+                  {['LEAGUE','ARCHIVE'].includes(currentMenu) && <ManagerWorkbench initialTab={currentMenu==='LEAGUE'?'시즌 리그':'도감'} catalog={FULL_DATABASE} meta={catalogMeta} players={myPlayers} setPlayers={setMyPlayers} lineup={lineup} setLineup={setLineup} manager={manager} setManager={setManager} team={favTeam} showToast={showToast} onReward={(points,stars)=>setCurrency(prev=>({points:prev.points+points,stars:prev.stars+stars}))}/>}
 
               </main>
 
