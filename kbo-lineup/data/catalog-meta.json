@@ -1,0 +1,26 @@
+{
+  "uniquePlayers": 2029,
+  "cards": 3683,
+  "awardCards": 363,
+  "portraits": 2029,
+  "dataYears": [
+    1982,
+    2025
+  ],
+  "sources": [
+    "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx",
+    "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx",
+    "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+  ],
+  "allstarCoverage": [
+    2018,
+    2019,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "collectedAt": "2026-11-12"
+}

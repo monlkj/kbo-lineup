@@ -1,29 +1,14 @@
 "use client";
 
     import { useState, useEffect, useMemo } from "react";
+import catalog from '../data/catalog.json';
+import catalogMeta from '../data/catalog-meta.json';
+import ManagerWorkbench, {Portrait,PlayerDetail} from './manager-workbench';
+import {overall,eligible} from './manager-engine';
 
     const TEAMS = ['KIA', '삼성', 'LG', '두산', 'KT', 'SSG', '롯데', '한화', 'NC', '키움', '해태', 'SK', 'OB', '빙그레', '현대'];
-    const TAGS = ['국가대표', 'MVP', '골든글러브', '올스타', '신인왕', '한국시리즈MVP'];
 
     const SKILL_LEVEL_UP = { 'E': 'D', 'D': 'C', 'C': 'B', 'B': 'A', 'A': 'S' };
-
-    const REAL_PLAYERS = {
-        'KIA': ['김도영', '양현종', '최형우', '나성범', '이의리', '정해영', '박찬호', '김선빈', '소크라테스', '네일', '윤영철', '김태군', '최원준'],
-        '삼성': ['구자욱', '원태인', '강민호', '이재현', '김영웅', '류지혁', '오승환', '이승엽', '양준혁', '박진만', '김지찬', '맥키넌', '코너'],
-        'LG': ['오지환', '홍창기', '박해민', '김현수', '문보경', '박동원', '임찬규', '정우영', '유영찬', '이병규', '박용택', '이상훈', '오스틴'],
-        '두산': ['양의지', '김재환', '정수빈', '허경민', '김택연', '곽빈', '홍건희', '강승호', '김동주', '우즈', '니퍼트', '박철순', '양석환'],
-        'KT': ['강백호', '고영표', '황재균', '박병호', '엄상백', '박영현', '배정대', '김상수', '로하스', '심우준', '유한준', '이진영', '장성우'],
-        'SSG': ['최정', '김광현', '추신수', '에레디아', '박성한', '최지훈', '서진용', '노경은', '한유섬', '박재상', '정근우', '김강민'],
-        '롯데': ['전준우', '윤동희', '박세웅', '김원중', '유강남', '황성빈', '구승민', '이대호', '최동원', '손아섭', '강민호', '마차도', '레이예스'],
-        '한화': ['류현진', '노시환', '문동주', '채은성', '안치홍', '김서현', '최재훈', '장종훈', '김태균', '송진우', '정민철', '이도윤', '페라자'],
-        'NC': ['박건우', '손아섭', '박민우', '김주원', '권희동', '이용찬', '김형준', '테임즈', '나성범', '구창모', '카스타노', '데이비슨'],
-        '키움': ['김혜성', '이주형', '송성문', '조상우', '김휘집', '이정후', '박병호', '서건창', '김하성', '안우진', '최원태', '후라도', '헤이수스'],
-        '해태': ['이종범', '선동열', '이강철', '김성한', '이순철', '조계현', '이대진', '홍현우'],
-        'SK': ['김광현', '최정', '정근우', '박경완', '김강민', '박희수', '이진영', '채병용'],
-        'OB': ['박철순', '김동주', '우즈', '심정수', '김상진', '안경현', '김태형'],
-        '빙그레': ['장종훈', '송진우', '이정훈', '한용덕', '이강돈', '이상군', '유승안'],
-        '현대': ['박재홍', '정민태', '심정수', '전준호', '김수경', '정성훈', '이숭용']
-    };
 
     const SKILL_DB = {
         B: {
@@ -67,40 +52,10 @@
         return skills;
     };
 
-    const FULL_DATABASE = (() => {
-      const list = [];
-      let idCounter = 1;
-
-      for(let i = 1; i <= 1500; i++) {
-        let grade = 'NORMAL';
-        const r = Math.random();
-        if(r > 0.98) grade = 'LEGEND'; else if(r > 0.94) grade = 'SIGNATURE'; else if(r > 0.85) grade = 'PLATINUM';
-        else if(r > 0.70) grade = 'HERO'; else if(r > 0.45) grade = 'SPECIAL'; else if(r > 0.25) grade = 'RARE';
-
-        let ovr = 60 + Math.floor(Math.random()*10);
-        if(grade === 'LEGEND') ovr = 95+Math.floor(Math.random()*4); if(grade === 'SIGNATURE') ovr = 88+Math.floor(Math.random()*5);
-        if(grade === 'PLATINUM') ovr = 82+Math.floor(Math.random()*5); if(grade === 'HERO') ovr = 75+Math.floor(Math.random()*6);
-        if(grade === 'SPECIAL') ovr = 70+Math.floor(Math.random()*5); if(grade === 'RARE') ovr = 65+Math.floor(Math.random()*5);
-
-        const generatedPos = (Math.random() > 0.6) ? 'P' : ['C','1B','2B','3B','SS','LF','CF','RF','DH'][Math.floor(Math.random() * 9)];
-        const team = TEAMS[Math.floor(Math.random() * TEAMS.length)];
-        const namesPool = REAL_PLAYERS[team] || REAL_PLAYERS['KIA'];
-        const pName = namesPool[Math.floor(Math.random() * namesPool.length)];
-
-        list.push({
-            id: `p-${idCounter++}`,
-            name: pName,
-            year: 1982 + Math.floor(Math.random()*45),
-            team: team,
-            pos: generatedPos,
-            grade, ovr,
-            tag: ['LEGEND','SIGNATURE','PLATINUM'].includes(grade) && Math.random()>0.5 ? TAGS[Math.floor(Math.random()*TAGS.length)] : null,
-            upgrade: 0,
-            skills: generateSkills(generatedPos === 'P' ? 'P' : 'B', grade)
-        });
-      }
-      return list;
-    })();
+    const FULL_DATABASE = catalog.map(c => {
+      const grade=c.awards.some(a=>a.type==='MVP')?'LEGEND':c.awards.some(a=>a.type==='골든글러브')?'PLATINUM':c.awards.some(a=>a.type==='올스타')?'HERO':overall(c)>=75?'SPECIAL':overall(c)>=65?'RARE':'NORMAL';
+      return {...c,grade,ovr:overall(c),upgrade:0,tag:c.awards[0]?.type||null,skills:generateSkills(c.pos,grade)};
+    });
 
     const GRADE_CONFIG = {
         NORMAL: { bg: 'bg-[#94a3b8]', text: 'text-white', border: 'border-[#475569]' },
@@ -121,6 +76,8 @@
       const [modalTab, setModalTab] = useState('MAILBOX');
       const [toast, setToast] = useState('');
       const [lastReward, setLastReward] = useState('');
+      const [manager, setManager] = useState({});
+      const [detailCard,setDetailCard] = useState(null);
 
       const [teamSelectModal, setTeamSelectModal] = useState({ isOpen: false, item: null, count: 1 });
       const [settingsModal, setSettingsModal] = useState(false);
@@ -152,13 +109,23 @@
         const code = teamCode.trim().toUpperCase();
         // 버전 v18로 강제 업그레이드 (구버전 팩ID 에러 방지)
         let savedData;
-        try { savedData = localStorage.getItem(`kbo_v18_${code}`); }
+        try { savedData = localStorage.getItem(`kbo_v20_${code}`) || (!localStorage.getItem(`kbo_v20_imported_${code}`) ? localStorage.getItem(`kbo_v18_${code}`) : null); }
         catch { showToast('브라우저 저장 공간을 사용할 수 없습니다. 저장 허용 설정을 확인해주세요.'); return; }
         if(savedData) {
             let data;
             try { data = JSON.parse(savedData); if (!data || !Array.isArray(data.myPlayers) || !data.currency) throw new Error(); }
             catch { showToast('저장 데이터를 읽을 수 없습니다. 다른 구단 코드를 사용해주세요.'); return; }
             setLastReward(data.lastReward || '');
+            setManager(data.manager || {});
+            // Upgrade older synthetic cards only when identity and season match real records.
+            const remapped=(data.myPlayers||[]).flatMap(old=>{
+              const candidates=FULL_DATABASE.filter(c=>old.playerId?c.id===old.id:(c.name===old.name&&c.year===old.year&&c.team===old.team));
+              if(candidates.length!==1)return [];
+              const real=candidates[0];return [{...real,...old,...real,uniqueId:old.uniqueId,grade:old.grade||real.grade,ovr:overall({...real,upgrade:old.upgrade||0,growth:old.growth||{}}),upgrade:old.upgrade||0,growth:old.growth||{},training:old.training||0,xp:old.xp||0,condition:old.condition||0,fatigue:old.fatigue||0,skills:old.skills||real.skills}];
+            });
+            const realIds=Object.fromEntries(remapped.map(c=>[c.uniqueId,c]));
+            data.myPlayers=remapped;
+            data.lineup=Object.fromEntries(Object.entries(data.lineup||{}).map(([pos,c])=>{const real=c&&realIds[c.uniqueId];return [pos,real&&eligible(real,pos)?real:null];}));
             setFavTeam(data.favTeam || 'KIA'); setCurrency(data.currency || { points: 0, stars: 0 });
             setMailbox(data.mailbox || []); setInventory(data.inventory || []);
             setMyPlayers(data.myPlayers || []); setLineup(data.lineup || { CF: null, LF: null, RF: null, SS: null, '2B': null, '3B': null, '1B': null, C: null, DH: null, P: null });
@@ -175,18 +142,26 @@
       };
 
       const handleSave = () => {
-        const data = { favTeam, currency, mailbox, inventory, myPlayers, lineup, lastReward };
-        try { localStorage.setItem(`kbo_v18_${teamCode.trim().toUpperCase()}`, JSON.stringify(data)); }
+        const data = { favTeam, currency, mailbox, inventory, myPlayers, lineup, lastReward, manager };
+        try { localStorage.setItem(`kbo_v20_${teamCode.trim().toUpperCase()}`, JSON.stringify(data)); localStorage.setItem(`kbo_v20_imported_${teamCode.trim().toUpperCase()}`,"1"); }
         catch { showToast('저장 공간이 부족하거나 저장이 차단되었습니다.'); }
       };
 
       useEffect(() => {
         if (isLoggedIn) handleSave();
-      }, [isLoggedIn, favTeam, currency, mailbox, inventory, myPlayers, lineup, lastReward]);
+      }, [isLoggedIn, favTeam, currency, mailbox, inventory, myPlayers, lineup, lastReward, manager]);
+
+      useEffect(() => {
+        const ids=Object.fromEntries(myPlayers.map(c=>[c.uniqueId,c]));
+        setLineup(prev=>{
+          if(!Object.values(prev).some(c=>c&&ids[c.uniqueId]&&c!==ids[c.uniqueId]))return prev;
+          return Object.fromEntries(Object.entries(prev).map(([pos,c])=>[pos,c?(ids[c.uniqueId]||null):null]));
+        });
+      },[myPlayers]);
 
       const handleReset = () => {
           if(confirm('정말 데이터를 초기화하시겠습니까?')) {
-              localStorage.removeItem(`kbo_v18_${teamCode.trim().toUpperCase()}`);
+              localStorage.removeItem(`kbo_v20_${teamCode.trim().toUpperCase()}`);
               window.location.reload();
           }
       };
@@ -209,6 +184,7 @@
           const packFilteredDB = FULL_DATABASE.filter(p => p.grade !== 'SIGNATURE');
 
           switch(item.packId) {
+              case 'award_only': pool = packFilteredDB.filter(p=>p.awards.length>0); break;
               case 'high_friendship': pool = packFilteredDB.filter(p => ['RARE', 'SPECIAL', 'HERO'].includes(p.grade)); break;
               case 'normal_all': pool = packFilteredDB.filter(p => ['NORMAL', 'RARE', 'SPECIAL'].includes(p.grade)); break;
               case 'normal_batter': pool = packFilteredDB.filter(p => ['NORMAL', 'RARE', 'SPECIAL'].includes(p.grade) && p.pos !== 'P'); break;
@@ -218,7 +194,7 @@
               case 'premium_team': pool = packFilteredDB.filter(p => p.team === targetTeam && ['PLATINUM', 'LEGEND'].includes(p.grade)); break;
               default: pool = packFilteredDB;
           }
-          if (pool.length === 0) pool = packFilteredDB;
+          if (pool.length === 0) { showToast('조건에 맞는 검증된 선수가 없습니다. 다른 팩이나 구단을 선택해주세요.'); return; }
 
           let currentInv = [...inventory];
           let openedCards = [];
@@ -228,7 +204,7 @@
               if (invIdx < 0) break;
               currentInv.splice(invIdx, 1);
 
-              const newCard = { ...pool[Math.floor(Math.random() * pool.length)], uniqueId: Date.now() + Math.random(), upgrade: 0 };
+              const newCard = { ...pool[Math.floor(Math.random() * pool.length)], uniqueId: crypto.randomUUID(), upgrade: 0, xp:0,training:0,growth:{},condition:0,fatigue:0 };
               if(!newCard.skills) newCard.skills = generateSkills(newCard.pos === 'P' ? 'P' : 'B', newCard.grade);
               openedCards.push(newCard);
           }
@@ -259,7 +235,7 @@
 
       const renderPlayerCard = (p, isPlaced = false, onClick = null) => (
           <div key={p.uniqueId} onClick={onClick} className={`flex items-center p-2 cursor-pointer transition-all border-2 ${isPlaced ? 'opacity-40 border-gray-600 bg-gray-800 grayscale' : `${GRADE_CONFIG[p.grade].border} hover:-translate-y-1 shadow-[2px_2px_10px_rgba(0,0,0,0.5)]`} ${GRADE_CONFIG[p.grade].bg}`}>
-              <div className="w-14 h-14 bg-black/50 rounded flex items-center justify-center font-black text-2xl mr-3 border border-white/20 text-white shadow-inner">{p.ovr}</div>
+              <Portrait card={p}/><div className="w-14 h-14 bg-black/50 rounded flex items-center justify-center font-black text-2xl mr-3 border border-white/20 text-white shadow-inner">{p.ovr}</div>
               <div className="flex-1">
                   <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                       <span className="text-[10px] bg-black text-white px-1.5 py-0.5 font-bold rounded-sm border border-gray-600">{p.year} {p.team}</span>
@@ -271,6 +247,7 @@
                       <span className="text-[9px] opacity-90 font-bold bg-black/40 px-1 py-0.5 rounded ml-2 uppercase border border-current">{p.grade}</span>
                   </div>
               </div>
+              <button className="detail-button" onClick={e=>{e.stopPropagation();setDetailCard(p);}}>상세</button>
               {isPlaced && <div className="text-[10px] bg-black text-red-500 px-2 py-1 font-bold rounded border border-red-500">배치됨</div>}
           </div>
       );
@@ -281,7 +258,7 @@
                   <span className="bg-black/60 text-white text-md px-2 py-1 font-black rounded">{p.pos}</span>
                   <span className="text-xs opacity-90 font-black bg-black/40 px-2 py-1 rounded uppercase border-2 border-current">{p.grade}</span>
               </div>
-              <div className="text-center font-black text-7xl drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] my-2 tracking-tighter">{p.ovr}</div>
+              <Portrait card={p}/><div className="text-center font-black text-7xl drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] my-2 tracking-tighter">{p.ovr}</div>
               <div className="bg-black/80 text-white text-center p-2 rounded border border-gray-500 shadow-inner">
                   <div className="text-xs opacity-80 mb-1 font-bold">{p.year} {p.team}</div>
                   <div className="font-black text-3xl drop-shadow-md">{p.name}</div>
@@ -292,8 +269,8 @@
       const renderLineupScreen = () => {
           const placePlayer = (player) => {
               if(!activePos) { showToast('먼저 그라운드에서 포지션을 선택하세요.'); return; }
-              if(activePos === 'P' && player.pos !== 'P') { showToast('투수에 타자를 넣을 수 없습니다!'); return; }
-              if(activePos !== 'P' && player.pos === 'P') { showToast('타자에 투수를 넣을 수 없습니다!'); return; }
+              if(!eligible(player,activePos)) { showToast('확인된 포지션에 맞게 배치해주세요!'); return; }
+              if(Object.values(lineup).some(c=>c?.playerId===player.playerId&&c.uniqueId!==player.uniqueId)) { showToast('동일 선수는 한 명만 출전할 수 있습니다!'); return; }
               setLineup(prev => ({...prev, [activePos]: player})); setActivePos(null);
           };
 
@@ -653,7 +630,7 @@
               </select>
               <button className="com2us-button entry-submit" type="submit">구단 입장 ▶</button>
             </form>
-            <p className="entry-note">처음이라면 구단을 창단하고, 같은 코드로 이어서 플레이하세요.<br/>진행 기록은 현재 기기·브라우저에 자동 저장됩니다.</p>
+            <p className="entry-note">처음이라면 구단을 창단하고, 같은 코드로 이어서 플레이하세요.<br/>진행 기록은 현재 기기·브라우저에 자동 저장됩니다. 실선수판에서는 기존 무작위 카드를 제외하며 구버전 원본 저장은 보존합니다.</p>
             {toast && <p role="status" className="entry-message">{toast}</p>}
           </section>
         </main>
@@ -661,7 +638,7 @@
 
       return (
           <div className="min-h-screen bg-slate-900 flex flex-col">
-              {toast && ( <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-black/90 text-white px-6 py-3 rounded border border-gray-500 font-black shadow-2xl animate-bounce">{toast}</div> )}
+              {toast && ( <div role="status" className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-black/90 text-white px-6 py-3 rounded border border-gray-500 font-black shadow-2xl animate-bounce">{toast}</div> )}
 
               <header className="com2us-panel p-4 flex justify-between items-center sticky top-0 z-40 rounded-b-lg mb-4 mx-2 mt-2">
                   <div className="flex items-center gap-4">
@@ -692,9 +669,10 @@
                               <h2 className="text-4xl font-black text-red-400 drop-shadow-md">상점</h2><p className="mt-4 font-bold text-gray-400">선수팩 · 영입 · 훈련 아이템</p>
                           </button>
                           <button onClick={() => changeMenu('LEAGUE')} className="com2us-panel flex flex-col items-center justify-center shadow-2xl hover:-translate-y-2 transition-transform p-10 rounded-xl">
-                              <h2 className="text-4xl font-black text-green-400 drop-shadow-md">리그 모드</h2><p className="mt-4 font-bold text-gray-400">경기 시뮬레이션 보상</p>
+                              <h2 className="text-4xl font-black text-green-400 drop-shadow-md">리그 모드</h2><p className="mt-4 font-bold text-gray-400">144경기 · 개인 기록 · 포스트시즌</p>
                           </button>
 
+                          <button onClick={()=>changeMenu('ARCHIVE')} className="com2us-panel p-8 rounded-xl font-black text-2xl text-yellow-200 md:col-span-3">선수 도감 · 타순 · 덱 효과 · 시즌 리그 <span className="text-sm">실제 선수 {catalogMeta.uniquePlayers.toLocaleString()}명 / 사진 수록</span></button>
                           <button onClick={getDailyReward} className="md:col-span-3 bg-gradient-to-r from-yellow-600 to-yellow-400 text-black border-2 border-yellow-200 flex flex-col items-center justify-center shadow-xl hover:-translate-y-1 p-6 rounded-xl font-black text-2xl">
                               🎁 일일 미션 보상 받기 (1000 S / 20000 P)
                           </button>
@@ -726,6 +704,7 @@
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                              <button onClick={()=>buyPack('award_only','수상자 전용팩',25000,'point')} className="com2us-button p-4 font-black text-lg rounded">수상자 전용팩<br/><small>검증된 골글 · MVP · 올스타 · 25,000 P</small></button>
                               <button onClick={()=>buyPack('normal_all', '일반 선수팩', 3000, 'point')} className="bg-gray-800 border border-gray-600 p-4 font-black text-lg hover:bg-gray-700 rounded shadow-lg text-white">일반 선수팩<br/><span className="text-sm text-blue-300">3,000 P</span></button>
                               <button onClick={()=>buyPack('normal_batter', '일반 타자팩', 5000, 'point')} className="bg-gray-800 border border-gray-600 p-4 font-black text-lg hover:bg-gray-700 rounded shadow-lg text-white">일반 타자팩<br/><span className="text-sm text-blue-300">5,000 P</span></button>
                               <button onClick={()=>buyPack('normal_pitcher', '일반 투수팩', 5000, 'point')} className="bg-gray-800 border border-gray-600 p-4 font-black text-lg hover:bg-gray-700 rounded shadow-lg text-white">일반 투수팩<br/><span className="text-sm text-blue-300">5,000 P</span></button>
@@ -739,19 +718,11 @@
                       </div>
                   )}
 
-                  {currentMenu === 'LEAGUE' && (
-                      <div className="com2us-panel p-16 text-center rounded-xl flex flex-col items-center">
-                          <h2 className="text-5xl font-black mb-6 text-green-400 drop-shadow-md">2026 정규 리그</h2>
-                          <div className="text-gray-400 font-bold mb-8">승리 시: 30,000 P + 500 S + 마일리지팩 지급</div>
-                          <button onClick={() => {
-                              showToast('리그 우승! 마일리지팩과 상금 획득.');
-                              setMailbox(prev => [{ id: Date.now(), title: '리그 우승 보상', type: 'PACK', packId: 'mileage', amount: 1 }, { id: Date.now()+1, title: '우승 상금', type: 'POINT', amount: 30000 }, { id: Date.now()+2, title: '우승 스타', type: 'STAR', amount: 500 }, ...prev]);
+                  {['LEAGUE','ARCHIVE'].includes(currentMenu) && <ManagerWorkbench catalog={FULL_DATABASE} meta={catalogMeta} players={myPlayers} setPlayers={setMyPlayers} lineup={lineup} setLineup={setLineup} manager={manager} setManager={setManager} team={favTeam} showToast={showToast} onReward={(points,stars)=>setCurrency(prev=>({points:prev.points+points,stars:prev.stars+stars}))}/>}
 
-                          }} className="com2us-button px-16 py-8 text-3xl font-black rounded-xl shadow-2xl hover:-translate-y-2">리그 경기 시작</button>
-                      </div>
-                  )}
               </main>
 
+              {detailCard && <PlayerDetail card={detailCard} onClose={()=>setDetailCard(null)}/>}
               {packResultMulti.length > 0 && (
                   <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[200] p-4 backdrop-blur-sm overflow-y-auto">
                       <div className="flex flex-col items-center animate-pop-in py-10">

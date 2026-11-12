@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# reproducible KBO data collection workspace
+/.data-work/
+**/__pycache__/
