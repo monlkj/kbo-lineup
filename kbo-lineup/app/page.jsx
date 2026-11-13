@@ -1,7 +1,9 @@
 "use client";
 
     import { useState, useEffect, useMemo } from "react";
-import catalog from '../data/catalog.json';
+import baseCatalog from '../data/catalog.json';
+import nationalCards from '../data/national-cards.json';
+const catalog=[...baseCatalog,...nationalCards];
 import catalogMeta from '../data/catalog-meta.json';
 import ManagerWorkbench, {PlayerDetail} from './manager-workbench';
 import PlayerCard from './player-card';
@@ -260,6 +262,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
 
       const openInventoryGroup = (grp,count) => {
         if(manager.pendingSkillChange||manager.pendingCombination)return;
+        if(grp.packId==='coach_material'){setIsModalOpen(false);changeMenu('LEGEND_SCOUT');return;}
         if(['limit_break_ticket','legend_wild_material','signature_wild_material','signature_contract'].includes(grp.packId)){setIsModalOpen(false);changeMenu(grp.packId==='limit_break_ticket'?'LIMIT':grp.packId==='legend_wild_material'?'LEGEND_SCOUT':'SIGNATURE_AWAKEN');return;}
         if(grp.packId?.includes('skill_ticket')){showToast('스킬변경권은 팀 관리 > 고유능력 변경에서 사용하세요.');return;}
         const amount=Math.min(count,grp.count);
@@ -447,8 +450,9 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       const groupedInventory = useMemo(() => {
           const map = {};
           inventory.forEach(item => {
-              if(!map[item.packId]) map[item.packId] = { ...item, count: 0, ids: [] };
-              map[item.packId].count++; map[item.packId].ids.push(item.id);
+              const key=item.packId==='coach_material'?item.packId+'_'+item.coachId:item.packId;
+              if(!map[key]) map[key] = { ...item, count: 0, ids: [] };
+              map[key].count++; map[key].ids.push(item.id);
           });
           return Object.values(map);
       }, [inventory]);
@@ -507,7 +511,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                               <h2 className="text-4xl font-black text-blue-300 drop-shadow-md">팀 관리</h2><p className="mt-4 font-bold text-gray-400">라인업, 스카우트, 강화, 스킬</p>
                           </button>
                           <button onClick={() => changeMenu('SHOP')} className="com2us-panel flex flex-col items-center justify-center shadow-2xl hover:-translate-y-2 transition-transform p-10 rounded-xl">
-                              <h2 className="text-4xl font-black text-red-400 drop-shadow-md">상점</h2><p className="mt-4 font-bold text-gray-400">선수팩 · 영입 · 훈련 아이템</p>
+                              <h2 className="text-4xl font-black text-red-400 drop-shadow-md">상점</h2><p className="mt-4 font-bold text-gray-400">선수팩 · 영입 · 강화 아이템</p>
                           </button>
                           <button onClick={() => changeMenu('LEAGUE')} className="com2us-panel flex flex-col items-center justify-center shadow-2xl hover:-translate-y-2 transition-transform p-10 rounded-xl">
                               <h2 className="text-4xl font-black text-green-400 drop-shadow-md">리그 모드</h2><p className="mt-4 font-bold text-gray-400">144경기 · 개인 기록 · 포스트시즌</p>
@@ -524,13 +528,13 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-full min-h-[60vh]">
                           <button onClick={() => changeMenu('LINEUP')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-white">라인업 관리</h2></button>
                           <button onClick={()=>changeMenu('ROSTER')} className="com2us-panel aspect-video flex flex-col items-center justify-center rounded-lg"><h2 className="text-3xl font-black text-yellow-200">선수 보유함 · 확장/방출</h2><p>{myPlayers.length} / {rosterLimit}명</p></button>
-                          <button onClick={() => changeMenu('TRAIN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-green-400">선수 훈련</h2></button>
+                          <button onClick={() => changeMenu('TRAIN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-green-400">선수 강화</h2></button>
                           <button onClick={() => changeMenu('LIMIT')} className="com2us-panel aspect-video p-5 rounded-lg"><h2 className="text-3xl font-black text-amber-300">한계돌파</h2><p>동일 선수 재료 · 강화 상한 +10 → +20</p></button>
                           <button onClick={() => changeMenu('COMBINE')} className="com2us-panel aspect-video p-5 rounded-lg"><h2 className="text-3xl font-black text-orange-300">선수 조합</h2><p>3~5장 조합 · 7장 뒤집기</p></button>
                           <button onClick={() => changeMenu('SKILL')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-purple-400">고유능력 변경</h2></button>
 
                           <button onClick={() => changeMenu('LEGEND_SCOUT')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-purple-500"><h2 className="text-3xl font-black text-purple-300">레전드 스카우트</h2><p className="text-sm mt-2 text-gray-400">후보 탐색 → 지정 재료 등록 → 영입</p></button>
-                          <button onClick={() => changeMenu('SIGNATURE_AWAKEN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-blue-400"><h2 className="text-3xl font-black text-blue-300">시그니처 스카우트</h2><p className="text-sm mt-2 text-gray-400">+20 플래티넘 · 재료 11개 · 각성 계약서</p></button>
+                          <button onClick={() => changeMenu('SIGNATURE_AWAKEN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-blue-400"><h2 className="text-3xl font-black text-blue-300">시그니처 스카우트</h2><p className="text-sm mt-2 text-gray-400">+20 플래티넘 · 지정 능력치 95 초과 · 5장 / 10장 · 계약서</p></button>
                       </div>
                   )}
 
@@ -630,15 +634,16 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                                           </div>
                                       ) : (
                                           groupedInventory.map(grp => (
-                                              <div key={grp.packId} className="inventory-item-row bg-gray-800 border border-gray-600 mb-3 flex justify-between items-center px-4 py-3 rounded">
+                                              <div key={grp.coachId||grp.packId} className="inventory-item-row bg-gray-800 border border-gray-600 mb-3 flex justify-between items-center px-4 py-3 rounded">
                                                   <div>
                                                       <div className="font-black text-xl text-blue-300">{grp.name}</div>
                                                       <div className="font-bold text-gray-400 mt-1">수량: {grp.count}개</div>
                                                   </div>
                                                   <div className="inventory-open-actions">
+                                                    {['coach_material','limit_break_ticket','legend_wild_material','signature_wild_material','signature_contract'].includes(grp.packId)?<button className="com2us-button" onClick={()=>openInventoryGroup(grp,1)}>사용 화면으로 이동</button>:<>
                                                     <button onClick={()=>openInventoryGroup(grp,1)}>1개 개봉</button>
                                                     <button disabled={grp.count<10} title={grp.count<10?'10개 이상 보유 시 사용할 수 있습니다.':''} onClick={()=>openInventoryGroup(grp,10)}>10개 개봉</button>
-                                                    <button className="com2us-button" onClick={()=>openInventoryGroup(grp,grp.count)}>모두 개봉</button>
+                                                    <button className="com2us-button" onClick={()=>openInventoryGroup(grp,grp.count)}>모두 개봉</button></>}
                                                   </div>
                                               </div>
                                           ))

@@ -110,10 +110,15 @@ for c in cards.values():
  valid.append(c)
 people=collections.defaultdict(list)
 for c in valid:people[c['playerId']].append(c)
+national=json.load(open(OUT/'scout-materials.json'))['national']
+national_keys={(n['name'],n['team'],n['year']) for n in national}
 selected=[]
+base_ids=set()
 for rows in people.values():
  rows.sort(key=lambda c:(bool(c['awards']),c['stats'].get('g',0),c['year']),reverse=True)
- chosen={c['id']:c for c in rows if c['awards']}
+ base_ids.update(c['id'] for c in rows if c['awards'])
+ base_ids.update(c['id'] for c in rows[:2])
+ chosen={c['id']:c for c in rows if c['awards'] or (c['name'],c['team'],c['year']) in national_keys}
  for c in rows[:2]:chosen[c['id']]=c
  selected.extend(chosen.values())
 selected.sort(key=lambda c:(-c['year'],c['name'],c['playerId']))
@@ -122,5 +127,6 @@ assert len(people)>=2000, f'Only {len(people)} verified people with distinct pho
 assert len(selected)==len({c['id'] for c in selected})
 assert all(c['positions'] and c['pos'] in c['positions'] for c in selected)
 (OUT/'portrait-provenance.json').write_text(json.dumps({pid:{k:v for k,v in photos[pid].items() if k in ['photo','source','imageSource','hash','provider']} for pid in people},ensure_ascii=False,indent=2))
-(OUT/'catalog.json').write_text(json.dumps(selected,ensure_ascii=False,separators=(',',':')))
+(OUT/'catalog.json').write_text(json.dumps([c for c in selected if c['id'] in base_ids],ensure_ascii=False,separators=(',',':')))
+(OUT/'national-cards.json').write_text(json.dumps([c for c in selected if c['id'] not in base_ids],ensure_ascii=False,separators=(',',':')))
 (OUT/'catalog-meta.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2));print(json.dumps(meta,ensure_ascii=False),flush=True)

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 const root=new URL('../',import.meta.url);
 const read=p=>JSON.parse(fs.readFileSync(new URL(p,root)));
-const cards=read('data/catalog.json'),meta=read('data/catalog-meta.json'),photos=read('data/portrait-provenance.json');
+const cards=[...read('data/catalog.json'),...read('data/national-cards.json')],meta=read('data/catalog-meta.json'),photos=read('data/portrait-provenance.json');
 assert.ok(meta.uniquePlayers>=2000);
 assert.equal(new Set(cards.map(c=>c.playerId)).size,meta.uniquePlayers);
 assert.equal(cards.length,meta.cards);
