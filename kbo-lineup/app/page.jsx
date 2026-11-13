@@ -5,6 +5,7 @@ import catalog from '../data/catalog.json';
 import catalogMeta from '../data/catalog-meta.json';
 import ManagerWorkbench, {PlayerDetail} from './manager-workbench';
 import PlayerCard from './player-card';
+import {REWARDS,POINT_LOTTERY,startingMail,dailyMail,leagueMail,championMail,normalizeUnclaimedMail,claimMail,openLotteries} from './reward-rules.js';
 import {overall,eligible} from './manager-engine';
 import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,scoutPool,SCOUT_PRICES,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
 
@@ -38,6 +39,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       const [lastReward, setLastReward] = useState('');
       const [manager, setManager] = useState({});
       const [detailCard,setDetailCard] = useState(null);
+      const [lotteryResult,setLotteryResult] = useState(null);
 
       const [teamSelectModal, setTeamSelectModal] = useState({ isOpen: false, item: null, count: 1 });
       const [settingsModal, setSettingsModal] = useState(false);
@@ -90,7 +92,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
             data.myPlayers=remapped;
             data.lineup=Object.fromEntries(Object.entries(data.lineup||{}).map(([pos,c])=>{const real=c&&realIds[c.uniqueId];return [pos,real&&eligible(real,pos)?real:null];}));
             setFavTeam(data.favTeam || 'KIA'); setCurrency(data.currency || { points: 0, stars: 0 });
-            setMailbox(data.mailbox || []); setInventory(data.inventory || []);
+            setMailbox(normalizeUnclaimedMail(data.mailbox)); setInventory(data.inventory || []);
             if(!(data.manager?.basicRosterGranted || data.manager?.starterGift)) {
               const starter=createStarterSquad(data.favTeam||'KIA',FULL_DATABASE);
               const combined=[...remapped,...starter.players];
@@ -105,11 +107,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
             setIsLoggedIn(true); showToast(`[${code}] 구단을 불러왔습니다.`);
         } else {
             if(!favTeam) { showToast('선호 구단을 선택해주세요!'); return; }
-            setMailbox([
-                { id: Date.now()+1, title: '창단 선물: 구단선택팩', type: 'PACK', packId: 'premium_team', amount: 3 },
-                { id: Date.now()+2, title: '창단 지원금', type: 'POINT', amount: 500000 },
-                { id: Date.now()+3, title: '창단 지원 스타', type: 'STAR', amount: 15000 }
-            ]);
+            setMailbox(startingMail());
             const starter=createStarterSquad(favTeam,FULL_DATABASE);
             setMyPlayers(starter.players);setLineup(starter.lineup);setManager(starter.manager);
             setIsLoggedIn(true); showToast(`[${code}] 기본 선수 ${starter.players.length}명과 리그 편성 지급! 바로 경기를 시작할 수 있습니다.`);
@@ -143,15 +141,8 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
 
       const receiveAllMail = () => {
           if(mailbox.length === 0) { showToast('받을 우편이 없습니다.'); return; }
-          let p = currency.points, s = currency.stars, newInv = [...inventory];
-          mailbox.forEach(mail => {
-              if(mail.type === 'POINT') p += mail.amount;
-              else if(mail.type === 'STAR') s += mail.amount;
-              else if(mail.type === 'PACK') {
-                  for(let i=0; i<mail.amount; i++) newInv.push({ id: Date.now() + Math.random(), name: mail.title, packId: mail.packId || 'normal_all' });
-              }
-          });
-          setCurrency({ points: p, stars: s }); setInventory(newInv); setMailbox([]); showToast('우편 수령 완료!');
+          const result=claimMail(mailbox,currency,inventory);
+          setCurrency(result.currency);setInventory(result.inventory);setMailbox([]);showToast('우편 수령 완료! 포인트 복권은 보관함에서 사용하세요.');
       };
 
       const openPack = (item, targetTeam = null, count = 1) => {
@@ -261,9 +252,33 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
           const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Seoul' });
           if (lastReward === today) { showToast('오늘의 보상을 이미 받았습니다.'); return; }
           setLastReward(today);
-          setCurrency(prev => ({...prev, stars: prev.stars + 1000, points: prev.points + 20000}));
-          showToast('🎁 일일 보상 획득! (1000 S / 20000 P)');
+          setMailbox(prev=>[...dailyMail(),...prev]);
+          showToast(`일일 보상: 포인트 복권 ${REWARDS.dailyLotteries}장 + ${REWARDS.dailyStars} S를 우편함으로 보냈습니다.`);
 
+      };
+
+      const openInventoryGroup = (grp,count) => {
+        if(manager.pendingSkillChange)return;
+        if(grp.packId?.includes('skill_ticket')){showToast('스킬변경권은 팀 관리 > 고유능력 변경에서 사용하세요.');return;}
+        const amount=Math.min(count,grp.count);
+        if(grp.packId==='point_lottery'){
+          const result=openLotteries(inventory,amount);
+          if(!result.count){showToast('보유한 포인트 복권이 없습니다.');return;}
+          setInventory(result.inventory);setCurrency(prev=>({...prev,points:prev.points+result.points}));
+          setIsModalOpen(false);setLotteryResult(result);return;
+        }
+        const item={id:grp.ids[0],packId:grp.packId};
+        if(['team','premium_team'].includes(grp.packId))setTeamSelectModal({isOpen:true,item,count:amount});
+        else {setIsModalOpen(false);openPack(item,null,amount);}
+      };
+      const receiveLeagueReward = (result,year) => {
+        if(result==='CHAMPION'){
+          if(manager.rewardedChampionships?.includes(year))return;
+          setManager(prev=>({...prev,rewardedChampionships:[...new Set([...(prev.rewardedChampionships||[]),year])]}));
+          setMailbox(prev=>[...championMail(year),...prev]);return;
+        }
+        setMailbox(prev=>[...leagueMail(result),...prev]);
+        showToast('경기 보상 포인트 복권을 우편함으로 보냈습니다.');
       };
 
       const renderPlayerCard = (p, isPlaced = false, onClick = null) => (
@@ -632,7 +647,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
 
                           <button onClick={()=>changeMenu('ARCHIVE')} className="com2us-panel p-8 rounded-xl font-black text-2xl text-yellow-200 md:col-span-3">선수 도감 · 타순 · 덱 효과 · 시즌 리그 <span className="text-sm">실제 선수 {catalogMeta.uniquePlayers.toLocaleString()}명 / 사진 수록</span></button>
                           <button onClick={getDailyReward} className="md:col-span-3 bg-gradient-to-r from-yellow-600 to-yellow-400 text-black border-2 border-yellow-200 flex flex-col items-center justify-center shadow-xl hover:-translate-y-1 p-6 rounded-xl font-black text-2xl">
-                              🎁 일일 미션 보상 받기 (1000 S / 20000 P)
+                              🎁 일일 출석 보상 · 복권 3장 + 30 S (우편함)
                           </button>
                       </div>
                   )}
@@ -660,7 +675,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                       <div className="com2us-panel p-8 text-center rounded-xl">
                           <div className="flex justify-between items-center mb-8 border-b-2 border-gray-600 pb-4">
                               <h2 className="text-4xl font-black text-red-400">상점</h2>
-                              <button onClick={() => { setCurrency(prev => ({...prev, stars: prev.stars + 300})); showToast('연습 지원금 +300 S');  }} className="bg-yellow-500 text-black px-6 py-2 font-black rounded shadow-lg border border-yellow-200 animate-pulse">연습 지원금 +300 S</button>
+                              <p className="text-sm text-yellow-200">스타는 출석·우승 보상으로 획득합니다.</p>
                           </div>
 
                           <section className="star-shop"><h3>★ 스타 상점 · 보유 {currency.stars.toLocaleString()} S</h3><div className="star-shop-grid"><button onClick={()=>buyPack('premium_team','스타 구단선택팩',1000,'star')}>구단선택팩 · 1,000 S</button><button onClick={()=>buyPack('award_only','스타 수상자 전용팩',800,'star')}>수상자 전용팩 · 800 S</button><button onClick={()=>buyPack('premium_skill_ticket','고급 스킬변경권',500,'star')}>고급 스킬변경권 · 500 S</button><button onClick={()=>buyPack('select_skill_ticket','스킬 선택변경권',700,'star')}>스킬 선택변경권 · 700 S</button><button onClick={()=>buyPack('protect_skill_ticket','스킬 보호변경권',700,'star')}>스킬 보호변경권 · 700 S</button><button onClick={expandRoster} disabled={rosterLimit>=ROSTER_MAX}>선수 보유함 +20칸 · 500 S</button><button onClick={()=>changeMenu('SIGNATURE_AWAKEN')}>시그니처 스카우트 · 3,000 S ↗</button><button onClick={()=>changeMenu('LEGEND_SCOUT')}>레전드 스카우트 · 5,000 S ↗</button></div></section>
@@ -679,11 +694,12 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                       </div>
                   )}
 
-                  {['LEAGUE','ARCHIVE'].includes(currentMenu) && <ManagerWorkbench initialTab={currentMenu==='LEAGUE'?'시즌 리그':'도감'} catalog={FULL_DATABASE} meta={catalogMeta} players={myPlayers} setPlayers={setMyPlayers} lineup={lineup} setLineup={setLineup} manager={manager} setManager={setManager} team={favTeam} showToast={showToast} onReward={(points,stars)=>setCurrency(prev=>({points:prev.points+points,stars:prev.stars+stars}))}/>}
+                  {['LEAGUE','ARCHIVE'].includes(currentMenu) && <ManagerWorkbench initialTab={currentMenu==='LEAGUE'?'시즌 리그':'도감'} catalog={FULL_DATABASE} meta={catalogMeta} players={myPlayers} setPlayers={setMyPlayers} lineup={lineup} setLineup={setLineup} manager={manager} setManager={setManager} team={favTeam} showToast={showToast} onReward={receiveLeagueReward}/>}
 
               </main>
 
               {manager.pendingSkillChange && <div className="manager-overlay skill-choice-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="고급 변경권 세트 선택"><h2>고급 스킬변경권 · 세트 선택</h2><p>변경권 1장을 사용했습니다. {manager.pendingSkillChange.rulesVersion===2?'신규 세트의 1번 슬롯은 플래티넘 이상을 보장합니다. 레전드 카드는 1번 슬롯에서만 10% 확률로 레전드 능력이 나옵니다.':'이전에 뽑은 대기 세트는 그대로 유지됩니다. 다음 사용부터 1번 슬롯 보장 규칙을 적용합니다.'} 둘 중 한 세트를 선택하면 다른 세트는 사라집니다. 새로고침해도 이 선택은 유지됩니다.</p><div className="skill-set-choices">{[['기존 세트',manager.pendingSkillChange.before,true],['신규 세트',manager.pendingSkillChange.after,false]].map(([label,skills,keep])=><section key={label}><h3>{label}</h3>{skills.map((skill,i)=><div key={i} className={`skill-choice-row ${GRADE_CONFIG[skill.grade].bg} ${GRADE_CONFIG[skill.grade].text}`}><b>{skill.name} {skill.level}</b><small>{skill.grade}</small></div>)}<button className="com2us-button" onClick={()=>resolvePremium(keep)}>{keep?'기존 세트 유지':'신규 세트 적용'}</button></section>)}</div></section></div>}
+              {lotteryResult && <div className="manager-overlay"><section className="manager-dialog lottery-result" role="dialog" aria-modal="true" aria-label="포인트 복권 결과"><small>POINT LOTTERY</small><h2>포인트 복권 {lotteryResult.count}장 사용</h2><strong className="lottery-total">+{lotteryResult.points.toLocaleString()} P</strong><div className="record-chips">{Object.entries(lotteryResult.breakdown).map(([points,count])=><span key={points}>{Number(points).toLocaleString()} P × {count}장</span>)}</div><details><summary>당첨 금액·확률 보기</summary>{POINT_LOTTERY.map(p=><p key={p.points}>{p.points.toLocaleString()} P · {p.weight}%</p>)}</details><button className="primary" onClick={()=>setLotteryResult(null)}>복권 결과 확인</button></section></div>}
               {detailCard && <PlayerDetail card={detailCard} onClose={()=>setDetailCard(null)}/>}
               {packResultMulti.length > 0 && (
                   <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[200] p-4 backdrop-blur-sm overflow-y-auto">
@@ -733,7 +749,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                                       mailbox.map(mail => (
                                           <div key={mail.id} className="bg-gray-800 border border-gray-600 mb-3 p-4 rounded">
                                               <div className="font-black text-xl text-white">{mail.title}</div>
-                                              <div className="font-bold text-blue-400">{mail.type === 'PACK' ? `${mail.amount}장` : mail.amount.toLocaleString()}</div>
+                                              <div className="font-bold text-blue-400">{['PACK','LOTTERY'].includes(mail.type) ? `${mail.amount}장` : `${mail.amount.toLocaleString()} ${mail.type==='STAR'?'S':'P'}`}</div>
                                           </div>
                                       ))
                                   )}
@@ -744,25 +760,15 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                                           </div>
                                       ) : (
                                           groupedInventory.map(grp => (
-                                              <div key={grp.packId} className="bg-gray-800 border border-gray-600 mb-3 flex justify-between items-center px-4 py-3 rounded">
+                                              <div key={grp.packId} className="inventory-item-row bg-gray-800 border border-gray-600 mb-3 flex justify-between items-center px-4 py-3 rounded">
                                                   <div>
                                                       <div className="font-black text-xl text-blue-300">{grp.name}</div>
                                                       <div className="font-bold text-gray-400 mt-1">수량: {grp.count}개</div>
                                                   </div>
-                                                  <div className="flex gap-2">
-                                                      <button onClick={() => {
-                                                          if(grp.packId && grp.packId.includes('skill_ticket')) { showToast("스킬변경권은 '팀 관리 > 고유능력 변경' 메뉴에서 선수 선택 후 사용하세요."); return; }
-                                                          const itemToOpen = { id: grp.ids[0], packId: grp.packId };
-                                                          if(grp.packId === 'team' || grp.packId === 'premium_team') setTeamSelectModal({ isOpen: true, item: itemToOpen, count: 1 });
-                                                          else { setIsModalOpen(false); openPack(itemToOpen, null, 1); }
-                                                      }} className="bg-gray-700 text-white font-black text-md px-4 py-2 border border-gray-500 rounded hover:bg-gray-600 shadow-lg">1개 개봉</button>
-
-                                                      <button onClick={() => {
-                                                          if(grp.packId && grp.packId.includes('skill_ticket')) { showToast("스킬변경권은 '팀 관리 > 고유능력 변경' 메뉴에서 선수 선택 후 사용하세요."); return; }
-                                                          const itemToOpen = { id: grp.ids[0], packId: grp.packId };
-                                                          if(grp.packId === 'team' || grp.packId === 'premium_team') setTeamSelectModal({ isOpen: true, item: itemToOpen, count: grp.count });
-                                                          else { setIsModalOpen(false); openPack(itemToOpen, null, grp.count); }
-                                                      }} className="com2us-button font-black text-md px-4 py-2 rounded shadow-lg">모두 개봉</button>
+                                                  <div className="inventory-open-actions">
+                                                    <button onClick={()=>openInventoryGroup(grp,1)}>1개 개봉</button>
+                                                    <button disabled={grp.count<10} title={grp.count<10?'10개 이상 보유 시 사용할 수 있습니다.':''} onClick={()=>openInventoryGroup(grp,10)}>10개 개봉</button>
+                                                    <button className="com2us-button" onClick={()=>openInventoryGroup(grp,grp.count)}>모두 개봉</button>
                                                   </div>
                                               </div>
                                           ))
