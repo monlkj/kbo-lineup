@@ -3,7 +3,8 @@
     import { useState, useEffect, useMemo } from "react";
 import catalog from '../data/catalog.json';
 import catalogMeta from '../data/catalog-meta.json';
-import ManagerWorkbench, {Portrait,PlayerDetail} from './manager-workbench';
+import ManagerWorkbench, {PlayerDetail} from './manager-workbench';
+import PlayerCard from './player-card';
 import {overall,eligible} from './manager-engine';
 import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,scoutPool,SCOUT_PRICES,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
 
@@ -245,7 +246,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
         let next;try{next=changeSkills(card,type,selectedSkillIdx);}catch(e){showToast(e.message);return;}
         setInventory(prev=>{const i=prev.findIndex(x=>x.packId===ticket);return i<0?prev:prev.filter((_,idx)=>idx!==i);});
         if(type==='PREMIUM'){
-          setManager(prev=>({...prev,pendingSkillChange:{cardId:card.uniqueId,before:sanitizeSkills(card),after:next}}));
+          setManager(prev=>({...prev,pendingSkillChange:{cardId:card.uniqueId,before:sanitizeSkills(card),after:next,rulesVersion:2}}));
         }else{applySkills(card,next);showToast(type==='PROTECT'?'선택한 슬롯을 보호하고 나머지 능력을 교체했습니다.':'기존 능력을 교체하고 새 고유능력을 적용했습니다.');}
       };
       const resolvePremium = (keepOld) => {
@@ -266,37 +267,12 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       };
 
       const renderPlayerCard = (p, isPlaced = false, onClick = null) => (
-          <div key={p.uniqueId} data-player-id={p.uniqueId} onClick={onClick} className={`flex items-center p-2 cursor-pointer transition-all border-2 ${isPlaced ? 'opacity-40 border-gray-600 bg-gray-800 grayscale' : `${GRADE_CONFIG[p.grade].border} hover:-translate-y-1 shadow-[2px_2px_10px_rgba(0,0,0,0.5)]`} ${GRADE_CONFIG[p.grade].bg}`}>
-              <Portrait card={p}/><div className="w-14 h-14 bg-black/50 rounded flex items-center justify-center font-black text-2xl mr-3 border border-white/20 text-white shadow-inner">{p.ovr}</div>
-              <div className="flex-1">
-                  <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                      <span className="text-[10px] bg-black text-white px-1.5 py-0.5 font-bold rounded-sm border border-gray-600">{p.year} {p.team}</span>
-                      <span className="text-[10px] bg-black text-white px-1.5 py-0.5 font-bold rounded-sm border border-gray-600">{p.pos}</span>
-                      {p.tag && <span className="text-[10px] bg-yellow-600 text-white border border-yellow-300 px-1.5 py-0.5 font-black rounded-sm">{p.tag}</span>}
-                  </div>
-                  <div className={`font-black text-lg drop-shadow-md flex items-center ${GRADE_CONFIG[p.grade].text}`}>
-                      {p.name} {p.upgrade > 0 && <span className="text-yellow-400 ml-1 drop-shadow-[1px_1px_2px_black]">+{p.upgrade}</span>}
-                      <span className="text-[9px] opacity-90 font-bold bg-black/40 px-1 py-0.5 rounded ml-2 uppercase border border-current">{p.grade}</span>
-                  </div>
-              </div>
-              <button className="detail-button" onClick={e=>{e.stopPropagation();setDetailCard(p);}}>상세</button>
-              {isPlaced && <div className="text-[10px] bg-black text-red-500 px-2 py-1 font-bold rounded border border-red-500">배치됨</div>}
-          </div>
+        <div key={p.uniqueId} className="classic-card-tile">
+          <PlayerCard card={p} selected={isPlaced} onClick={onClick}/>
+          <button className="card-detail-action" onClick={()=>setDetailCard(p)}>선수 상세</button>
+        </div>
       );
-
-      const BigResultCard = ({ p }) => (
-          <div className={`relative w-64 h-80 flex flex-col justify-between p-3 border-4 shadow-[0_0_20px_rgba(0,0,0,0.8)] ${GRADE_CONFIG[p.grade].bg} ${GRADE_CONFIG[p.grade].border} ${GRADE_CONFIG[p.grade].text}`}>
-              <div className="flex justify-between items-start">
-                  <span className="bg-black/60 text-white text-md px-2 py-1 font-black rounded">{p.pos}</span>
-                  <span className="text-xs opacity-90 font-black bg-black/40 px-2 py-1 rounded uppercase border-2 border-current">{p.grade}</span>
-              </div>
-              <Portrait card={p}/><div className="text-center font-black text-7xl drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] my-2 tracking-tighter">{p.ovr}</div>
-              <div className="bg-black/80 text-white text-center p-2 rounded border border-gray-500 shadow-inner">
-                  <div className="text-xs opacity-80 mb-1 font-bold">{p.year} {p.team}</div>
-                  <div className="font-black text-3xl drop-shadow-md">{p.name}</div>
-              </div>
-          </div>
-      );
+      const BigResultCard = ({p}) => <PlayerCard card={p} large/>;
 
       const renderLineupScreen = () => {
           const placePlayer = (player) => {
@@ -327,13 +303,9 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                                   {!p ? (
                                       <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-black text-sm ${activePos === pos.role ? 'bg-yellow-500 border-white scale-125 z-20 text-black shadow-[0_0_15px_rgba(234,179,8,1)]' : 'bg-black/60 border-gray-400 text-gray-300'}`}>{pos.role}</div>
                                   ) : (
-                                      <div className={`relative w-20 h-28 flex flex-col justify-between p-1 border-2 shadow-lg hover:scale-110 ${GRADE_CONFIG[p.grade].bg} ${GRADE_CONFIG[p.grade].border} ${GRADE_CONFIG[p.grade].text} ${activePos===pos.role?'scale-110 z-20 ring-4 ring-yellow-400':''}`}>
-                                          <div className="flex justify-between items-start">
-                                              <span className="bg-black/60 text-white text-[9px] px-1 font-bold rounded">{p.pos}</span>
-                                              <button onClick={(e) => { e.stopPropagation(); setLineup(prev => ({...prev, [pos.role]: null})); }} className="text-gray-300 hover:text-red-500 bg-black/80 rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-black border border-gray-500">X</button>
-                                          </div>
-                                          <div className="text-center font-black text-2xl drop-shadow-[0_2px_2px_rgba(0,0,0,1)]">{p.ovr}</div>
-                                          <div className="bg-black/80 text-white text-[10px] text-center p-0.5 rounded-sm"><div className="font-black truncate">{p.name}</div></div>
+                                      <div className="field-card-wrap">
+                                        <PlayerCard card={p} role={pos.role} selected={activePos===pos.role}/>
+                                        <button className="field-card-remove" aria-label={`${pos.role} 선수 편성 해제`} onClick={e=>{e.stopPropagation();setLineup(prev=>({...prev,[pos.role]:null}));}}>×</button>
                                       </div>
                                   )}
                               </div>
@@ -342,7 +314,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                   </div>
                   <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
                       <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">선수 명단 ({myPlayers.length})</h3>
-                      <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2 pb-10">
+                      <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
                           {myPlayers.length === 0 ? <p className="text-gray-500 font-bold text-center mt-10">선수가 없습니다.</p> :
                             <>
                                 {myPlayers.slice(0, visibleCount).map(p => {
@@ -402,7 +374,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                   </div>
                   <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
                       <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">보유 명단</h3>
-                      <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2 pb-10">
+                      <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
                           {myPlayers.slice(0, visibleCount).map(p => renderPlayerCard(p, trainSelectedCard?.uniqueId === p.uniqueId, () => setTrainSelectedCard(p)))}
                           {myPlayers.length > visibleCount && ( <button onClick={() => setVisibleCount(v => v + 30)} className="w-full bg-gray-800 border border-gray-600 text-gray-300 py-3 mt-4 font-black">▼ 더보기</button> )}
                       </div>
@@ -475,12 +447,12 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                                   </div>
                               </div>
 
-                              <p className="muted">일반·선택·보호: 플래티넘 이상 선수만 최대 플래티넘. 고급: 레전드 선수만 최대 레전드. 플래티넘 미만 선수는 최대 히어로. 고급 변경권은 1장 사용 후 기존/신규 전체 세트 중 선택합니다.</p><div className="grid grid-cols-2 gap-3 w-full">
+                              <p className="muted">일반·선택·보호: 플래티넘 이상 선수만 최대 플래티넘. 고급: 1번 슬롯 플래티넘 확정, 레전드 카드에서만 10% 레전드 / 90% 플래티넘. 2·3번은 최대 플래티넘. 다른 변경권은 플래티넘 미만 선수에서 최대 히어로. 고급 변경권은 1장 사용 후 기존/신규 전체 세트 중 선택합니다.</p><div className="grid grid-cols-2 gap-3 w-full">
                                   <button onClick={() => handleSkillChange('NORMAL_TICKET')} className="bg-gray-700 border border-gray-500 py-3 font-black text-white hover:bg-gray-600 rounded">
                                       일반 스변 (전체 변경)<br/><span className="text-xs text-yellow-400 font-normal">보유: {normalTicketCount}장</span>
                                   </button>
-                                  <button onClick={() => handleSkillChange('PREMIUM')} className="com2us-button py-3 font-black rounded">
-                                      고급 스변 (전체 · 기존/신규 선택)<br/><span className="text-xs text-yellow-300 font-normal">보유: {premiumTicketCount}장</span>
+                                  <button disabled={!['PLATINUM','SIGNATURE','LEGEND'].includes(skillSelectedCard.grade)} title="플래티넘 이상 선수 전용 · 1번 슬롯 플래티넘 이상 확정" onClick={() => handleSkillChange('PREMIUM')} className="com2us-button py-3 font-black rounded">
+                                      고급 스변 (1번 슬롯 플래티넘 이상 확정)<br/><span className="text-xs text-yellow-300 font-normal">보유: {premiumTicketCount}장</span>
                                   </button>
                                   <button onClick={() => handleSkillChange('PROTECT')} className="bg-green-700 border border-green-500 py-3 font-black text-white hover:bg-green-600 rounded">
                                       보변권 (선택 슬롯 보호)<br/><span className="text-xs text-yellow-300 font-normal">보유: {protectTicketCount}장</span>
@@ -494,7 +466,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                   </div>
                   <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
                       <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">보유 명단</h3>
-                      <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2 pb-10">
+                      <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
                           {myPlayers.slice(0, visibleCount).map(p => renderPlayerCard(p, skillSelectedCard?.uniqueId === p.uniqueId, () => {
                               setSkillSelectedCard(p);
                               setSelectedSkillIdx(null); // 카드 바뀔 때만 슬롯 초기화
@@ -582,7 +554,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
 
                   <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
                       <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">재료 보관함</h3>
-                      <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2 pb-10">
+                      <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
                           {availablePlayers.slice(0, visibleCount).map(p => renderPlayerCard(p, currentList.some(sc=>sc.uniqueId===p.uniqueId), () => toggleCombineSelect(p)))}
                       </div>
                   </div>
@@ -711,7 +683,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
 
               </main>
 
-              {manager.pendingSkillChange && <div className="manager-overlay skill-choice-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="고급 변경권 세트 선택"><h2>고급 스킬변경권 · 세트 선택</h2><p>변경권 1장을 사용했습니다. 둘 중 한 세트를 선택하면 다른 세트는 사라집니다. 새로고침해도 이 선택은 유지됩니다.</p><div className="skill-set-choices">{[['기존 세트',manager.pendingSkillChange.before,true],['신규 세트',manager.pendingSkillChange.after,false]].map(([label,skills,keep])=><section key={label}><h3>{label}</h3>{skills.map((skill,i)=><div key={i} className={`skill-choice-row ${GRADE_CONFIG[skill.grade].bg} ${GRADE_CONFIG[skill.grade].text}`}><b>{skill.name} {skill.level}</b><small>{skill.grade}</small></div>)}<button className="com2us-button" onClick={()=>resolvePremium(keep)}>{keep?'기존 세트 유지':'신규 세트 적용'}</button></section>)}</div></section></div>}
+              {manager.pendingSkillChange && <div className="manager-overlay skill-choice-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="고급 변경권 세트 선택"><h2>고급 스킬변경권 · 세트 선택</h2><p>변경권 1장을 사용했습니다. {manager.pendingSkillChange.rulesVersion===2?'신규 세트의 1번 슬롯은 플래티넘 이상을 보장합니다. 레전드 카드는 1번 슬롯에서만 10% 확률로 레전드 능력이 나옵니다.':'이전에 뽑은 대기 세트는 그대로 유지됩니다. 다음 사용부터 1번 슬롯 보장 규칙을 적용합니다.'} 둘 중 한 세트를 선택하면 다른 세트는 사라집니다. 새로고침해도 이 선택은 유지됩니다.</p><div className="skill-set-choices">{[['기존 세트',manager.pendingSkillChange.before,true],['신규 세트',manager.pendingSkillChange.after,false]].map(([label,skills,keep])=><section key={label}><h3>{label}</h3>{skills.map((skill,i)=><div key={i} className={`skill-choice-row ${GRADE_CONFIG[skill.grade].bg} ${GRADE_CONFIG[skill.grade].text}`}><b>{skill.name} {skill.level}</b><small>{skill.grade}</small></div>)}<button className="com2us-button" onClick={()=>resolvePremium(keep)}>{keep?'기존 세트 유지':'신규 세트 적용'}</button></section>)}</div></section></div>}
               {detailCard && <PlayerDetail card={detailCard} onClose={()=>setDetailCard(null)}/>}
               {packResultMulti.length > 0 && (
                   <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[200] p-4 backdrop-blur-sm overflow-y-auto">

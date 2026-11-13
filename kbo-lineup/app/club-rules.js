@@ -20,7 +20,7 @@ export const TICKETS={NORMAL_TICKET:'skill_ticket',PREMIUM:'premium_skill_ticket
 const SKILL_RANK={NORMAL:0,HERO:1,PLATINUM:2,LEGEND:3};
 export function skillCount(grade){return ['HERO','PLATINUM','SIGNATURE','LEGEND'].includes(grade)?3:grade==='SPECIAL'?2:1;}
 export function skillCeiling(grade,type='PREMIUM'){
- if(type==='PREMIUM'&&grade==='LEGEND')return 'LEGEND';
+ if(['PREMIUM','INITIAL'].includes(type)&&grade==='LEGEND')return 'LEGEND';
  return ['PLATINUM','SIGNATURE','LEGEND'].includes(grade)?'PLATINUM':'HERO';
 }
 export function generateSingleSkill(pos,grade,rng=Math.random,excluded=[]){
@@ -30,7 +30,7 @@ export function generateSingleSkill(pos,grade,rng=Math.random,excluded=[]){
  const roll=rng();return {name,grade,level:roll>.9?'B':roll>.6?'C':roll>.3?'D':'E'};
 }
 function rollGrade(max,rng){const r=rng();const rank=r>.95?3:r>.8?2:r>.5?1:0;return Object.keys(SKILL_RANK).find(k=>SKILL_RANK[k]===Math.min(rank,SKILL_RANK[max]));}
-export function generateSkills(pos,grade,type='PREMIUM',rng=Math.random){const list=[];for(let i=0;i<skillCount(grade);i++)list.push(generateSingleSkill(pos,rollGrade(skillCeiling(grade,type),rng),rng,list.map(s=>s.name)));return list;}
+export function generateSkills(pos,grade,type='INITIAL',rng=Math.random){const list=[];for(let i=0;i<skillCount(grade);i++)list.push(generateSingleSkill(pos,rollGrade(skillCeiling(grade,type),rng),rng,list.map(s=>s.name)));return list;}
 export function sanitizeSkills(card){
  const max=SKILL_RANK[skillCeiling(card.grade)];const old=Array.isArray(card.skills)?card.skills:[];
  return Array.from({length:skillCount(card.grade)},(_,i)=>{
@@ -41,7 +41,15 @@ export function sanitizeSkills(card){
 export function changeSkills(card,type,slot=null,rng=Math.random){
  if(!TICKETS[type])throw new Error('지원하지 않는 변경권입니다.');
  const before=sanitizeSkills(card);
- if(type==='NORMAL_TICKET'||type==='PREMIUM')return generateSkills(card.pos,card.grade,type,rng);
+ if(type==='PREMIUM'){
+  if(!['PLATINUM','SIGNATURE','LEGEND'].includes(card.grade))throw new Error('고급 변경권은 플래티넘 이상 선수에게만 사용할 수 있습니다.');
+  // These are this game's explicit rates, not a claim about another game's official rates.
+  const firstGrade=card.grade==='LEGEND'&&rng()<.10?'LEGEND':'PLATINUM';
+  const next=[generateSingleSkill(card.pos,firstGrade,rng)];
+  for(let i=1;i<skillCount(card.grade);i++)next.push(generateSingleSkill(card.pos,rollGrade('PLATINUM',rng),rng,next.map(s=>s.name)));
+  return next;
+ }
+ if(type==='NORMAL_TICKET')return generateSkills(card.pos,card.grade,type,rng);
  if(!Number.isInteger(slot)||slot<0||slot>=before.length)throw new Error(type==='PROTECT'?'보호할 슬롯을 선택해주세요.':'변경할 슬롯을 선택해주세요.');
  if(type==='PROTECT'&&before.length<2)throw new Error('보호할 슬롯 외에 변경할 고유능력이 없습니다.');
  return before.map((s,i)=>((type==='SELECT'&&i===slot)||(type==='PROTECT'&&i!==slot))?generateSingleSkill(card.pos,rollGrade(skillCeiling(card.grade,type),rng),rng):s);

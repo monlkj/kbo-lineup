@@ -8,6 +8,7 @@ for(const grade of ['NORMAL','RARE','SPECIAL','HERO','PLATINUM','SIGNATURE','LEG
  const card={pos,grade,skills:generateSkills(pos,grade,'PREMIUM',()=>.999)};
  assert.equal(card.skills.length,skillCount(grade));
  for(const type of ['NORMAL_TICKET','PREMIUM','SELECT','PROTECT']){
+  if(type==='PREMIUM'&&!['PLATINUM','SIGNATURE','LEGEND'].includes(grade)){assert.throws(()=>changeSkills(card,type));continue;}
   if(type==='PROTECT'&&card.skills.length===1){assert.throws(()=>changeSkills(card,type,0));continue;}
   const skills=changeSkills(card,type,0,()=>.999);
   if(type==='SELECT')assert.deepEqual(skills.slice(1),card.skills.slice(1));
@@ -26,3 +27,18 @@ assert.equal(capacity({},0),100);assert.equal(capacity({rosterCapacity:120},101)
 assert.equal(acquisitionCount(99,100,5),1);assert.equal(acquisitionCount(100,100,1),0);
 for(const grade of ['SIGNATURE','LEGEND']){const pool=scoutPool(catalog,grade);assert.ok(pool.length);const card=playableCard(pool[0],grade);assert.equal(card.grade,grade);assert.ok(card.photo);assert.equal(card.skills.length,3);}
 console.log('PASS: every card/ticket grade ceiling, full-set rerolls, selected/protected slots, legacy illegal-skill cleanup, all club starter rosters, capacity and scout output grades');
+
+for(const grade of ['PLATINUM','SIGNATURE','LEGEND'])for(const pos of ['P','SS']){
+ const card={grade,pos,skills:generateSkills(pos,grade)};
+ for(let seed=0;seed<1000;seed++){
+  let n=seed;const rng=()=>{n=(n*1664525+1013904223)>>>0;return n/4294967296;};
+  const set=changeSkills(card,'PREMIUM',null,rng);
+  assert.ok(['PLATINUM','LEGEND'].includes(set[0].grade));
+  if(grade!=='LEGEND')assert.equal(set[0].grade,'PLATINUM');
+  assert.ok(set.slice(1).every(s=>s.grade!=='LEGEND'));
+ }
+ assert.equal(changeSkills(card,'PREMIUM',null,()=>0)[0].grade,grade==='LEGEND'?'LEGEND':'PLATINUM');
+ assert.equal(changeSkills(card,'PREMIUM',null,()=>.0999)[0].grade,grade==='LEGEND'?'LEGEND':'PLATINUM');
+ assert.equal(changeSkills(card,'PREMIUM',null,()=>.1)[0].grade,'PLATINUM');
+}
+console.log('PASS: first-slot guarantee across 6000 rolls, exact 10% boundary and no legend skills in slots 2/3');
