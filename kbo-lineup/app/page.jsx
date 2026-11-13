@@ -5,6 +5,8 @@ import catalog from '../data/catalog.json';
 import catalogMeta from '../data/catalog-meta.json';
 import ManagerWorkbench, {PlayerDetail} from './manager-workbench';
 import PlayerCard from './player-card';
+import PlayerFilters from './player-filters.jsx';
+import {EMPTY_FILTERS,filterPlayers,unassignedPlayers} from './player-filters.js';
 import {REWARDS,POINT_LOTTERY,startingMail,dailyMail,leagueMail,championMail,normalizeUnclaimedMail,claimMail,openLotteries} from './reward-rules.js';
 import {overall,eligible} from './manager-engine';
 import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,scoutPool,SCOUT_PRICES,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
@@ -64,8 +66,12 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       const rosterLimit=capacity(manager,myPlayers.length);
       const protectedPlayers=protectedIds(lineup,manager);
       const [scoutTeam,setScoutTeam] = useState('');
+      const [playerFilters,setPlayerFilters]=useState({...EMPTY_FILTERS});
+      const filteredOwned=useMemo(()=>filterPlayers(myPlayers,playerFilters),[myPlayers,playerFilters]);
+      const lineupCandidates=useMemo(()=>filterPlayers(unassignedPlayers(myPlayers,lineup,manager.staff),playerFilters,activePos),[myPlayers,lineup,manager.staff,playerFilters,activePos]);
+      const filterControls=(lockedPosition='')=><PlayerFilters compact value={playerFilters} onChange={value=>{setPlayerFilters(value);setVisibleCount(30);}} teams={[...new Set(myPlayers.map(c=>c.team))].sort()} lockedPosition={lockedPosition}/>;
 
-      const changeMenu = (menu) => { if(manager.pendingSkillChange){showToast('기존 또는 신규 고유능력 세트를 먼저 선택해주세요.');return;} setCurrentMenu(menu); setVisibleCount(30); };
+      const changeMenu = (menu) => { if(manager.pendingSkillChange){showToast('기존 또는 신규 고유능력 세트를 먼저 선택해주세요.');return;} setCurrentMenu(menu); setVisibleCount(30);setPlayerFilters({...EMPTY_FILTERS});if(menu==='LINEUP')setActivePos(null); };
       const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2500); };
 
       const handleLogin = (e) => {
@@ -131,6 +137,16 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
           return Object.fromEntries(Object.entries(prev).map(([pos,c])=>[pos,c?(ids[c.uniqueId]||null):null]));
         });
       },[myPlayers]);
+
+      useEffect(()=>{
+        if(!manager.staff)return;
+        const first=myPlayers.find(c=>c.uniqueId===manager.staff.starters?.[0])||null;
+        setLineup(prev=>prev.P===first?prev:{...prev,P:first});
+      },[manager.staff,myPlayers]);
+      const clearFieldPosition=(pos)=>{
+        setLineup(prev=>({...prev,[pos]:null}));
+        if(pos==='P')setManager(prev=>({...prev,staff:{...prev.staff,starters:(prev.staff?.starters||[]).map((id,i)=>i===0?null:id)}}));
+      };
 
       const handleReset = () => {
           if(confirm('정말 데이터를 초기화하시겠습니까?')) {
@@ -293,8 +309,8 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
           const placePlayer = (player) => {
               if(!activePos) { showToast('먼저 그라운드에서 포지션을 선택하세요.'); return; }
               if(!eligible(player,activePos)) { showToast('확인된 포지션에 맞게 배치해주세요!'); return; }
-              if(Object.values(lineup).some(c=>c?.playerId===player.playerId&&c.uniqueId!==player.uniqueId)) { showToast('동일 선수는 한 명만 출전할 수 있습니다!'); return; }
-              setLineup(prev => ({...prev, [activePos]: player})); setActivePos(null);
+              if(!unassignedPlayers(myPlayers,lineup,manager.staff).some(c=>c.uniqueId===player.uniqueId)) { showToast('동일 선수는 한 명만 출전할 수 있습니다!'); return; }
+              setLineup(prev => ({...prev, [activePos]: player}));if(activePos==='P')setManager(prev=>({...prev,staff:{...prev.staff,starters:Array.from({length:5},(_,i)=>i===0?player.uniqueId:prev.staff?.starters?.[i]||null)}})); setActivePos(null);
           };
 
           return (
@@ -314,29 +330,26 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                       ].map(pos => {
                           const p = lineup[pos.role];
                           return (
-                              <div key={pos.role} onClick={() => setActivePos(pos.role)} className="absolute flex flex-col items-center -translate-x-1/2 translate-y-1/2 z-10 cursor-pointer" style={{ bottom: pos.b, left: pos.l }}>
+                              <div key={pos.role} role="button" tabIndex={0} aria-label={`${pos.role} 포지션 선택`} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setActivePos(pos.role);}}} onClick={() => setActivePos(pos.role)} className="absolute flex flex-col items-center -translate-x-1/2 translate-y-1/2 z-10 cursor-pointer" style={{ bottom: pos.b, left: pos.l }}>
                                   {!p ? (
                                       <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-black text-sm ${activePos === pos.role ? 'bg-yellow-500 border-white scale-125 z-20 text-black shadow-[0_0_15px_rgba(234,179,8,1)]' : 'bg-black/60 border-gray-400 text-gray-300'}`}>{pos.role}</div>
                                   ) : (
                                       <div className="field-card-wrap">
-                                        <PlayerCard card={p} role={pos.role} selected={activePos===pos.role}/>
-                                        <button className="field-card-remove" aria-label={`${pos.role} 선수 편성 해제`} onClick={e=>{e.stopPropagation();setLineup(prev=>({...prev,[pos.role]:null}));}}>×</button>
+                                        <PlayerCard compact card={p} role={pos.role} selected={activePos===pos.role}/>
+                                        <button className="field-card-remove" aria-label={`${pos.role} 선수 편성 해제`} onClick={e=>{e.stopPropagation();clearFieldPosition(pos.role);}}>×</button>
                                       </div>
                                   )}
                               </div>
                           )
                       })}
                   </div>
-                  <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
-                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">선수 명단 ({myPlayers.length})</h3>
+                  <div role="complementary" aria-label="라인업 교체 후보" className="lineup-sidebar w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
+                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">{activePos?`${activePos} 교체 후보`:'미편성 후보'} ({lineupCandidates.length})</h3>{filterControls(activePos)}
                       <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
-                          {myPlayers.length === 0 ? <p className="text-gray-500 font-bold text-center mt-10">선수가 없습니다.</p> :
+                          {lineupCandidates.length === 0 ? <p className="text-gray-500 font-bold text-center mt-10">배치 가능한 미편성 후보가 없습니다. 다른 포지션을 선택하거나 필터를 초기화해주세요.</p> :
                             <>
-                                {myPlayers.slice(0, visibleCount).map(p => {
-                                    const isPlaced = Object.values(lineup).some(placed => placed?.uniqueId === p.uniqueId);
-                                    return renderPlayerCard(p, isPlaced, () => { if(!isPlaced) placePlayer(p); });
-                                })}
-                                {myPlayers.length > visibleCount && (
+                                {lineupCandidates.slice(0,visibleCount).map(p=>renderPlayerCard(p,false,()=>placePlayer(p)))}
+                                {lineupCandidates.length > visibleCount && (
                                     <button onClick={() => setVisibleCount(v => v + 30)} className="w-full bg-gray-800 border border-gray-600 text-gray-300 py-3 mt-4 font-black hover:bg-gray-700">▼ 더보기</button>
                                 )}
                             </>
@@ -388,10 +401,10 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                       )}
                   </div>
                   <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
-                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">보유 명단</h3>
+                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">보유 명단 ({filteredOwned.length})</h3>{filterControls()}
                       <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
-                          {myPlayers.slice(0, visibleCount).map(p => renderPlayerCard(p, trainSelectedCard?.uniqueId === p.uniqueId, () => setTrainSelectedCard(p)))}
-                          {myPlayers.length > visibleCount && ( <button onClick={() => setVisibleCount(v => v + 30)} className="w-full bg-gray-800 border border-gray-600 text-gray-300 py-3 mt-4 font-black">▼ 더보기</button> )}
+                          {filteredOwned.slice(0, visibleCount).map(p => renderPlayerCard(p, trainSelectedCard?.uniqueId === p.uniqueId, () => setTrainSelectedCard(p)))}
+                          {filteredOwned.length > visibleCount && ( <button onClick={() => setVisibleCount(v => v + 30)} className="w-full bg-gray-800 border border-gray-600 text-gray-300 py-3 mt-4 font-black">▼ 더보기</button> )}
                       </div>
                   </div>
               </div>
@@ -480,13 +493,13 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                       )}
                   </div>
                   <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
-                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">보유 명단</h3>
+                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">보유 명단 ({filteredOwned.length})</h3>{filterControls()}
                       <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
-                          {myPlayers.slice(0, visibleCount).map(p => renderPlayerCard(p, skillSelectedCard?.uniqueId === p.uniqueId, () => {
+                          {filteredOwned.slice(0, visibleCount).map(p => renderPlayerCard(p, skillSelectedCard?.uniqueId === p.uniqueId, () => {
                               setSkillSelectedCard(p);
                               setSelectedSkillIdx(null); // 카드 바뀔 때만 슬롯 초기화
                           }))}
-                          {myPlayers.length > visibleCount && ( <button onClick={() => setVisibleCount(v => v + 30)} className="w-full bg-gray-800 border border-gray-600 text-gray-300 py-3 mt-4 font-black">▼ 더보기</button> )}
+                          {filteredOwned.length > visibleCount && ( <button onClick={() => setVisibleCount(v => v + 30)} className="w-full bg-gray-800 border border-gray-600 text-gray-300 py-3 mt-4 font-black">▼ 더보기</button> )}
                       </div>
                   </div>
               </div>
@@ -528,7 +541,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
               setCurrency(prev=>({...prev,points:prev.points-cost}));
               setMyPlayers(prev=>[card,...prev.filter(c=>!ids.has(c.uniqueId))]);setList([]);setPackResultMulti([card]);
           };
-          const availablePlayers=myPlayers.filter(p=>!protectedPlayers.has(p.uniqueId)&&(!isSignature||['PLATINUM','SIGNATURE','LEGEND'].includes(p.grade)));
+          const availablePlayers=filterPlayers(myPlayers.filter(p=>!protectedPlayers.has(p.uniqueId)&&(!isSignature||['PLATINUM','SIGNATURE','LEGEND'].includes(p.grade))),playerFilters);
 
 
           return (
@@ -568,7 +581,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                   </div>
 
                   <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
-                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">재료 보관함</h3>
+                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">재료 보관함 ({availablePlayers.length})</h3>{filterControls()}
                       <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
                           {availablePlayers.slice(0, visibleCount).map(p => renderPlayerCard(p, currentList.some(sc=>sc.uniqueId===p.uniqueId), () => toggleCombineSelect(p)))}
                       </div>
@@ -665,7 +678,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                   )}
 
                   {currentMenu === 'LINEUP' && renderLineupScreen()}
-                  {currentMenu === 'ROSTER' && <section className="com2us-panel p-6"><h2 className="text-2xl font-black">선수 보유함 · {myPlayers.length} / {rosterLimit}명</h2><div className="scout-toolbar"><button className="com2us-button" disabled={rosterLimit>=ROSTER_MAX} onClick={expandRoster}>보유함 +20칸 · 500 S (최대 300명)</button><p>편성된 선수는 방출·스카우트 재료로 사용할 수 없습니다. 편성 해제 후 정리하세요.</p></div><div className="space-y-3">{myPlayers.slice(0,visibleCount).map(c=><div key={c.uniqueId} className="roster-release-row">{renderPlayerCard(c,false,()=>setDetailCard(c))}<button disabled={protectedPlayers.has(c.uniqueId)} onClick={()=>releasePlayer(c)}>방출 · 1,000 P</button></div>)}</div>{myPlayers.length>visibleCount&&<button className="com2us-button p-3 mt-4" onClick={()=>setVisibleCount(v=>v+30)}>더보기</button>}</section>}
+                  {currentMenu === 'ROSTER' && <section className="com2us-panel p-6"><h2 className="text-2xl font-black">선수 보유함 · {myPlayers.length} / {rosterLimit}명</h2><div className="scout-toolbar"><button className="com2us-button" disabled={rosterLimit>=ROSTER_MAX} onClick={expandRoster}>보유함 +20칸 · 500 S (최대 300명)</button><p>편성된 선수는 방출·스카우트 재료로 사용할 수 없습니다. 편성 해제 후 정리하세요.</p></div><div>{filterControls()}<p className="muted">검색 결과 {filteredOwned.length}명</p></div><div className="space-y-3">{filteredOwned.slice(0,visibleCount).map(c=><div key={c.uniqueId} className="roster-release-row">{renderPlayerCard(c,false,()=>setDetailCard(c))}<button disabled={protectedPlayers.has(c.uniqueId)} onClick={()=>releasePlayer(c)}>방출 · 1,000 P</button></div>)}</div>{filteredOwned.length>visibleCount&&<button className="com2us-button p-3 mt-4" onClick={()=>setVisibleCount(v=>v+30)}>더보기</button>}</section>}
                   {currentMenu === 'TRAIN' && renderTrainScreen()}
                   {currentMenu === 'SKILL' && renderSkillScreen()}
                   {currentMenu === 'LEGEND_SCOUT' && renderSpecialCombineScreen('LEGEND')}
