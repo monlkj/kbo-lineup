@@ -57,7 +57,7 @@ export function changeSkills(card,type,slot=null,rng=Math.random){
 export function playableCard(base,grade=base.grade){return {...makeCard({...base,grade}),grade,skills:generateSkills(base.pos,grade)};}
 export function capacity(manager,count=0){const n=Number(manager?.rosterCapacity);return Math.max(ROSTER_BASE,count,Number.isFinite(n)?Math.min(ROSTER_MAX,Math.floor(n)):ROSTER_BASE);}
 export function acquisitionCount(count,limit,requested){return Math.max(0,Math.min(Math.max(0,Math.floor(requested)),limit-count));}
-export function protectedIds(lineup,manager){return new Set([...Object.values(lineup||{}).filter(Boolean).map(c=>c.uniqueId),...(manager?.staff?.starters||[]),...(manager?.staff?.relief||[]),manager?.pendingSkillChange?.cardId].filter(Boolean));}
+export function protectedIds(lineup,manager){return new Set([...Object.values(lineup||{}).filter(Boolean).map(c=>c.uniqueId),...(manager?.staff?.starters||[]),...(manager?.staff?.relief||[]),manager?.pendingSkillChange?.cardId,...(manager?.legendScout?.pledges||[]).filter(id=>id&&!String(id).startsWith('item:'))].filter(Boolean));}
 export function scoutPool(database,grade,team=''){
  if(!['SIGNATURE','LEGEND'].includes(grade))throw new Error('스카우트 등급을 확인해주세요.');
  return database.filter(c=>(!team||c.team===team)&&(grade==='LEGEND'?c.grade==='LEGEND':['PLATINUM','SIGNATURE','LEGEND'].includes(c.grade)));

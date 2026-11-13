@@ -5,11 +5,12 @@ import catalog from '../data/catalog.json';
 import catalogMeta from '../data/catalog-meta.json';
 import ManagerWorkbench, {PlayerDetail} from './manager-workbench';
 import PlayerCard from './player-card';
+import ProgressionWorkshop, {CombinationResult} from './progression-workshop.jsx';
 import PlayerFilters from './player-filters.jsx';
 import {EMPTY_FILTERS,filterPlayers,unassignedPlayers} from './player-filters.js';
 import {REWARDS,POINT_LOTTERY,startingMail,dailyMail,leagueMail,championMail,normalizeUnclaimedMail,claimMail,openLotteries} from './reward-rules.js';
 import {overall,eligible} from './manager-engine';
-import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,scoutPool,SCOUT_PRICES,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
+import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
 
     const TEAMS = ['KIA', '삼성', 'LG', '두산', 'KT', 'SSG', '롯데', '한화', 'NC', '키움', '해태', 'SK', 'OB', '빙그레', '현대'];
 
@@ -55,23 +56,17 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       const [lineup, setLineup] = useState({ CF: null, LF: null, RF: null, SS: null, '2B': null, '3B': null, '1B': null, C: null, DH: null, P: null });
 
       const [activePos, setActivePos] = useState(null);
-      const [trainSelectedCard, setTrainSelectedCard] = useState(null);
       const [skillSelectedCard, setSkillSelectedCard] = useState(null);
       const [selectedSkillIdx, setSelectedSkillIdx] = useState(null);
 
-      const [combineMode, setCombineMode] = useState('NORMAL');
-      const [selectedToCombine, setSelectedToCombine] = useState([]);
-      const [spCombineMode, setSpCombineMode] = useState('LEGEND');
-      const [spSelectedToCombine, setSpSelectedToCombine] = useState([]);
       const rosterLimit=capacity(manager,myPlayers.length);
       const protectedPlayers=protectedIds(lineup,manager);
-      const [scoutTeam,setScoutTeam] = useState('');
       const [playerFilters,setPlayerFilters]=useState({...EMPTY_FILTERS});
       const filteredOwned=useMemo(()=>filterPlayers(myPlayers,playerFilters),[myPlayers,playerFilters]);
       const lineupCandidates=useMemo(()=>filterPlayers(unassignedPlayers(myPlayers,lineup,manager.staff),playerFilters,activePos),[myPlayers,lineup,manager.staff,playerFilters,activePos]);
       const filterControls=(lockedPosition='')=><PlayerFilters compact value={playerFilters} onChange={value=>{setPlayerFilters(value);setVisibleCount(30);}} teams={[...new Set(myPlayers.map(c=>c.team))].sort()} lockedPosition={lockedPosition}/>;
 
-      const changeMenu = (menu) => { if(manager.pendingSkillChange){showToast('기존 또는 신규 고유능력 세트를 먼저 선택해주세요.');return;} setCurrentMenu(menu); setVisibleCount(30);setPlayerFilters({...EMPTY_FILTERS});if(menu==='LINEUP')setActivePos(null); };
+      const changeMenu = (menu) => { if(manager.pendingSkillChange||manager.pendingCombination){showToast('진행 중인 결과 선택을 먼저 완료해주세요.');return;} setCurrentMenu(menu); setVisibleCount(30);setPlayerFilters({...EMPTY_FILTERS});if(menu==='LINEUP')setActivePos(null); };
       const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2500); };
 
       const handleLogin = (e) => {
@@ -162,7 +157,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       };
 
       const openPack = (item, targetTeam = null, count = 1) => {
-          if(manager.pendingSkillChange)return;
+          if(manager.pendingSkillChange||manager.pendingCombination)return;
           const requested=Math.min(count,inventory.filter(i=>i.packId===item.packId).length);
           count=acquisitionCount(myPlayers.length,rosterLimit,requested);
           if(count<1){showToast('선수 보유 한도입니다. 선수 정리 또는 보유함 확장 후 개봉해주세요.');return;}
@@ -204,7 +199,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       };
 
       const buyPack = (packId, title, cost, type = 'point') => {
-          if(manager.pendingSkillChange)return;
+          if(manager.pendingSkillChange||manager.pendingCombination)return;
           if (type === 'point' && currency.points < cost) { showToast('포인트가 부족합니다!'); return; }
           if (type === 'star' && currency.stars < cost) { showToast('스타가 부족합니다!'); return; }
           if(type === 'point') setCurrency(prev => ({...prev, points: prev.points - cost}));
@@ -214,28 +209,18 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       }
 
       const expandRoster = () => {
-        if(manager.pendingSkillChange)return;
+        if(manager.pendingSkillChange||manager.pendingCombination)return;
         if(rosterLimit>=ROSTER_MAX){showToast(`최대 ${ROSTER_MAX}명까지 확장할 수 있습니다.`);return;}
         if(currency.stars<EXPAND_STARS){showToast('스타가 부족합니다.');return;}
         const next=Math.min(ROSTER_MAX,rosterLimit+ROSTER_STEP);
         setCurrency(prev=>({...prev,stars:prev.stars-EXPAND_STARS}));
         setManager(prev=>({...prev,rosterCapacity:next}));showToast(`보유 한도를 ${next}명으로 확장했습니다.`);
       };
-      const starScout = (grade) => {
-        if(manager.pendingSkillChange)return;
-        if(acquisitionCount(myPlayers.length,rosterLimit,1)<1){showToast('선수 보유 한도입니다. 먼저 보유함을 정리해주세요.');return;}
-        const pool=scoutPool(FULL_DATABASE,grade,scoutTeam);
-        if(!pool.length){showToast('선택한 구단에 해당 스카우트 대상이 없습니다.');return;}
-        const cost=SCOUT_PRICES[grade];if(currency.stars<cost){showToast(`${cost.toLocaleString()} 스타가 필요합니다.`);return;}
-        const card=playableCard(pool[Math.floor(Math.random()*pool.length)],grade);
-        setCurrency(prev=>({...prev,stars:prev.stars-cost}));setMyPlayers(prev=>[card,...prev]);setPackResultMulti([card]);
-      };
       const releasePlayer = (card) => {
         if(protectedPlayers.has(card.uniqueId)){showToast('편성된 선수나 변경권 선택 중인 선수는 방출할 수 없습니다.');return;}
         if(!confirm(`${card.year} ${card.name} 선수를 방출하고 1,000 P를 받을까요?`))return;
         setMyPlayers(prev=>prev.filter(c=>c.uniqueId!==card.uniqueId));setCurrency(prev=>({...prev,points:prev.points+1000}));
         if(skillSelectedCard?.uniqueId===card.uniqueId)setSkillSelectedCard(null);
-        if(trainSelectedCard?.uniqueId===card.uniqueId)setTrainSelectedCard(null);
         setSelectedToCombine(prev=>prev.filter(c=>c.uniqueId!==card.uniqueId));setSpSelectedToCombine(prev=>prev.filter(c=>c.uniqueId!==card.uniqueId));
         showToast('선수 방출 완료 · 1,000 P');
       };
@@ -245,7 +230,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
         setSkillSelectedCard(updated);
       };
       const handleSkillChange = (type) => {
-        if(manager.pendingSkillChange)return;
+        if(manager.pendingSkillChange||manager.pendingCombination)return;
         const card=myPlayers.find(c=>c.uniqueId===skillSelectedCard?.uniqueId);
         if(!card){showToast('선수를 먼저 선택해주세요.');return;}
         const ticket=TICKETS[type],index=inventory.findIndex(i=>i.packId===ticket);
@@ -274,7 +259,8 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
       };
 
       const openInventoryGroup = (grp,count) => {
-        if(manager.pendingSkillChange)return;
+        if(manager.pendingSkillChange||manager.pendingCombination)return;
+        if(['limit_break_ticket','legend_wild_material','signature_wild_material','signature_contract'].includes(grp.packId)){setIsModalOpen(false);changeMenu(grp.packId==='limit_break_ticket'?'LIMIT':grp.packId==='legend_wild_material'?'LEGEND_SCOUT':'SIGNATURE_AWAKEN');return;}
         if(grp.packId?.includes('skill_ticket')){showToast('스킬변경권은 팀 관리 > 고유능력 변경에서 사용하세요.');return;}
         const amount=Math.min(count,grp.count);
         if(grp.packId==='point_lottery'){
@@ -360,57 +346,6 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
           );
       };
 
-      const renderTrainScreen = () => {
-          const handleEnhance = () => {
-              if(!trainSelectedCard) return;
-              const upg = trainSelectedCard.upgrade || 0;
-              if(upg >= 10) { showToast('최대 강화(+10)입니다!'); return; }
-              const cost = (upg + 1) * 3000;
-              if(currency.points < cost) { showToast(`포인트 부족 (${cost} P 필요)`); return; }
-
-              const successRate = Math.max(10, 100 - (upg * 10));
-              const isSuccess = Math.random() * 100 < successRate;
-              setCurrency(prev => ({...prev, points: prev.points - cost}));
-
-              if(isSuccess) {
-                  const updatedCard = { ...trainSelectedCard, upgrade: upg + 1, ovr: trainSelectedCard.ovr + 1 };
-                  setMyPlayers(prev => prev.map(p => p.uniqueId === trainSelectedCard.uniqueId ? updatedCard : p));
-                  setLineup(prev => { const next = {...prev}; for(let key in next) { if(next[key]?.uniqueId === trainSelectedCard.uniqueId) next[key] = updatedCard; } return next; });
-                  setTrainSelectedCard(updatedCard);
-                  showToast(`🎉 강화 성공! +${updatedCard.upgrade}`);
-              } else {
-                  showToast(`💥 강화 실패... 포인트 증발.`);
-              }
-
-          };
-
-          return (
-              <div className="flex flex-col lg:flex-row h-[75vh] gap-6">
-                  <div className="flex-1 com2us-panel p-8 flex flex-col items-center justify-center rounded-lg relative">
-                      <h2 className="text-4xl font-black mb-8 border-b-2 border-gray-600 pb-4 text-green-400 w-full text-center">선수 훈련 (강화)</h2>
-                      {!trainSelectedCard ? <div className="text-gray-500 font-bold text-xl text-center">우측에서 훈련할 선수를 선택하세요.</div> : (
-                          <div className="flex flex-col items-center w-full max-w-md">
-                              <div className="w-full mb-8">{renderPlayerCard(trainSelectedCard)}</div>
-                              <div className="bg-gray-900 border border-gray-600 w-full p-6 text-center mb-6 rounded shadow-inner">
-                                  <div className="text-xl font-bold mb-2 text-gray-300">현재: +{trainSelectedCard.upgrade || 0} ➔ <span className="text-green-400 text-2xl">+{(trainSelectedCard.upgrade || 0) + 1}</span></div>
-                                  <div className="text-red-400 font-black mb-2 text-lg">성공 확률: {Math.max(10, 100 - ((trainSelectedCard.upgrade || 0) * 10))}%</div>
-                                  <div className="font-bold text-yellow-400">비용: {(trainSelectedCard.upgrade + 1) * 3000} P</div>
-                              </div>
-                              <button onClick={handleEnhance} className="w-full com2us-button py-4 text-xl font-black rounded">강화 시도</button>
-                          </div>
-                      )}
-                  </div>
-                  <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
-                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">보유 명단 ({filteredOwned.length})</h3>{filterControls()}
-                      <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
-                          {filteredOwned.slice(0, visibleCount).map(p => renderPlayerCard(p, trainSelectedCard?.uniqueId === p.uniqueId, () => setTrainSelectedCard(p)))}
-                          {filteredOwned.length > visibleCount && ( <button onClick={() => setVisibleCount(v => v + 30)} className="w-full bg-gray-800 border border-gray-600 text-gray-300 py-3 mt-4 font-black">▼ 더보기</button> )}
-                      </div>
-                  </div>
-              </div>
-          );
-      };
-
       const renderSkillScreen = () => {
           const normalTicketCount = inventory.filter(i => i.packId === 'skill_ticket').length;
           const premiumTicketCount = inventory.filter(i => i.packId === 'premium_skill_ticket').length;
@@ -419,7 +354,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
 
           const handleSkillUpgrade = (idx, e) => {
               e.stopPropagation();
-              if(manager.pendingSkillChange)return;
+              if(manager.pendingSkillChange||manager.pendingCombination)return;
               if(!skillSelectedCard) return;
               const s = skillSelectedCard.skills[idx];
               if(s.level === 'S') { showToast('이미 최대 레벨(S)입니다.'); return; }
@@ -506,89 +441,8 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
           );
       };
 
-      const renderSpecialCombineScreen = (mode) => {
-          const isSignature = mode === 'SIGNATURE';
-          const title = isSignature ? '시그니처 스카우트' : '레전드 스카우트';
-          const reqCount = isSignature ? 3 : 5;
-          const cost = isSignature ? 100000 : 200000;
-
-          const currentList = isSignature ? spSelectedToCombine : selectedToCombine;
-          const setList = isSignature ? setSpSelectedToCombine : setSelectedToCombine;
-
-          const toggleCombineSelect = (p) => {
-              if(currentList.some(sc => sc.uniqueId === p.uniqueId)) {
-                  setList(prev => prev.filter(sc => sc.uniqueId !== p.uniqueId));
-              } else {
-                  if(currentList.length >= reqCount) { showToast(`최대 ${reqCount}명만 등록할 수 있습니다.`); return; }
-                  if(protectedPlayers.has(p.uniqueId)){showToast('편성된 선수는 재료로 사용할 수 없습니다.');return;}
-                  if(isSignature && !['PLATINUM', 'SIGNATURE', 'LEGEND'].includes(p.grade)) { showToast('플래티넘 이상 등급만 재료로 가능합니다.'); return; }
-                  setList(prev => [...prev, p]);
-              }
-          };
-
-          const handleSpecialCombine = () => {
-              if(manager.pendingSkillChange)return;
-              if(currentList.length!==reqCount || new Set(currentList.map(c=>c.uniqueId)).size!==reqCount){showToast(`재료 ${reqCount}명이 필요합니다.`);return;}
-              const material=currentList.map(c=>myPlayers.find(p=>p.uniqueId===c.uniqueId));
-              if(material.some(c=>!c||protectedPlayers.has(c.uniqueId))){showToast('편성 중이거나 없는 선수는 재료로 사용할 수 없습니다.');setList([]);return;}
-              if(isSignature&&material.some(c=>!['PLATINUM','SIGNATURE','LEGEND'].includes(c.grade))){showToast('플래티넘 이상 재료가 필요합니다.');return;}
-              if(myPlayers.length-reqCount+1>rosterLimit){showToast('영입 후 인원이 선수 보유 한도를 초과합니다.');return;}
-              if(currency.points<cost){showToast(`비용 부족 (${cost.toLocaleString()} P)`);return;}
-              const grade=isSignature?'SIGNATURE':'LEGEND';const pool=scoutPool(FULL_DATABASE,grade,scoutTeam);
-              if(!pool.length){showToast('선택한 구단에 스카우트 대상이 없습니다.');return;}
-              const card=playableCard(pool[Math.floor(Math.random()*pool.length)],grade);
-              const ids=new Set(material.map(c=>c.uniqueId));
-              setCurrency(prev=>({...prev,points:prev.points-cost}));
-              setMyPlayers(prev=>[card,...prev.filter(c=>!ids.has(c.uniqueId))]);setList([]);setPackResultMulti([card]);
-          };
-          const availablePlayers=filterPlayers(myPlayers.filter(p=>!protectedPlayers.has(p.uniqueId)&&(!isSignature||['PLATINUM','SIGNATURE','LEGEND'].includes(p.grade))),playerFilters);
-
-
-          return (
-              <div className="flex flex-col lg:flex-row h-[75vh] gap-6">
-                  <div className="flex-1 com2us-panel p-6 flex flex-col rounded-lg border-blue-500 shadow-2xl relative">
-                      <div className="bg-blue-900 border border-blue-400 text-white text-center py-2 font-black text-2xl mb-6 rounded">{title}</div><div className="scout-toolbar"><select aria-label="스카우트 구단 선택" value={scoutTeam} onChange={e=>setScoutTeam(e.target.value)}><option value="">전체 구단</option>{TEAMS.map(t=><option key={t}>{t}</option>)}</select><button onClick={()=>starScout(mode)} className="com2us-button">스타 스카우트 · {SCOUT_PRICES[mode].toLocaleString()} S · {mode} 확정</button><span>재료 미소모 / 보유 {myPlayers.length} / {rosterLimit}명</span></div>
-
-                      <div className="flex flex-1 gap-6">
-                          <div className="w-1/3 flex flex-col items-center justify-center bg-gray-900 border border-gray-600 rounded p-4">
-                              <div className="text-gray-400 font-bold mb-4">{isSignature ? '획득 예정: 시그니처' : '획득 예정: 레전드'}</div>
-                              <div className={`w-32 h-48 border-2 border-dashed ${isSignature ? 'border-[#38bdf8]' : 'border-[#d8b4fe]'} flex flex-col items-center justify-center bg-black/50 text-center p-2`}>
-                                  <span className="text-4xl">?</span><br/>
-                                  <span className={`font-black ${isSignature ? 'text-[#38bdf8]' : 'text-[#d8b4fe]'}`}>{isSignature ? 'SIGNATURE' : 'LEGEND'}</span>
-                              </div>
-                              <div className="mt-6 font-black text-yellow-400 text-lg">필요 비용: {cost.toLocaleString()} P</div>
-                          </div>
-
-                          <div className="w-2/3 flex flex-col">
-                              <div className="text-blue-300 font-black mb-2 text-lg">재료 선수 등록 ({currentList.length} / {reqCount})</div>
-                              <div className="grid grid-cols-3 gap-3 flex-1 content-start">
-                                  {Array.from({length: reqCount}).map((_, i) => {
-                                      const p = currentList[i];
-                                      return p ? (
-                                          <div key={i} className={`h-32 border-2 flex flex-col items-center justify-center text-sm font-black ${GRADE_CONFIG[p.grade].bg} ${GRADE_CONFIG[p.grade].border} ${GRADE_CONFIG[p.grade].text}`}>
-                                              {p.ovr}<br/>{p.name}<br/><span className="text-[10px] bg-black/50 px-1 mt-1 font-normal rounded">{p.grade}</span>
-                                          </div>
-                                      ) : (
-                                          <div key={i} className="h-32 border-2 border-dashed border-gray-500 bg-gray-800 flex items-center justify-center font-bold text-gray-500 text-sm text-center">
-                                              {isSignature ? '플래티넘 이상' : '재료 선수'}<br/>등록
-                                          </div>
-                                      )
-                                  })}
-                              </div>
-                              <button onClick={handleSpecialCombine} className="com2us-button py-4 text-2xl font-black rounded mt-4">재료 스카우트 진행</button>
-                          </div>
-                      </div>
-                  </div>
-
-                  <div className="w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
-                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">재료 보관함 ({availablePlayers.length})</h3>{filterControls()}
-                      <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
-                          {availablePlayers.slice(0, visibleCount).map(p => renderPlayerCard(p, currentList.some(sc=>sc.uniqueId===p.uniqueId), () => toggleCombineSelect(p)))}
-                      </div>
-                  </div>
-              </div>
-          );
-      };
+      const progressionState={players:myPlayers,currency,inventory,lineup,manager};
+      const commitProgression=next=>{setMyPlayers(next.players);setCurrency(next.currency);setInventory(next.inventory);setManager(next.manager);};
 
       const groupedInventory = useMemo(() => {
           const map = {};
@@ -626,6 +480,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
           <div className="min-h-screen bg-slate-900 flex flex-col">
               {toast && ( <div role="status" className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-black/90 text-white px-6 py-3 rounded border border-gray-500 font-black shadow-2xl animate-bounce">{toast}</div> )}
 
+              <div inert={!!(manager.pendingCombination||manager.pendingSkillChange)}>
               <header className="com2us-panel p-4 flex justify-between items-center sticky top-0 z-40 rounded-b-lg mb-4 mx-2 mt-2">
                   <div className="flex items-center gap-4">
                       <button onClick={() => changeMenu('HOME')} className="font-black text-2xl text-blue-400 hover:text-blue-300 drop-shadow-md">◀ 홈</button>
@@ -670,19 +525,19 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                           <button onClick={() => changeMenu('LINEUP')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-white">라인업 관리</h2></button>
                           <button onClick={()=>changeMenu('ROSTER')} className="com2us-panel aspect-video flex flex-col items-center justify-center rounded-lg"><h2 className="text-3xl font-black text-yellow-200">선수 보유함 · 확장/방출</h2><p>{myPlayers.length} / {rosterLimit}명</p></button>
                           <button onClick={() => changeMenu('TRAIN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-green-400">선수 훈련</h2></button>
+                          <button onClick={() => changeMenu('LIMIT')} className="com2us-panel aspect-video p-5 rounded-lg"><h2 className="text-3xl font-black text-amber-300">한계돌파</h2><p>동일 선수 재료 · 강화 상한 +10 → +20</p></button>
+                          <button onClick={() => changeMenu('COMBINE')} className="com2us-panel aspect-video p-5 rounded-lg"><h2 className="text-3xl font-black text-orange-300">선수 조합</h2><p>3~5장 조합 · 7장 뒤집기</p></button>
                           <button onClick={() => changeMenu('SKILL')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-purple-400">고유능력 변경</h2></button>
 
-                          <button onClick={() => changeMenu('LEGEND_SCOUT')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-purple-500"><h2 className="text-3xl font-black text-purple-300">레전드 스카우트</h2><p className="text-sm mt-2 text-gray-400">재료 5장 또는 5,000 S</p></button>
-                          <button onClick={() => changeMenu('SIGNATURE_AWAKEN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-blue-400"><h2 className="text-3xl font-black text-blue-300">시그니처 스카우트</h2><p className="text-sm mt-2 text-gray-400">재료 3장 또는 3,000 S</p></button>
+                          <button onClick={() => changeMenu('LEGEND_SCOUT')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-purple-500"><h2 className="text-3xl font-black text-purple-300">레전드 스카우트</h2><p className="text-sm mt-2 text-gray-400">후보 탐색 → 지정 재료 등록 → 영입</p></button>
+                          <button onClick={() => changeMenu('SIGNATURE_AWAKEN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-blue-400"><h2 className="text-3xl font-black text-blue-300">시그니처 스카우트</h2><p className="text-sm mt-2 text-gray-400">+20 플래티넘 · 재료 11개 · 각성 계약서</p></button>
                       </div>
                   )}
 
                   {currentMenu === 'LINEUP' && renderLineupScreen()}
                   {currentMenu === 'ROSTER' && <section className="com2us-panel p-6"><h2 className="text-2xl font-black">선수 보유함 · {myPlayers.length} / {rosterLimit}명</h2><div className="scout-toolbar"><button className="com2us-button" disabled={rosterLimit>=ROSTER_MAX} onClick={expandRoster}>보유함 +20칸 · 500 S (최대 300명)</button><p>편성된 선수는 방출·스카우트 재료로 사용할 수 없습니다. 편성 해제 후 정리하세요.</p></div><div>{filterControls()}<p className="muted">검색 결과 {filteredOwned.length}명</p></div><div className="space-y-3">{filteredOwned.slice(0,visibleCount).map(c=><div key={c.uniqueId} className="roster-release-row">{renderPlayerCard(c,false,()=>setDetailCard(c))}<button disabled={protectedPlayers.has(c.uniqueId)} onClick={()=>releasePlayer(c)}>방출 · 1,000 P</button></div>)}</div>{filteredOwned.length>visibleCount&&<button className="com2us-button p-3 mt-4" onClick={()=>setVisibleCount(v=>v+30)}>더보기</button>}</section>}
-                  {currentMenu === 'TRAIN' && renderTrainScreen()}
+                  {['TRAIN','LIMIT','COMBINE','LEGEND_SCOUT','SIGNATURE_AWAKEN'].includes(currentMenu) && <ProgressionWorkshop key={currentMenu} mode={currentMenu} state={progressionState} database={FULL_DATABASE} onCommit={commitProgression} onResult={card=>setPackResultMulti([card])} showToast={showToast}/>}
                   {currentMenu === 'SKILL' && renderSkillScreen()}
-                  {currentMenu === 'LEGEND_SCOUT' && renderSpecialCombineScreen('LEGEND')}
-                  {currentMenu === 'SIGNATURE_AWAKEN' && renderSpecialCombineScreen('SIGNATURE')}
 
                   {currentMenu === 'SHOP' && (
                       <div className="com2us-panel p-8 text-center rounded-xl">
@@ -691,7 +546,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                               <p className="text-sm text-yellow-200">스타는 출석·우승 보상으로 획득합니다.</p>
                           </div>
 
-                          <section className="star-shop"><h3>★ 스타 상점 · 보유 {currency.stars.toLocaleString()} S</h3><div className="star-shop-grid"><button onClick={()=>buyPack('premium_team','스타 구단선택팩',1000,'star')}>구단선택팩 · 1,000 S</button><button onClick={()=>buyPack('award_only','스타 수상자 전용팩',800,'star')}>수상자 전용팩 · 800 S</button><button onClick={()=>buyPack('premium_skill_ticket','고급 스킬변경권',500,'star')}>고급 스킬변경권 · 500 S</button><button onClick={()=>buyPack('select_skill_ticket','스킬 선택변경권',700,'star')}>스킬 선택변경권 · 700 S</button><button onClick={()=>buyPack('protect_skill_ticket','스킬 보호변경권',700,'star')}>스킬 보호변경권 · 700 S</button><button onClick={expandRoster} disabled={rosterLimit>=ROSTER_MAX}>선수 보유함 +20칸 · 500 S</button><button onClick={()=>changeMenu('SIGNATURE_AWAKEN')}>시그니처 스카우트 · 3,000 S ↗</button><button onClick={()=>changeMenu('LEGEND_SCOUT')}>레전드 스카우트 · 5,000 S ↗</button></div></section>
+                          <section className="star-shop"><h3>★ 스타 상점 · 보유 {currency.stars.toLocaleString()} S</h3><div className="star-shop-grid"><button onClick={()=>buyPack('premium_team','스타 구단선택팩',1000,'star')}>구단선택팩 · 1,000 S</button><button onClick={()=>buyPack('award_only','스타 수상자 전용팩',800,'star')}>수상자 전용팩 · 800 S</button><button onClick={()=>buyPack('premium_skill_ticket','고급 스킬변경권',500,'star')}>고급 스킬변경권 · 500 S</button><button onClick={()=>buyPack('select_skill_ticket','스킬 선택변경권',700,'star')}>스킬 선택변경권 · 700 S</button><button onClick={()=>buyPack('protect_skill_ticket','스킬 보호변경권',700,'star')}>스킬 보호변경권 · 700 S</button><button onClick={expandRoster} disabled={rosterLimit>=ROSTER_MAX}>선수 보유함 +20칸 · 500 S</button><button onClick={()=>changeMenu('SIGNATURE_AWAKEN')}>시그니처 각성 ↗</button><button onClick={()=>changeMenu('LEGEND_SCOUT')}>레전드 후보 탐색 ↗</button></div></section>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                               <button onClick={()=>buyPack('award_only','수상자 전용팩',25000,'point')} className="com2us-button p-4 font-black text-lg rounded">수상자 전용팩<br/><small>검증된 골글 · MVP · 올스타 · 25,000 P</small></button>
                               <button onClick={()=>buyPack('normal_all', '일반 선수팩', 3000, 'point')} className="bg-gray-800 border border-gray-600 p-4 font-black text-lg hover:bg-gray-700 rounded shadow-lg text-white">일반 선수팩<br/><span className="text-sm text-blue-300">3,000 P</span></button>
@@ -710,6 +565,8 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                   {['LEAGUE','ARCHIVE'].includes(currentMenu) && <ManagerWorkbench initialTab={currentMenu==='LEAGUE'?'시즌 리그':'도감'} catalog={FULL_DATABASE} meta={catalogMeta} players={myPlayers} setPlayers={setMyPlayers} lineup={lineup} setLineup={setLineup} manager={manager} setManager={setManager} team={favTeam} showToast={showToast} onReward={receiveLeagueReward}/>}
 
               </main>
+              </div>
+              <CombinationResult state={progressionState} onCommit={commitProgression} onResult={card=>setPackResultMulti([card])} showToast={showToast}/>
 
               {manager.pendingSkillChange && <div className="manager-overlay skill-choice-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="고급 변경권 세트 선택"><h2>고급 스킬변경권 · 세트 선택</h2><p>변경권 1장을 사용했습니다. {manager.pendingSkillChange.rulesVersion===2?'신규 세트의 1번 슬롯은 플래티넘 이상을 보장합니다. 레전드 카드는 1번 슬롯에서만 10% 확률로 레전드 능력이 나옵니다.':'이전에 뽑은 대기 세트는 그대로 유지됩니다. 다음 사용부터 1번 슬롯 보장 규칙을 적용합니다.'} 둘 중 한 세트를 선택하면 다른 세트는 사라집니다. 새로고침해도 이 선택은 유지됩니다.</p><div className="skill-set-choices">{[['기존 세트',manager.pendingSkillChange.before,true],['신규 세트',manager.pendingSkillChange.after,false]].map(([label,skills,keep])=><section key={label}><h3>{label}</h3>{skills.map((skill,i)=><div key={i} className={`skill-choice-row ${GRADE_CONFIG[skill.grade].bg} ${GRADE_CONFIG[skill.grade].text}`}><b>{skill.name} {skill.level}</b><small>{skill.grade}</small></div>)}<button className="com2us-button" onClick={()=>resolvePremium(keep)}>{keep?'기존 세트 유지':'신규 세트 적용'}</button></section>)}</div></section></div>}
               {lotteryResult && <div className="manager-overlay"><section className="manager-dialog lottery-result" role="dialog" aria-modal="true" aria-label="포인트 복권 결과"><small>POINT LOTTERY</small><h2>포인트 복권 {lotteryResult.count}장 사용</h2><strong className="lottery-total">+{lotteryResult.points.toLocaleString()} P</strong><div className="record-chips">{Object.entries(lotteryResult.breakdown).map(([points,count])=><span key={points}>{Number(points).toLocaleString()} P × {count}장</span>)}</div><details><summary>당첨 금액·확률 보기</summary>{POINT_LOTTERY.map(p=><p key={p.points}>{p.points.toLocaleString()} P · {p.weight}%</p>)}</details><button className="primary" onClick={()=>setLotteryResult(null)}>복권 결과 확인</button></section></div>}
