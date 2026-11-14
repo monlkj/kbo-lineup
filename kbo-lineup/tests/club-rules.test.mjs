@@ -38,7 +38,10 @@ for(const grade of ['PLATINUM','SIGNATURE','LEGEND'])for(const pos of ['P','SS']
   assert.ok(set.slice(1).every(s=>s.grade!=='LEGEND'));
  }
  assert.equal(changeSkills(card,'PREMIUM',null,()=>0)[0].grade,grade==='LEGEND'?'LEGEND':'PLATINUM');
- assert.equal(changeSkills(card,'PREMIUM',null,()=>.0999)[0].grade,grade==='LEGEND'?'LEGEND':'PLATINUM');
- assert.equal(changeSkills(card,'PREMIUM',null,()=>.1)[0].grade,'PLATINUM');
+ assert.equal(changeSkills(card,'PREMIUM',null,()=>.3499)[0].grade,grade==='LEGEND'?'LEGEND':'PLATINUM');
+ assert.equal(changeSkills(card,'PREMIUM',null,()=>.35)[0].grade,'PLATINUM');
 }
-console.log('PASS: first-slot guarantee across 6000 rolls, exact 10% boundary and no legend skills in slots 2/3');
+console.log('PASS: first-slot guarantee across 6000 rolls, exact 35% boundary and no legend skills in slots 2/3');
+
+// Exactly 35% of uniformly spaced first-slot rolls must produce LEGEND.
+let legends=0;for(let i=0;i<1000;i++){let first=true;const rng=()=>{if(first){first=false;return i/1000;}return .5;};if(changeSkills({pos:'P',grade:'LEGEND',skills:[]},'PREMIUM',null,rng)[0].grade==='LEGEND')legends++;}assert.equal(legends,350);

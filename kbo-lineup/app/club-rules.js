@@ -16,6 +16,7 @@ export const SKILL_DB = {
     };
 export const ROSTER_BASE=100,ROSTER_MAX=300,ROSTER_STEP=20,EXPAND_STARS=500;
 export const SCOUT_PRICES={SIGNATURE:3000,LEGEND:5000};
+export const LEGEND_SKILL_RATE=.35;
 export const TICKETS={NORMAL_TICKET:'skill_ticket',PREMIUM:'premium_skill_ticket',SELECT:'select_skill_ticket',PROTECT:'protect_skill_ticket'};
 const SKILL_RANK={NORMAL:0,HERO:1,PLATINUM:2,LEGEND:3};
 export function skillCount(grade){return ['HERO','PLATINUM','SIGNATURE','LEGEND'].includes(grade)?3:grade==='SPECIAL'?2:1;}
@@ -44,7 +45,7 @@ export function changeSkills(card,type,slot=null,rng=Math.random){
  if(type==='PREMIUM'){
   if(!['PLATINUM','SIGNATURE','LEGEND'].includes(card.grade))throw new Error('고급 변경권은 플래티넘 이상 선수에게만 사용할 수 있습니다.');
   // These are this game's explicit rates, not a claim about another game's official rates.
-  const firstGrade=card.grade==='LEGEND'&&rng()<.10?'LEGEND':'PLATINUM';
+  const firstGrade=card.grade==='LEGEND'&&rng()<LEGEND_SKILL_RATE?'LEGEND':'PLATINUM';
   const next=[generateSingleSkill(card.pos,firstGrade,rng)];
   for(let i=1;i<skillCount(card.grade);i++)next.push(generateSingleSkill(card.pos,rollGrade('PLATINUM',rng),rng,next.map(s=>s.name)));
   return next;

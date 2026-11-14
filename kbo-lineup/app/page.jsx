@@ -10,9 +10,10 @@ import PlayerCard from './player-card';
 import ProgressionWorkshop, {CombinationResult} from './progression-workshop.jsx';
 import PlayerFilters from './player-filters.jsx';
 import {EMPTY_FILTERS,filterPlayers,unassignedPlayers} from './player-filters.js';
+import {grantTestResources} from './test-resources.js';
 import {REWARDS,POINT_LOTTERY,startingMail,dailyMail,leagueMail,championMail,normalizeUnclaimedMail,claimMail,openLotteries} from './reward-rules.js';
 import {overall,eligible} from './manager-engine';
-import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
+import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
 
     const TEAMS = ['KIA', '삼성', 'LG', '두산', 'KT', 'SSG', '롯데', '한화', 'NC', '키움', '해태', 'SK', 'OB', '빙그레', '현대'];
 
@@ -240,7 +241,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
         let next;try{next=changeSkills(card,type,selectedSkillIdx);}catch(e){showToast(e.message);return;}
         setInventory(prev=>{const i=prev.findIndex(x=>x.packId===ticket);return i<0?prev:prev.filter((_,idx)=>idx!==i);});
         if(type==='PREMIUM'){
-          setManager(prev=>({...prev,pendingSkillChange:{cardId:card.uniqueId,before:sanitizeSkills(card),after:next,rulesVersion:2}}));
+          setManager(prev=>({...prev,pendingSkillChange:{cardId:card.uniqueId,before:sanitizeSkills(card),after:next,rulesVersion:3,legendRate:LEGEND_SKILL_RATE}}));
         }else{applySkills(card,next);showToast(type==='PROTECT'?'선택한 슬롯을 보호하고 나머지 능력을 교체했습니다.':'기존 능력을 교체하고 새 고유능력을 적용했습니다.');}
       };
       const resolvePremium = (keepOld) => {
@@ -413,12 +414,13 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
                                   </div>
                               </div>
 
-                              <p className="muted">일반·선택·보호: 플래티넘 이상 선수만 최대 플래티넘. 고급: 1번 슬롯 플래티넘 확정, 레전드 카드에서만 10% 레전드 / 90% 플래티넘. 2·3번은 최대 플래티넘. 다른 변경권은 플래티넘 미만 선수에서 최대 히어로. 고급 변경권은 1장 사용 후 기존/신규 전체 세트 중 선택합니다.</p><div className="grid grid-cols-2 gap-3 w-full">
+                              {skillSelectedCard.grade==='LEGEND'&&<section className="legend-skill-help" aria-label="레전드 고유능력 획득 안내"><b>레전드 고유능력은 고급 스변에서만!</b><p>변경권 사용 시 1번 슬롯에서 레전드 {Math.round(LEGEND_SKILL_RATE*100)}% / 플래티넘 {Math.round((1-LEGEND_SKILL_RATE)*100)}%. 일반·선택·보호 변경권의 레전드 확률은 0%입니다. 2·3번은 최대 플래티넘이며, 원하는 능력이 나오면 ‘신규 세트 적용’을 선택하세요.</p><details><summary>레전드 능력 목록 확인</summary><p>{SKILL_DB[skillSelectedCard.pos==='P'?'P':'B'].LEGEND.join(' · ')}</p></details><p>10회 사용해도 레전드가 한 번도 안 나올 확률은 약 {((1-LEGEND_SKILL_RATE)**10*100).toFixed(1)}%입니다. 매회 독립 추첨이며 확정 보장은 없습니다.</p></section>}
+                              <p className="muted">일반·선택·보호: 플래티넘 이상 선수만 최대 플래티넘. 고급: 1번 슬롯 플래티넘 이상 확정, 레전드 카드에서만 {Math.round(LEGEND_SKILL_RATE*100)}% 레전드 / {Math.round((1-LEGEND_SKILL_RATE)*100)}% 플래티넘. 2·3번은 최대 플래티넘. 다른 변경권은 플래티넘 미만 선수에서 최대 히어로. 고급 변경권은 1장 사용 후 기존/신규 전체 세트 중 선택합니다.</p><div className="grid grid-cols-2 gap-3 w-full">
                                   <button onClick={() => handleSkillChange('NORMAL_TICKET')} className="bg-gray-700 border border-gray-500 py-3 font-black text-white hover:bg-gray-600 rounded">
                                       일반 스변 (전체 변경)<br/><span className="text-xs text-yellow-400 font-normal">보유: {normalTicketCount}장</span>
                                   </button>
                                   <button disabled={!['PLATINUM','SIGNATURE','LEGEND'].includes(skillSelectedCard.grade)} title="플래티넘 이상 선수 전용 · 1번 슬롯 플래티넘 이상 확정" onClick={() => handleSkillChange('PREMIUM')} className="com2us-button py-3 font-black rounded">
-                                      고급 스변 (1번 슬롯 플래티넘 이상 확정)<br/><span className="text-xs text-yellow-300 font-normal">보유: {premiumTicketCount}장</span>
+                                      {skillSelectedCard.grade==='LEGEND'?`고급 스변 · 레전드 ${Math.round(LEGEND_SKILL_RATE*100)}% (1번 슬롯)`:'고급 스변 (1번 슬롯 플래티넘 이상 확정)'}<br/><span className="text-xs text-yellow-300 font-normal">보유: {premiumTicketCount}장</span>
                                   </button>
                                   <button onClick={() => handleSkillChange('PROTECT')} className="bg-green-700 border border-green-500 py-3 font-black text-white hover:bg-green-600 rounded">
                                       보변권 (선택 슬롯 보호)<br/><span className="text-xs text-yellow-300 font-normal">보유: {protectTicketCount}장</span>
@@ -446,6 +448,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
 
       const progressionState={players:myPlayers,currency,inventory,lineup,manager};
       const commitProgression=next=>{setMyPlayers(next.players);setCurrency(next.currency);setInventory(next.inventory);setManager(next.manager);};
+      const supportTestResources=()=>{try{commitProgression(grantTestResources(progressionState));showToast('시험용 지원 완료! 포인트·스타 999,999,999, 변경권·돌파권·계약서·만능 재료 각 999장으로 충전했습니다.');}catch(e){showToast(e.message);}};
 
       const groupedInventory = useMemo(() => {
           const map = {};
@@ -504,6 +507,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
 
               <main className="flex-1 max-w-7xl w-full mx-auto p-4">
                 <div className="club-strip"><span>⚾ {favTeam} · {teamCode.toUpperCase()} 구단</span><span>보유 선수 {myPlayers.length} / {rosterLimit}명 · 자동 저장</span></div>
+                <section className="test-resource-panel" aria-label="시험용 재화 지원"><div><b>TEST · 무제한 재화 지원</b><p>포인트·스타 각 999,999,999 / 변경권·돌파권·계약서·만능 재료 각 999장 / 선수팩 각 100장. 이 구단에 저장되며 언제든 다시 충전할 수 있습니다.</p>{manager.testResourcesUsed&&<small>시험용 지원을 사용한 구단입니다.</small>}</div><button className="com2us-button" onClick={supportTestResources}>시험용 재화 무한 지원</button></section>
                 {currentMenu !== 'HOME' && <button className="back-link" onClick={() => changeMenu('TEAM_MANAGE')}>팀 관리 메뉴</button>}
                   {currentMenu === 'HOME' && (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full min-h-[60vh]">
@@ -572,7 +576,7 @@ import {generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableC
               </div>
               <CombinationResult state={progressionState} onCommit={commitProgression} onResult={card=>setPackResultMulti([card])} showToast={showToast}/>
 
-              {manager.pendingSkillChange && <div className="manager-overlay skill-choice-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="고급 변경권 세트 선택"><h2>고급 스킬변경권 · 세트 선택</h2><p>변경권 1장을 사용했습니다. {manager.pendingSkillChange.rulesVersion===2?'신규 세트의 1번 슬롯은 플래티넘 이상을 보장합니다. 레전드 카드는 1번 슬롯에서만 10% 확률로 레전드 능력이 나옵니다.':'이전에 뽑은 대기 세트는 그대로 유지됩니다. 다음 사용부터 1번 슬롯 보장 규칙을 적용합니다.'} 둘 중 한 세트를 선택하면 다른 세트는 사라집니다. 새로고침해도 이 선택은 유지됩니다.</p><div className="skill-set-choices">{[['기존 세트',manager.pendingSkillChange.before,true],['신규 세트',manager.pendingSkillChange.after,false]].map(([label,skills,keep])=><section key={label}><h3>{label}</h3>{skills.map((skill,i)=><div key={i} className={`skill-choice-row ${GRADE_CONFIG[skill.grade].bg} ${GRADE_CONFIG[skill.grade].text}`}><b>{skill.name} {skill.level}</b><small>{skill.grade}</small></div>)}<button className="com2us-button" onClick={()=>resolvePremium(keep)}>{keep?'기존 세트 유지':'신규 세트 적용'}</button></section>)}</div></section></div>}
+              {manager.pendingSkillChange && <div className="manager-overlay skill-choice-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="고급 변경권 세트 선택"><h2>고급 스킬변경권 · 세트 선택</h2><p>변경권 1장을 사용했습니다. {manager.pendingSkillChange.rulesVersion>=2?'신규 세트의 1번 슬롯은 플래티넘 이상을 보장합니다. 현재 레전드 카드의 고스변 1번 슬롯은 레전드 35% / 플래티넘 65%입니다. 이미 뽑힌 대기 세트는 업데이트로 재추첨되지 않습니다.':'이전에 뽑은 대기 세트는 그대로 유지됩니다. 다음 사용부터 1번 슬롯 보장 규칙을 적용합니다.'} 둘 중 한 세트를 선택하면 다른 세트는 사라집니다. 새로고침해도 이 선택은 유지됩니다.</p><div className="skill-set-choices">{[['기존 세트',manager.pendingSkillChange.before,true],['신규 세트',manager.pendingSkillChange.after,false]].map(([label,skills,keep])=><section key={label}><h3>{label}</h3>{skills.map((skill,i)=><div key={i} className={`skill-choice-row ${GRADE_CONFIG[skill.grade].bg} ${GRADE_CONFIG[skill.grade].text}`}><b>{skill.name} {skill.level}</b><small>{skill.grade}</small></div>)}<button className="com2us-button" onClick={()=>resolvePremium(keep)}>{keep?'기존 세트 유지':'신규 세트 적용'}</button></section>)}</div></section></div>}
               {lotteryResult && <div className="manager-overlay"><section className="manager-dialog lottery-result" role="dialog" aria-modal="true" aria-label="포인트 복권 결과"><small>POINT LOTTERY</small><h2>포인트 복권 {lotteryResult.count}장 사용</h2><strong className="lottery-total">+{lotteryResult.points.toLocaleString()} P</strong><div className="record-chips">{Object.entries(lotteryResult.breakdown).map(([points,count])=><span key={points}>{Number(points).toLocaleString()} P × {count}장</span>)}</div><details><summary>당첨 금액·확률 보기</summary>{POINT_LOTTERY.map(p=><p key={p.points}>{p.points.toLocaleString()} P · {p.weight}%</p>)}</details><button className="primary" onClick={()=>setLotteryResult(null)}>복권 결과 확인</button></section></div>}
               {detailCard && <PlayerDetail card={detailCard} onClose={()=>setDetailCard(null)}/>}
               {packResultMulti.length > 0 && (
