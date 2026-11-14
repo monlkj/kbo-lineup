@@ -36,6 +36,7 @@ export function schedule(){
 export function newSeason(year=2026){return {year,day:0,standings:Object.fromEntries(TEAMS.map(t=>[t,{w:0,l:0,d:0,rf:0,ra:0}])),batters:{},pitchers:{},history:[],postseason:null,complete:false};}
 export function sortedStandings(s){return Object.entries(s.standings).sort((a,b)=>b[1].w/Math.max(1,b[1].w+b[1].l)-a[1].w/Math.max(1,a[1].w+a[1].l)||b[1].w-a[1].w||(b[1].rf-b[1].ra)-(a[1].rf-a[1].ra));}
 const randomInt=(n,r)=>Math.floor(r()*n);
+export const TACTICS={BALANCED:{name:'균형',contact:0,power:0,speed:0,note:'능력치 보정 없음'},CONTACT:{name:'정교',contact:6,power:-4,speed:0,note:'경기 중 정확 +6 / 파워 -4'},POWER:{name:'장타',contact:-5,power:8,speed:0,note:'경기 중 파워 +8 / 정확 -5'},RUN:{name:'기동력',contact:0,power:-4,speed:10,note:'경기 중 주력 +10 / 파워 -4'}};
 export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={}){
  const totals=[0,0], innings=[[],[]], batters={},pitchers={};let cursor=[0,0];
  const teams=[away,home],bonus=[bonusAway,bonusHome];
@@ -50,7 +51,7 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
    const score=c=>{runs++;batterStat(c).r++;};
    let plate=0;
    while(outs<3&&plate++<100){
-    const c=offense.batters[cursor[side]++%9],br=ratings(c),bs=batterStat(c);const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
+    const c=offense.batters[cursor[side]++%9],br=ratings(c),bs=batterStat(c);const tactic=TACTICS[offense.tactic]||TACTICS.BALANCED;for(const k of ['contact','power','speed'])br[k]=clamp(br[k]+tactic[k]);const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
     const tired=(pc.fatigue||0)*.001+Math.max(0,inn-3)*(100-pr.stamina)*.00015;
     const fielding=defense.batters.reduce((sum,c)=>sum+ratings(c).field,0)/9;
     const hitChance=Math.max(.13,Math.min(.43,.25+(br.contact-pr.stuff+adjust)*.003+tired+(80-fielding)*.0006));
@@ -60,7 +61,7 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
      if(n===4){bs.hr++;for(const base of bases)if(base){score(base);bs.rbi++;}score(c);bs.rbi++;bases=[null,null,null];}
      else{for(let b=2;b>=0;b--)if(bases[b]){if(b+n>=3){score(bases[b]);bs.rbi++;}else bases[b+n]=bases[b];bases[b]=null;}bases[n-1]=c;}
     }else{bs.ab++;outs++;ps.outs++;if(rng()<Math.max(.1,.22+(pr.stuff-br.eye)*.003)){bs.so++;ps.so++;}else if(outs<3&&bases[2]&&rng()<.22){score(bases[2]);bs.rbi++;bases[2]=null;}}
-    if(bases[0]&&!bases[1]&&rng()<(ratings(bases[0]).speed-30)*.001){batterStat(bases[0]).sb++;bases[1]=bases[0];bases[0]=null;}
+    if(bases[0]&&!bases[1]&&rng()<(clamp(ratings(bases[0]).speed+tactic.speed)-30)*.001){batterStat(bases[0]).sb++;bases[1]=bases[0];bases[0]=null;}
     if(side===1&&inn>=8&&totals[1]+runs>totals[0])break;
    }
    ps.er+=runs;totals[side]+=runs;innings[side].push(runs);
@@ -68,7 +69,7 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
   if(inn>=8&&totals[0]!==totals[1])break;
  }
  if(totals[0]!==totals[1]){const winner=totals[0]>totals[1]?0:1,loser=1-winner;pitcherStat(teams[winner].starter).w++;pitcherStat(teams[loser].starter).l++;if(Math.abs(totals[0]-totals[1])<=3){const closer=teams[winner].relief[2];if(pitchers[closer.uniqueId]?.outs)pitcherStat(closer).sv++;}}
- return {home:home.name,away:away.name,homeScore:totals[1],awayScore:totals[0],innings,batters,pitchers};
+ return {home:home.name,away:away.name,homeScore:totals[1],awayScore:totals[0],innings,batters,pitchers,tactics:{[home.name]:home.tactic||'BALANCED',[away.name]:away.tactic||'BALANCED'}};
 }
 const teamCache=new WeakMap();
 export function buildTeam(name,catalog,day=0){

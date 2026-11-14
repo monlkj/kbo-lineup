@@ -45,3 +45,5 @@ console.log('PASS: first-slot guarantee across 6000 rolls, exact 35% boundary an
 
 // Exactly 35% of uniformly spaced first-slot rolls must produce LEGEND.
 let legends=0;for(let i=0;i<1000;i++){let first=true;const rng=()=>{if(first){first=false;return i/1000;}return .5;};if(changeSkills({pos:'P',grade:'LEGEND',skills:[]},'PREMIUM',null,rng)[0].grade==='LEGEND')legends++;}assert.equal(legends,350);
+// Enumerate equally spaced second/third slot grade rolls: 32% two top-tier skills, 4% three.
+let double=0,triple=0;for(let a=0;a<10;a++)for(let b=0;b<10;b++){const draws=[.5,.5,.5,(a+.5)/10,.5,.5,(b+.5)/10,.5,.5];const skills=changeSkills({grade:'LEGEND',pos:'P',skills:[]},'PREMIUM',null,()=>draws.shift()??.5);const n=skills.filter(s=>['PLATINUM','LEGEND'].includes(s.grade)).length;if(n===2)double++;if(n===3)triple++;}assert.equal(double,32);assert.equal(triple,4);
