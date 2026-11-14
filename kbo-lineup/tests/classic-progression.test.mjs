@@ -69,3 +69,15 @@ test('all legend recipes require own-franchise awards, verified national card, a
  let s=rules.searchLegend(state(),db,'',false,1000,()=>0);const old=s.manager.legendScout;const requirements=[...old.requirements.slice(0,6),old.requirements[8],old.requirements[7],old.requirements[6]].map(x=>({...x}));delete requirements[6].team;delete requirements[7].team;delete requirements[8].team;s={...s,inventory:Array.from({length:9},()=>({packId:rules.CLASSIC.legendWild})),manager:{...s.manager,legendScout:{...old,recipeVersion:undefined,requirements,pledges:Array(9).fill('item:'+rules.CLASSIC.legendWild)}}};const before=clone(s),next=rules.migrateLegendRecipe(s,db);assert.equal(next.manager.legendScout.requirements.length,12);assert.deepEqual(next.manager.legendScout.requirements.slice(0,6),requirements.slice(0,6));assert.equal(next.manager.legendScout.pledges.filter(Boolean).length,9);assert.deepEqual(next.currency,s.currency);assert.deepEqual(next.inventory,s.inventory);assert.deepEqual(clone(s),before);
  const coach=next.manager.legendScout.requirements[10];const wrong={id:'wrong',packId:'coach_material',coachId:'not-real'};assert.equal(rules.matchesCoach(wrong,coach),false);assert.throws(()=>rules.pledgeLegend({...next,inventory:[...next.inventory,wrong]},10,'coach:wrong'),/코치/);
 });
+
+test('limit-break availability explains blockers and allows a ticket without material or currency',()=>{
+ const target={...card(),upgrade:10};const s=state([target]);s.currency={points:0,stars:0};s.inventory=[{packId:rules.CLASSIC.limitTicket}];
+ assert.match(rules.breakthroughBlockReason(s,target.uniqueId,null,'points'),/재료|돌파권/);
+ assert.equal(rules.breakthroughBlockReason(s,target.uniqueId,null,'ticket'),'');
+ const result=rules.breakthrough(s,target.uniqueId,null,'ticket',()=>.999);assert.equal(rules.upgradeLimit(result.state.players[0]),12);assert.equal(result.state.players[0].upgrade,10);assert.equal(result.state.inventory.length,0);assert.deepEqual(result.state.currency,{points:0,stars:0});
+ assert.match(rules.breakthroughBlockReason({...s,players:[{...target,grade:'NORMAL'}]},target.uniqueId,null,'ticket'),/스페셜 이상/);
+ const material=card();const other={...s,players:[target,material]};assert.match(rules.breakthroughBlockReason(other,target.uniqueId,material.uniqueId,'stars'),/스타/);
+ assert.match(rules.breakthroughBlockReason({...other,lineup:{P:material}},target.uniqueId,material.uniqueId,'stars'),/편성/);
+ assert.match(rules.breakthroughBlockReason({...s,players:[{...target,limitBreaks:5}]},target.uniqueId,null,'ticket'),/최대/);
+ assert.match(rules.breakthroughBlockReason({...s,inventory:[]},target.uniqueId,null,'ticket'),/없습니다/);
+});

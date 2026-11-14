@@ -17,8 +17,24 @@ export function upgradeLimit(card){const legacy=Math.ceil(Math.max(0,(card.upgra
 export function enhanceQuote(card,kind='points'){return {limit:upgradeLimit(card),cost:kind==='stars'?50*((card.upgrade||0)+1):3000*((card.upgrade||0)+1),chance:kind==='stars'?1:Math.max(.1,1-(card.upgrade||0)*.1)};}
 export function enhance(state,id,kind='points',rng=Math.random){fresh(state);const c=player(state,id),q=enhanceQuote(c,kind);if((c.upgrade||0)>=q.limit)throw Error('현재 강화 상한입니다. 한계돌파로 상한을 확장해주세요.');const currency=pay(state,kind,q.cost),success=rng()<q.chance;const updated=success?{...c,upgrade:(c.upgrade||0)+1}:c;if(success)updated.ovr=overall(updated);return {state:{...state,currency,players:state.players.map(p=>p.uniqueId===id?updated:p)},success};}
 export function breakthroughQuote(target,source,kind='points'){return {chance:kind==='points'?(BREAK_RATES[source?.grade]||0):1,cost:kind==='stars'?100*((target.limitBreaks||0)+1):10000*((target.limitBreaks||0)+1),nextLimit:Math.min(20,upgradeLimit(target)+2)};}
+export function breakthroughBlockReason(state,id,materialId,kind='points'){
+ const c=state.players.find(p=>p.uniqueId===id);
+ if(!c)return '우측 명단에서 한계돌파할 선수를 선택해주세요.';
+ if(state.manager.pendingSkillChange||state.manager.pendingCombination)return '진행 중인 결과 선택을 먼저 완료해주세요.';
+ if(rank(c)<2)return '노멀·레어 카드는 한계돌파할 수 없습니다. 스페셜 이상 카드를 선택해주세요.';
+ if(upgradeLimit(c)>=20)return '최대 강화 상한 +20에 도달했습니다.';
+ if(kind==='ticket')return state.inventory.some(i=>i.packId===CLASSIC.limitTicket)?'':'한계돌파권이 없습니다. 구매하거나 다른 방식을 선택해주세요.';
+ if(!['points','stars'].includes(kind))return '사용할 재화를 선택해주세요.';
+ const source=state.players.find(p=>p.uniqueId===materialId);
+ if(!source)return '아래에서 동일 선수 재료 1장을 선택하거나 한계돌파권을 사용해주세요.';
+ if(source.uniqueId===id||freeIds(state,true).has(source.uniqueId))return '편성·레전드 재료로 등록된 카드는 사용할 수 없습니다. 재료 카드만 편성/등록을 해제해주세요.';
+ if(String(source.playerId)!==String(c.playerId))return '연도와 관계없이 동일 선수 카드가 필요합니다.';
+ const quote=breakthroughQuote(c,source,kind);
+ if((state.currency[kind]||0)<quote.cost)return `${quote.cost.toLocaleString()} ${kind==='stars'?'스타':'포인트'}가 필요합니다. 현재 ${(state.currency[kind]||0).toLocaleString()} 보유 중입니다.`;
+ return '';
+}
 export function breakthrough(state,id,materialId,kind='points',rng=Math.random){
- fresh(state);const c=player(state,id);if(rank(c)<2)throw Error('한계돌파는 스페셜 이상 카드부터 가능합니다.');if(upgradeLimit(c)>=20)throw Error('최대 강화 상한 +20에 도달했습니다.');
+ const blocked=breakthroughBlockReason(state,id,materialId,kind);if(blocked)throw Error(blocked);const c=player(state,id);
  let currency=state.currency,inventory=state.inventory,source;
  if(kind==='ticket')inventory=removeItem(inventory,CLASSIC.limitTicket);
  else{source=material(state,materialId,[id]);if(String(source.playerId)!==String(c.playerId))throw Error('연도와 관계없이 동일 선수 카드가 필요합니다.');currency=pay(state,kind,breakthroughQuote(c,source,kind).cost);}
