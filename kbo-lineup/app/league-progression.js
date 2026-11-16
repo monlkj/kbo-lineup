@@ -49,7 +49,12 @@ export function claimLeagueGoal(state,id,team){
 export function buyLeagueSupply(state,id){const item=LEAGUE_SHOP.find(i=>i.id===id);if(!item)throw Error('리그 상점 상품을 확인해주세요.');if((state.manager.leagueTokens||0)<item.cost)throw Error('리그 코인이 부족합니다. 경기와 시즌 목표로 모을 수 있습니다.');return {...state,manager:{...state.manager,leagueTokens:state.manager.leagueTokens-item.cost},inventory:[...state.inventory,{id:crypto.randomUUID(),packId:item.id,name:item.name}]};}
 export function packCardGrade(base){return ['SIGNATURE','LEGEND'].includes(base.grade)?'PLATINUM':base.grade;}
 
-export function advanceLeagueSeason(state,team){const season=state.manager.season;if(!season?.complete)throw Error('현재 시즌을 먼저 완료해주세요.');let next=finishLeagueSeason(state,season,team);for(const goal of leagueGoalProgress(next.manager.season,team,state.players.map(p=>p.uniqueId)))if(!goal.claimed&&goal.value>=goal.goal)next=claimLeagueGoal(next,goal.id,team);return {...next,manager:{...next.manager,pastSeasons:[...(next.manager.pastSeasons||[]),next.manager.season],season:newSeason(season.year+1)}};}
+export function compactSeasonArchive(season){
+ const ownStats=table=>Object.fromEntries(Object.entries(table||{}).filter(([id])=>!id.startsWith('AI-')));
+ const games=(season.history||[]).map(g=>({day:g.day,home:g.home,away:g.away,homeScore:g.homeScore,awayScore:g.awayScore,innings:g.innings,tactics:g.tactics}));
+ return {...season,archiveFormat:2,batters:ownStats(season.batters),pitchers:ownStats(season.pitchers),history:games};
+}
+export function advanceLeagueSeason(state,team){const season=state.manager.season;if(!season?.complete)throw Error('현재 시즌을 먼저 완료해주세요.');const year=Number(season.year);if(!Number.isSafeInteger(year)||!Number.isSafeInteger(year+1))throw Error('시즌 연도를 확인해주세요.');let next=finishLeagueSeason(state,season,team);for(const goal of leagueGoalProgress(next.manager.season,team,state.players.map(p=>p.uniqueId)))if(!goal.claimed&&goal.value>=goal.goal)next=claimLeagueGoal(next,goal.id,team);return {...next,manager:{...next.manager,pastSeasons:[...(next.manager.pastSeasons||[]).map(compactSeasonArchive),compactSeasonArchive(next.manager.season)],season:newSeason(year+1)}};}
 
 export function simulateLeagueSeries(state,team,catalog,count=5){
  if(!Number.isInteger(count)||count<1||count>5)throw Error('빠른 진행은 최대 5경기입니다.');

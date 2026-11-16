@@ -322,6 +322,198 @@
       "year": 2023,
       "role": "불펜코치",
       "source": "https://mobile.newsis.com/view/NISX20221114_0002084783"
+    },
+    {
+      "id": "coach-SSG-2023-이진영",
+      "name": "이진영",
+      "team": "SSG",
+      "year": 2023,
+      "role": "타격코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-SSG-2023-김민재",
+      "name": "김민재",
+      "team": "SSG",
+      "year": 2023,
+      "role": "작전·벤치코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-SSG-2023-이승호",
+      "name": "이승호",
+      "team": "SSG",
+      "year": 2023,
+      "role": "불펜코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-SSG-2023-조동화",
+      "name": "조동화",
+      "team": "SSG",
+      "year": 2023,
+      "role": "주루·외야코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-SSG-2023-손지환",
+      "name": "손지환",
+      "team": "SSG",
+      "year": 2023,
+      "role": "내야 수비코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-LG-2023-경헌호",
+      "name": "경헌호",
+      "team": "LG",
+      "year": 2023,
+      "role": "투수코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-LG-2023-김일경",
+      "name": "김일경",
+      "team": "LG",
+      "year": 2023,
+      "role": "수비코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-LG-2023-이종범",
+      "name": "이종범",
+      "team": "LG",
+      "year": 2023,
+      "role": "주루·외야코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-LG-2023-박경완",
+      "name": "박경완",
+      "team": "LG",
+      "year": 2023,
+      "role": "배터리코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-KT-2023-김강",
+      "name": "김강",
+      "team": "KT",
+      "year": 2023,
+      "role": "타격코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-KT-2023-최만호",
+      "name": "최만호",
+      "team": "KT",
+      "year": 2023,
+      "role": "주루·작전코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-KT-2023-박기혁",
+      "name": "박기혁",
+      "team": "KT",
+      "year": 2023,
+      "role": "수비코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-KT-2023-제춘모",
+      "name": "제춘모",
+      "team": "KT",
+      "year": 2023,
+      "role": "불펜코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-키움-2023-노병오",
+      "name": "노병오",
+      "team": "키움",
+      "year": 2023,
+      "role": "투수코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-키움-2023-마정길",
+      "name": "마정길",
+      "team": "키움",
+      "year": 2023,
+      "role": "불펜코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-키움-2023-박재상",
+      "name": "박재상",
+      "team": "키움",
+      "year": 2023,
+      "role": "작전·주루코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-키움-2023-채종국",
+      "name": "채종국",
+      "team": "키움",
+      "year": 2023,
+      "role": "수비코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-삼성-2023-정현욱",
+      "name": "정현욱",
+      "team": "삼성",
+      "year": 2023,
+      "role": "투수코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-삼성-2023-손주인",
+      "name": "손주인",
+      "team": "삼성",
+      "year": 2023,
+      "role": "수비코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-삼성-2023-강명구",
+      "name": "강명구",
+      "team": "삼성",
+      "year": 2023,
+      "role": "주루코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-삼성-2023-권오준",
+      "name": "권오준",
+      "team": "삼성",
+      "year": 2023,
+      "role": "불펜코치",
+      "source": "https://herr-kwak.tistory.com/1277"
+    },
+    {
+      "id": "coach-두산-2023-조성환",
+      "name": "조성환",
+      "team": "두산",
+      "year": 2023,
+      "role": "수비코치",
+      "source": "https://www.mk.co.kr/news/sports/10605931"
+    },
+    {
+      "id": "coach-두산-2023-정수성",
+      "name": "정수성",
+      "team": "두산",
+      "year": 2023,
+      "role": "작전코치",
+      "source": "https://www.mk.co.kr/news/sports/10605931"
+    },
+    {
+      "id": "coach-두산-2023-세리자와 유지",
+      "name": "세리자와 유지",
+      "team": "두산",
+      "year": 2023,
+      "role": "배터리코치",
+      "source": "https://www.mk.co.kr/news/sports/10605931"
     }
   ]
 }
