@@ -11,11 +11,12 @@ import ProgressionWorkshop, {CombinationResult} from './progression-workshop.jsx
 import PlayerFilters from './player-filters.jsx';
 import {EMPTY_FILTERS,filterPlayers,unassignedPlayers} from './player-filters.js';
 import {simulateLeagueSeries,recordLeagueGame,finishLeagueSeason,advanceLeagueSeason,claimLeagueGoal,buyLeagueSupply,packCardGrade,leagueClub} from './league-progression.js';
+import LineupShowcase,{StadiumArtwork} from './lineup-showcase.jsx';
 import LineupControls from './lineup-controls.jsx';
 import {openCoachPacks,COACH_CATALOG} from './coaching.js';
 import {grantTestResources} from './test-resources.js';
 import {REWARDS,POINT_LOTTERY,startingMail,dailyMail,leagueMail,championMail,normalizeUnclaimedMail,claimMail,openLotteries} from './reward-rules.js';
-import {overall,eligible} from './manager-engine';
+import {BAT_POS,overall,eligible} from './manager-engine';
 import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
 
     const TEAMS = ['KIA', '삼성', 'LG', '두산', 'KT', 'SSG', '롯데', '한화', 'NC', '키움', '해태', 'SK', 'OB', '빙그레', '현대'];
@@ -63,6 +64,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       const [lineup, setLineup] = useState({ CF: null, LF: null, RF: null, SS: null, '2B': null, '3B': null, '1B': null, C: null, DH: null, P: null });
 
       const [activePos, setActivePos] = useState(null);
+      const [lineupEditorTab,setLineupEditorTab]=useState('ORDER');
       const [skillSelectedCard, setSkillSelectedCard] = useState(null);
       const [selectedSkillIdx, setSelectedSkillIdx] = useState(null);
 
@@ -314,23 +316,22 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
           };
 
           return (
-              <div className="flex flex-col lg:flex-row h-[75vh] gap-6">
-                  <div className="flex-1 bg-green-900 border-4 border-gray-700 relative rounded-lg shadow-inner overflow-hidden min-h-[400px]">
-                      <div className="absolute top-4 left-4 z-20">
+              <div className="lineup-field-layout" id="lineup-diamond">
+                  <div className="stadium-panel"><div className="stadium-header"><span><i/> FIELD POSITION</span><b>우리 팀의 그라운드</b><small>선수 카드를 눌러 교체</small></div><div className="stadium-canvas"><StadiumArtwork/>
+                      <div className="stadium-save">
                           <button onClick={()=>{handleSave(); showToast('저장 완료!');}} className="com2us-button px-6 py-2 font-black rounded shadow-lg">라인업 저장</button>
                       </div>
-                      <div className="absolute top-4 right-4 z-20 bg-black/80 border border-gray-500 px-4 py-2 font-black text-sm text-yellow-400 rounded">
-                          {activePos ? `우측 명단에서 [${activePos}] 선택` : '그라운드 포지션 클릭'}
+                      <div className="stadium-selection-hint">
+                          {activePos ? `후보 명단에서 [${activePos}] 선택` : '그라운드 포지션 클릭'}
                       </div>
-                      <div className="absolute w-[80%] h-[80%] max-w-[350px] max-h-[350px] border-4 border-white/20 rotate-45 bottom-[-5%] left-1/2 -translate-x-1/2" />
                       {[
-                        { role: 'CF', b: '75%', l: '50%' }, { role: 'LF', b: '60%', l: '20%' }, { role: 'RF', b: '60%', l: '80%' },
-                        { role: 'SS', b: '45%', l: '35%' }, { role: '2B', b: '45%', l: '65%' }, { role: '3B', b: '30%', l: '20%' },
-                        { role: '1B', b: '30%', l: '80%' }, { role: 'P', b: '35%', l: '50%' }, { role: 'C', b: '10%', l: '50%' }, { role: 'DH', b: '10%', l: '20%' }
+                        { role: 'CF', b: '80%', l: '50%' }, { role: 'LF', b: '64%', l: '20%' }, { role: 'RF', b: '64%', l: '80%' },
+                        { role: 'SS', b: '47%', l: '35%' }, { role: '2B', b: '47%', l: '65%' }, { role: '3B', b: '36%', l: '20%' },
+                        { role: '1B', b: '36%', l: '80%' }, { role: 'P', b: '36%', l: '50%' }, { role: 'C', b: '12%', l: '50%' }, { role: 'DH', b: '12%', l: '20%' }
                       ].map(pos => {
                           const p = lineup[pos.role];
                           return (
-                              <div key={pos.role} role="button" tabIndex={0} aria-label={`${pos.role} 포지션 선택`} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setActivePos(pos.role);}}} onClick={() => setActivePos(pos.role)} className="absolute flex flex-col items-center -translate-x-1/2 translate-y-1/2 z-10 cursor-pointer" style={{ bottom: pos.b, left: pos.l }}>
+                              <div key={pos.role} role="button" tabIndex={0} aria-label={`${pos.role} 포지션 선택`} onKeyDown={e=>{if(e.target===e.currentTarget&&(e.key==='Enter'||e.key===' ')){e.preventDefault();setActivePos(pos.role);}}} onClick={() => setActivePos(pos.role)} className={`stadium-position ${activePos===pos.role?'is-active':''}`} style={{ bottom: pos.b, left: pos.l }}>
                                   {!p ? (
                                       <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-black text-sm ${activePos === pos.role ? 'bg-yellow-500 border-white scale-125 z-20 text-black shadow-[0_0_15px_rgba(234,179,8,1)]' : 'bg-black/60 border-gray-400 text-gray-300'}`}>{pos.role}</div>
                                   ) : (
@@ -338,13 +339,13 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
                                         <PlayerCard compact card={p} role={pos.role} selected={activePos===pos.role}/>
                                         <button className="field-card-remove" aria-label={`${pos.role} 선수 편성 해제`} onClick={e=>{e.stopPropagation();clearFieldPosition(pos.role);}}>×</button>
                                       </div>
-                                  )}
+                                  )}<span className="stadium-position-label">{pos.role}<i>{lineup[pos.role]?(manager.order||BAT_POS).indexOf(pos.role)>=0?`${(manager.order||BAT_POS).indexOf(pos.role)+1}번 타자`:pos.role==='P'?'투수':'선발':'미편성'}</i></span>
                               </div>
                           )
                       })}
-                  </div>
-                  <div role="complementary" aria-label="라인업 교체 후보" className="lineup-sidebar w-full lg:w-[400px] com2us-panel p-4 flex flex-col h-full rounded-lg">
-                      <h3 className="font-black text-xl mb-3 border-b-2 border-gray-600 pb-2 text-blue-300">{activePos?`${activePos} 교체 후보`:'미편성 후보'} ({lineupCandidates.length})</h3>{filterControls(activePos)}
+                  </div></div>
+                  <div role="complementary" aria-label="라인업 교체 후보" className="lineup-sidebar squad-candidates">
+                      <small className="squad-sidebar-eyebrow">PLAYER SELECTION</small><h3 className="squad-sidebar-title">{activePos?`${activePos} 교체 후보`:'미편성 후보'} ({lineupCandidates.length})</h3>{filterControls(activePos)}
                       <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
                           {lineupCandidates.length === 0 ? <p className="text-gray-500 font-bold text-center mt-10">배치 가능한 미편성 후보가 없습니다. 다른 포지션을 선택하거나 필터를 초기화해주세요.</p> :
                             <>
@@ -495,7 +496,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       );
 
       return (
-          <div className="min-h-screen bg-slate-900 flex flex-col">
+          <div className={`min-h-screen bg-slate-900 flex flex-col ${currentMenu==='LINEUP'?'lineup-mode':''}`}>
               {toast && ( <div role="status" className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-black/90 text-white px-6 py-3 rounded border border-gray-500 font-black shadow-2xl animate-bounce">{toast}</div> )}
 
               <div inert={!!(manager.pendingCombination||manager.pendingSkillChange)}>
@@ -554,7 +555,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
                       </div>
                   )}
 
-                  {currentMenu === 'LINEUP' && <><LineupControls state={progressionState} onCommit={commitProgression} showToast={showToast}/>{renderLineupScreen()}</>}
+                  {currentMenu === 'LINEUP' && <><LineupShowcase team={favTeam} players={myPlayers} lineup={lineup} manager={manager} inventory={inventory} onSelect={setActivePos} onEdit={setLineupEditorTab}>{renderLineupScreen()}</LineupShowcase><section id="lineup-editor"><LineupControls key={lineupEditorTab} initialTab={lineupEditorTab} state={progressionState} onCommit={commitProgression} showToast={showToast}/></section></>}
                   {currentMenu === 'COACHES' && <LineupControls initialTab="COACH" state={progressionState} onCommit={commitProgression} showToast={showToast}/>}
                   {currentMenu === 'ROSTER' && <section className="com2us-panel p-6"><h2 className="text-2xl font-black">선수 보유함 · {myPlayers.length} / {rosterLimit}명</h2><div className="scout-toolbar"><button className="com2us-button" disabled={rosterLimit>=ROSTER_MAX} onClick={expandRoster}>보유함 +20칸 · 500 S (최대 300명)</button><p>편성된 선수는 방출·스카우트 재료로 사용할 수 없습니다. 편성 해제 후 정리하세요.</p></div><div>{filterControls()}<p className="muted">검색 결과 {filteredOwned.length}명</p></div><div className="space-y-3">{filteredOwned.slice(0,visibleCount).map(c=><div key={c.uniqueId} className="roster-release-row">{renderPlayerCard(c,false,()=>setDetailCard(c))}<button disabled={protectedPlayers.has(c.uniqueId)} onClick={()=>releasePlayer(c)}>방출 · 1,000 P</button></div>)}</div>{filteredOwned.length>visibleCount&&<button className="com2us-button p-3 mt-4" onClick={()=>setVisibleCount(v=>v+30)}>더보기</button>}</section>}
                   {['TRAIN','LIMIT','COMBINE','LEGEND_SCOUT','SIGNATURE_AWAKEN'].includes(currentMenu) && <ProgressionWorkshop key={currentMenu} mode={currentMenu} state={progressionState} database={FULL_DATABASE} onCommit={commitProgression} onResult={card=>setPackResultMulti([card])} showToast={showToast}/>}
