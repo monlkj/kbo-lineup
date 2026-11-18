@@ -14,7 +14,7 @@ import {EMPTY_FILTERS,filterPlayers,unassignedPlayers} from './player-filters.js
 import {simulateLeagueSeries,recordLeagueGame,finishLeagueSeason,advanceLeagueSeason,claimLeagueGoal,buyLeagueSupply,packCardGrade,leagueClub} from './league-progression.js';
 import LineupShowcase,{StadiumArtwork} from './lineup-showcase.jsx';
 import LineupControls from './lineup-controls.jsx';
-import {openCoachPacks,COACH_CATALOG} from './coaching.js';
+import {openCoachPacks,COACH_CATALOG,migrateCoachStorage} from './coaching.js';
 import {grantTestResources} from './test-resources.js';
 import {REWARDS,POINT_LOTTERY,startingMail,dailyMail,leagueMail,championMail,normalizeUnclaimedMail,claimMail,openLotteries} from './reward-rules.js';
 import {BAT_POS,overall,eligible} from './manager-engine';
@@ -94,6 +94,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
             try { data = JSON.parse(savedData); if (!data || !Array.isArray(data.myPlayers) || !data.currency) throw new Error(); }
             catch { showToast('저장 데이터를 읽을 수 없습니다. 다른 구단 코드를 사용해주세요.'); return; }
             setLastReward(data.lastReward || '');
+            data=migrateCoachStorage(data);
             setManager(data.manager || {});
             // Upgrade older synthetic cards only when identity and season match real records.
             const remapped=(data.myPlayers||[]).flatMap(old=>{
@@ -274,7 +275,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
         if(manager.pendingSkillChange||manager.pendingCombination)return;
         if(grp.packId==='legend_recruit_permit'){showToast('레전드 영입 증서는 팀 관리 > 레전드 스카우트에서 사용합니다.');return;}
         if(grp.packId==='coach_material'){setIsModalOpen(false);changeMenu('COACHES');return;}
-        if(grp.packId==='coach_pack'){try{const result=openCoachPacks({players:myPlayers,currency,inventory,manager,lineup},Math.min(count,grp.count));setInventory(result.state.inventory);setCoachResults(result.coaches);setIsModalOpen(false);}catch(e){showToast(e.message);}return;}
+        if(grp.packId==='coach_pack'){try{const result=openCoachPacks({players:myPlayers,currency,inventory,manager,lineup},Math.min(count,grp.count));setInventory(result.state.inventory);setManager(result.state.manager);setCoachResults(result.coaches);setIsModalOpen(false);}catch(e){showToast(e.message);}return;}
         if(['limit_break_ticket','legend_wild_material','signature_wild_material','signature_contract'].includes(grp.packId)){setIsModalOpen(false);changeMenu(grp.packId==='limit_break_ticket'?'LIMIT':grp.packId==='legend_wild_material'?'LEGEND_SCOUT':'SIGNATURE_AWAKEN');return;}
         if(grp.packId?.includes('skill_ticket')){showToast('스킬변경권은 팀 관리 > 고유능력 변경에서 사용하세요.');return;}
         const amount=Math.min(count,grp.count);
@@ -466,7 +467,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
 
       const groupedInventory = useMemo(() => {
           const map = {};
-          inventory.forEach(item => {
+          inventory.filter(i=>i.packId!=='coach_material').forEach(item => {
               const key=item.packId==='coach_material'?item.packId+'_'+item.coachId:item.packId;
               if(!map[key]) map[key] = { ...item, count: 0, ids: [] };
               map[key].count++; map[key].ids.push(item.id);
@@ -549,7 +550,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
                           <button onClick={() => changeMenu('TRAIN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-green-400">선수 강화</h2></button>
                           <button onClick={() => changeMenu('LIMIT')} className="com2us-panel aspect-video p-5 rounded-lg"><h2 className="text-3xl font-black text-amber-300">한계돌파</h2><p>동일 선수 재료 · 강화 상한 +10 → +20</p></button>
                           <button onClick={() => changeMenu('COMBINE')} className="com2us-panel aspect-video p-5 rounded-lg"><h2 className="text-3xl font-black text-orange-300">선수 조합</h2><p>3~5장 조합 · 7장 뒤집기</p></button>
-                          <button onClick={() => changeMenu('COACHES')} className="com2us-panel aspect-video p-5 rounded-lg"><h2 className="text-3xl font-black text-cyan-300">코치 편성</h2><p>코치 보관 · 6개 보직 · 편성 보호</p></button>
+                          <button onClick={() => changeMenu('COACHES')} className="com2us-panel aspect-video p-5 rounded-lg"><h2 className="text-3xl font-black text-cyan-300">코치 편성</h2><p>전용 코치 목록 · M/HD/HC/PC/DC/BC</p></button>
                           <button onClick={() => changeMenu('SKILL')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-purple-400">고유능력 변경</h2></button>
 
                           <button onClick={() => changeMenu('LEGEND_SCOUT')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-purple-500"><h2 className="text-3xl font-black text-purple-300">레전드 스카우트</h2><p className="text-sm mt-2 text-gray-400">후보 탐색 → 지정 재료 등록 → 영입</p></button>
@@ -595,7 +596,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
               {manager.pendingSkillChange && <div className="manager-overlay skill-choice-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="고급 변경권 세트 선택"><h2>고급 스킬변경권 · 세트 선택</h2><p>변경권 1장을 사용했습니다. {manager.pendingSkillChange.rulesVersion>=2?'신규 세트의 1번 슬롯은 플래티넘 이상을 보장합니다. 현재 레전드 카드의 고스변은 세 슬롯 각각 35%로 레전드 능력이 나옵니다. 최대 3개까지 가능합니다. 이미 뽑힌 대기 세트는 업데이트로 재추첨되지 않습니다.':'이전에 뽑은 대기 세트는 그대로 유지됩니다. 다음 사용부터 1번 슬롯 보장 규칙을 적용합니다.'} 둘 중 한 세트를 선택하면 다른 세트는 사라집니다. 새로고침해도 이 선택은 유지됩니다.</p><div className="skill-set-choices">{[['기존 세트',manager.pendingSkillChange.before,true],['신규 세트',manager.pendingSkillChange.after,false]].map(([label,skills,keep])=><section key={label}><h3>{label}</h3>{skills.map((skill,i)=><div key={i} data-skill-grade={skill.grade} className={`skill-choice-row ${GRADE_CONFIG[skill.grade].bg} ${GRADE_CONFIG[skill.grade].text}`}><b>{skill.name} {skill.level}</b><small>{skill.grade}</small></div>)}<button className="com2us-button" onClick={()=>resolvePremium(keep)}>{keep?'기존 세트 유지':'신규 세트 적용'}</button></section>)}</div></section></div>}
               {lotteryResult && <div className="manager-overlay"><section className="manager-dialog lottery-result" role="dialog" aria-modal="true" aria-label="포인트 복권 결과"><small>POINT LOTTERY</small><h2>포인트 복권 {lotteryResult.count}장 사용</h2><strong className="lottery-total">+{lotteryResult.points.toLocaleString()} P</strong><div className="record-chips">{Object.entries(lotteryResult.breakdown).map(([points,count])=><span key={points}>{Number(points).toLocaleString()} P × {count}장</span>)}</div><details><summary>당첨 금액·확률 보기</summary>{POINT_LOTTERY.map(p=><p key={p.points}>{p.points.toLocaleString()} P · {p.weight}%</p>)}</details><button className="primary" onClick={()=>setLotteryResult(null)}>복권 결과 확인</button></section></div>}
               {detailCard && <PlayerDetail card={myPlayers.find(c=>c.uniqueId===detailCard.uniqueId)||detailCard} onClose={()=>setDetailCard(null)}/>}
-              {coachResults.length>0&&<div className="manager-overlay coach-result-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="코치팩 개봉 결과"><h2>코치 영입 · {coachResults.length}명</h2><p>코치는 선수 정원과 별도로 보관하며 경기에 편성해도 소모되지 않습니다.</p><div className="coach-result-grid">{coachResults.map(i=>{const c=COACH_CATALOG.find(c=>c.id===i.coachId);return <article key={i.id}><small>COACH · {c.team} '{String(c.year).slice(-2)}</small><h3>{c.name}</h3><b>{c.role}</b><a href={c.source} target="_blank" rel="noreferrer">소속·보직 출처 ↗</a></article>;})}</div><button className="com2us-button" onClick={()=>{setCoachResults([]);changeMenu('COACHES');}}>코치 편성으로</button><button onClick={()=>setCoachResults([])}>코치 결과 닫기</button></section></div>}
+              {coachResults.length>0&&<div className="manager-overlay coach-result-overlay"><section className="manager-dialog" role="dialog" aria-modal="true" aria-label="코치팩 개봉 결과"><h2>코치 영입 · {coachResults.length}명</h2><p>영입한 코치는 아이템 보관함이 아닌 코치 편성의 전용 목록에 저장됩니다. 경기에 편성해도 소모되지 않습니다.</p><div className="coach-result-grid">{coachResults.map(i=>{const c=COACH_CATALOG.find(c=>c.id===i.coachId);return <article key={i.id}><small>COACH · {c.team} '{String(c.year).slice(-2)}</small><h3>{c.name}</h3><b>{c.role}</b><a href={c.source} target="_blank" rel="noreferrer">소속·보직 출처 ↗</a></article>;})}</div><button className="com2us-button" onClick={()=>{setCoachResults([]);changeMenu('COACHES');}}>코치 편성으로</button><button onClick={()=>setCoachResults([])}>코치 결과 닫기</button></section></div>}
               {packResultMulti.length > 0 && (
                   <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[200] p-4 backdrop-blur-sm overflow-y-auto">
                       <div className="flex flex-col items-center animate-pop-in py-10">
