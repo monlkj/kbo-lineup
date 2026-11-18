@@ -1,0 +1,138 @@
+{
+  "enabled": true,
+  "status": "partially_configured",
+  "note": "사용자가 확정한 타자 레전드 4개만 경기 적용. 위압감과 기타 능력은 입력 대기.",
+  "skills": [
+    {
+      "name": "핵심타자",
+      "type": "batter",
+      "grade": "LEGEND",
+      "user_description": "이전 타자에게 2*x 만큼의 우산효과(파워)가 작용합니다. 이 고유능력을 가지고 있는 선수는 x 만큼의 파워가 증가합니다.",
+      "effects": [
+        {
+          "target": "previous_batter",
+          "stat": "power",
+          "multiplier": 2,
+          "parameter": "x"
+        },
+        {
+          "target": "self",
+          "stat": "power",
+          "multiplier": 1,
+          "parameter": "x"
+        }
+      ],
+      "parameters": {
+        "x": {
+          "E": 3,
+          "D": 6,
+          "C": 10,
+          "B": 15,
+          "A": 18,
+          "S": 20
+        }
+      },
+      "enabled": true,
+      "previous_batter_rule": "batting_order_wrap_1_to_9"
+    },
+    {
+      "name": "위압감",
+      "type": "batter",
+      "grade": "LEGEND",
+      "user_description": "투수의 실투가 발생할 확률이 높아집니다",
+      "effects": [
+        {
+          "target": "opposing_pitcher",
+          "event": "mistake_probability_increase"
+        }
+      ],
+      "parameters": {
+        "probability_increase": {
+          "E": null,
+          "D": null,
+          "C": null,
+          "B": null,
+          "A": null,
+          "S": null
+        }
+      },
+      "enabled": false,
+      "status": "deferred_by_user"
+    },
+    {
+      "name": "베테랑",
+      "type": "batter",
+      "grade": "LEGEND",
+      "user_description": "모든 능력치가 OO만큼 증가합니다",
+      "effects": [
+        {
+          "target": "self",
+          "stat": "all",
+          "parameter": "OO"
+        }
+      ],
+      "parameters": {
+        "OO": {
+          "E": 5,
+          "D": 7,
+          "C": 10,
+          "B": 15,
+          "A": 18,
+          "S": 20
+        }
+      },
+      "enabled": true
+    },
+    {
+      "name": "대포군단",
+      "type": "batter",
+      "grade": "LEGEND",
+      "user_description": "대포군단 고유능력을 가지고 있는 선수, 파워 능력치가 올라가",
+      "effects": [
+        {
+          "target": "self",
+          "stat": "power",
+          "parameter": "amount"
+        }
+      ],
+      "parameters": {
+        "amount": {
+          "E": 3,
+          "D": 7,
+          "C": 10,
+          "B": 13,
+          "A": 16,
+          "S": 20
+        }
+      },
+      "enabled": true
+    },
+    {
+      "name": "타격의 달인",
+      "type": "batter",
+      "grade": "LEGEND",
+      "user_description": "정확과 선구가 OO만큼 증가합니다",
+      "effects": [
+        {
+          "target": "self",
+          "stats": [
+            "contact",
+            "eye"
+          ],
+          "parameter": "OO"
+        }
+      ],
+      "parameters": {
+        "OO": {
+          "E": 3,
+          "D": 7,
+          "C": 10,
+          "B": 13,
+          "A": 16,
+          "S": 20
+        }
+      },
+      "enabled": true
+    }
+  ]
+}

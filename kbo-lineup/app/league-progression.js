@@ -32,7 +32,8 @@ export function recordLeagueGame(state,next,result,team){
  return {...state,manager:{...state.manager,season,lastLeagueReward:key,leagueTokens:(state.manager.leagueTokens||0)+tokens},mailbox:[...mail,...state.mailbox],summary:{outcome,tokens,streak}};
 }
 export function finishLeagueSeason(state,season,team){
- if(!season.complete||season.day!==144||!season.postseason?.champion)throw Error('한국시리즈까지 완료해야 시즌 보상을 받을 수 있습니다.');
+ if(Number(season.day)!==144||!season.postseason?.champion)throw Error('한국시리즈까지 완료해야 시즌 보상을 받을 수 있습니다.');
+ season={...season,day:Number(season.day),year:Number(season.year),complete:true};
  if((state.manager.completedLeagueSeasons||[]).includes(season.year))return {...state,manager:{...state.manager,season},summary:{already:true}};
  const mail=[packMail(`${season.year} 시즌 완주 · 레전드 영입 증서`,'legend_recruit_permit',1),packMail(`${season.year} 시즌 완주 · 구단선택팩`,'premium_team',3),lotteryMail(`${season.year} 시즌 완주 포인트 복권`,20)];
  const champion=season.postseason.champion===team;
@@ -54,7 +55,7 @@ export function compactSeasonArchive(season){
  const games=(season.history||[]).map(g=>({day:g.day,home:g.home,away:g.away,homeScore:g.homeScore,awayScore:g.awayScore,innings:g.innings,tactics:g.tactics}));
  return {...season,archiveFormat:2,batters:ownStats(season.batters),pitchers:ownStats(season.pitchers),history:games};
 }
-export function advanceLeagueSeason(state,team){const season=state.manager.season;if(!season?.complete)throw Error('현재 시즌을 먼저 완료해주세요.');const year=Number(season.year);if(!Number.isSafeInteger(year)||!Number.isSafeInteger(year+1))throw Error('시즌 연도를 확인해주세요.');let next=finishLeagueSeason(state,season,team);for(const goal of leagueGoalProgress(next.manager.season,team,state.players.map(p=>p.uniqueId)))if(!goal.claimed&&goal.value>=goal.goal)next=claimLeagueGoal(next,goal.id,team);return {...next,manager:{...next.manager,pastSeasons:[...(next.manager.pastSeasons||[]).map(compactSeasonArchive),compactSeasonArchive(next.manager.season)],season:newSeason(year+1)}};}
+export function advanceLeagueSeason(state,team){const old=state.manager.season;if(!old||Number(old.day)!==144||!old.postseason?.champion)throw Error('포스트시즌을 먼저 마무리해주세요.');const season={...old,complete:true,day:Number(old.day),year:Number(old.year)};state={...state,manager:{...state.manager,season}};const year=Number(season.year);if(!Number.isSafeInteger(year)||!Number.isSafeInteger(year+1))throw Error('시즌 연도를 확인해주세요.');let next=finishLeagueSeason(state,season,team);for(const goal of leagueGoalProgress(next.manager.season,team,state.players.map(p=>p.uniqueId)))if(!goal.claimed&&goal.value>=goal.goal)next=claimLeagueGoal(next,goal.id,team);return {...next,manager:{...next.manager,pastSeasons:[...(next.manager.pastSeasons||[]).map(compactSeasonArchive),compactSeasonArchive(next.manager.season)],season:newSeason(year+1)}};}
 
 export function simulateLeagueSeries(state,team,catalog,count=5){
  if(!Number.isInteger(count)||count<1||count>5)throw Error('빠른 진행은 최대 5경기입니다.');

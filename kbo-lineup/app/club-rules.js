@@ -47,7 +47,7 @@ export function changeSkills(card,type,slot=null,rng=Math.random){
   // These are this game's explicit rates, not a claim about another game's official rates.
   const firstGrade=card.grade==='LEGEND'&&rng()<LEGEND_SKILL_RATE?'LEGEND':'PLATINUM';
   const next=[generateSingleSkill(card.pos,firstGrade,rng)];
-  for(let i=1;i<skillCount(card.grade);i++)next.push(generateSingleSkill(card.pos,rollGrade('PLATINUM',rng),rng,next.map(s=>s.name)));
+  for(let i=1;i<skillCount(card.grade);i++){const grade=card.grade==='LEGEND'&&rng()<LEGEND_SKILL_RATE?'LEGEND':rollGrade('PLATINUM',rng);next.push(generateSingleSkill(card.pos,grade,rng,next.map(s=>s.name)));}
   return next;
  }
  if(type==='NORMAL_TICKET')return generateSkills(card.pos,card.grade,type,rng);

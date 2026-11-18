@@ -1,3 +1,4 @@
+import {battingSkillBonuses,activeSkillNames} from './skill-effects.js';
 export const BAT_POS = ['CF','LF','RF','SS','2B','3B','1B','C','DH'];
 export const TEAMS = ['KIA','삼성','LG','두산','KT','SSG','롯데','한화','NC','키움'];
 export const BATTING = {contact:'정확',power:'파워',eye:'선구',speed:'주력',field:'수비'};
@@ -40,6 +41,8 @@ export const TACTICS={BALANCED:{name:'균형',contact:0,power:0,speed:0,note:'�
 export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={}){
  const totals=[0,0], innings=[[],[]], batters={},pitchers={};let cursor=[0,0];
  const teams=[away,home],bonus=[bonusAway,bonusHome];
+ const effective=teams.map(team=>{const buffs=battingSkillBonuses(team.batters),tactic=TACTICS[team.tactic]||TACTICS.BALANCED;return team.batters.map((c,i)=>{const base=ratings(c);return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,(k in tactic?clamp(v+tactic[k]):v)+buffs[i][k]]));});});
+ const statById=teams.map((team,i)=>Object.fromEntries(team.batters.map((c,j)=>[c.uniqueId,effective[i][j]])));
  function batterStat(c){return batters[c.uniqueId] ||= {name:c.name,playerId:c.playerId,ab:0,h:0,hr:0,rbi:0,bb:0,so:0,r:0,sb:0};}
  function pitcherStat(c){return pitchers[c.uniqueId] ||= {name:c.name,playerId:c.playerId,outs:0,er:0,so:0,bb:0,h:0,w:0,l:0,sv:0};}
  for(let inn=0;inn<12;inn++){
@@ -51,9 +54,9 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
    const score=c=>{runs++;batterStat(c).r++;};
    let plate=0;
    while(outs<3&&plate++<100){
-    const c=offense.batters[cursor[side]++%9],br=ratings(c),bs=batterStat(c);const tactic=TACTICS[offense.tactic]||TACTICS.BALANCED;for(const k of ['contact','power','speed'])br[k]=clamp(br[k]+tactic[k]);const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
+    const c=offense.batters[cursor[side]++%9],br=statById[side][c.uniqueId],bs=batterStat(c);const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
     const tired=(pc.fatigue||0)*.001+Math.max(0,inn-3)*(100-pr.stamina)*.00015;
-    const fielding=defense.batters.reduce((sum,c)=>sum+ratings(c).field,0)/9;
+    const fielding=effective[1-side].reduce((sum,s)=>sum+s.field,0)/9;
     const hitChance=Math.max(.13,Math.min(.43,.25+(br.contact-pr.stuff+adjust)*.003+tired+(80-fielding)*.0006));
     const walkChance=Math.max(.025,Math.min(.17,.07+(br.eye-pr.control+adjust)*.0015));const roll=rng();
     if(roll<walkChance){bs.bb++;ps.bb++;if(bases[0]&&bases[1]&&bases[2]){score(bases[2]);bs.rbi++;}if(bases[0]&&bases[1])bases[2]=bases[1];if(bases[0])bases[1]=bases[0];bases[0]=c;}
@@ -61,7 +64,7 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
      if(n===4){bs.hr++;for(const base of bases)if(base){score(base);bs.rbi++;}score(c);bs.rbi++;bases=[null,null,null];}
      else{for(let b=2;b>=0;b--)if(bases[b]){if(b+n>=3){score(bases[b]);bs.rbi++;}else bases[b+n]=bases[b];bases[b]=null;}bases[n-1]=c;}
     }else{bs.ab++;outs++;ps.outs++;if(rng()<Math.max(.1,.22+(pr.stuff-br.eye)*.003)){bs.so++;ps.so++;}else if(outs<3&&bases[2]&&rng()<.22){score(bases[2]);bs.rbi++;bases[2]=null;}}
-    if(bases[0]&&!bases[1]&&rng()<(clamp(ratings(bases[0]).speed+tactic.speed)-30)*.001){batterStat(bases[0]).sb++;bases[1]=bases[0];bases[0]=null;}
+    if(bases[0]&&!bases[1]&&rng()<(statById[side][bases[0].uniqueId].speed-30)*.001){batterStat(bases[0]).sb++;bases[1]=bases[0];bases[0]=null;}
     if(side===1&&inn>=8&&totals[1]+runs>totals[0])break;
    }
    ps.er+=runs;totals[side]+=runs;innings[side].push(runs);
@@ -69,7 +72,7 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
   if(inn>=8&&totals[0]!==totals[1])break;
  }
  if(totals[0]!==totals[1]){const winner=totals[0]>totals[1]?0:1,loser=1-winner;pitcherStat(teams[winner].starter).w++;pitcherStat(teams[loser].starter).l++;if(Math.abs(totals[0]-totals[1])<=3){const closer=teams[winner].relief[2];if(pitchers[closer.uniqueId]?.outs)pitcherStat(closer).sv++;}}
- return {home:home.name,away:away.name,homeScore:totals[1],awayScore:totals[0],innings,batters,pitchers,tactics:{[home.name]:home.tactic||'BALANCED',[away.name]:away.tactic||'BALANCED'}};
+ return {home:home.name,away:away.name,homeScore:totals[1],awayScore:totals[0],innings,batters,pitchers,tactics:{[home.name]:home.tactic||'BALANCED',[away.name]:away.tactic||'BALANCED'},skillEffects:{[home.name]:activeSkillNames(home.batters),[away.name]:activeSkillNames(away.batters)}};
 }
 const teamCache=new WeakMap();
 export function buildTeam(name,catalog,day=0){
