@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "status": "partially_configured",
-  "note": "사용자가 확정한 타자 레전드 4개만 경기 적용. 위압감과 기타 능력은 입력 대기.",
+  "note": "확정된 타자 레전드 5개 적용. 나머지 능력은 입력 대기.",
   "skills": [
     {
       "name": "핵심타자",
@@ -39,25 +39,51 @@
       "name": "위압감",
       "type": "batter",
       "grade": "LEGEND",
-      "user_description": "투수의 실투가 발생할 확률이 높아집니다",
+      "user_description": "등급에 따라 상대 투수의 실투 확률과 안타 확률이 증가합니다.",
       "effects": [
         {
           "target": "opposing_pitcher",
-          "event": "mistake_probability_increase"
+          "event": "mistake_induction"
+        },
+        {
+          "target": "self",
+          "event": "hit_ability"
         }
       ],
       "parameters": {
-        "probability_increase": {
-          "E": null,
-          "D": null,
-          "C": null,
-          "B": null,
-          "A": null,
-          "S": null
+        "mistake_induction": {
+          "E": 8,
+          "D": 16,
+          "C": 24,
+          "B": 32,
+          "A": 40,
+          "S": 48
+        },
+        "hit_ability": {
+          "E": 4,
+          "D": 8,
+          "C": 12,
+          "B": 16,
+          "A": 20,
+          "S": 24
         }
       },
-      "enabled": false,
-      "status": "deferred_by_user"
+      "enabled": true,
+      "status": "configured",
+      "level_descriptions": {
+        "E": "상대 투수의 실투가 조금 증가. 안타 확률 조금 증가.",
+        "D": "상대 투수의 실투가 약간 증가. 안타 확률 약간 증가.",
+        "C": "상대 투수의 실투가 다소 증가. 안타 확률 다소 증가.",
+        "B": "상대 투수의 실투가 증가. 안타 확률 증가.",
+        "A": "상대 투수의 실투가 많이 증가. 안타 확률 많이 증가.",
+        "S": "상대 투수의 실투가 아주 많이 증가. 안타 확률 아주 많이 증가."
+      },
+      "conversion": {
+        "probability_per_hidden_point": 0.001,
+        "hit_bonus_on_induced_mistake": 0.08,
+        "final_hit_probability_cap": 0.43
+      },
+      "note": "히든 능력치이며 확률 퍼센트가 아님. 이 게임의 환산 계수로 판정한다. 보유 타자 자신의 타석에서만 적용."
     },
     {
       "name": "베테랑",

@@ -1,4 +1,4 @@
-import {battingSkillBonuses,activeSkillNames} from './skill-effects.js';
+import {battingSkillBonuses,activeSkillNames,intimidationAtBat} from './skill-effects.js';
 export const BAT_POS = ['CF','LF','RF','SS','2B','3B','1B','C','DH'];
 export const TEAMS = ['KIA','삼성','LG','두산','KT','SSG','롯데','한화','NC','키움'];
 export const BATTING = {contact:'정확',power:'파워',eye:'선구',speed:'주력',field:'수비'};
@@ -57,7 +57,8 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
     const c=offense.batters[cursor[side]++%9],br=statById[side][c.uniqueId],bs=batterStat(c);const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
     const tired=(pc.fatigue||0)*.001+Math.max(0,inn-3)*(100-pr.stamina)*.00015;
     const fielding=effective[1-side].reduce((sum,s)=>sum+s.field,0)/9;
-    const hitChance=Math.max(.13,Math.min(.43,.25+(br.contact-pr.stuff+adjust)*.003+tired+(80-fielding)*.0006));
+    const baseHitChance=Math.max(.13,Math.min(.43,.25+(br.contact-pr.stuff+adjust)*.003+tired+(80-fielding)*.0006));
+    const {hitChance,inducedMistake}=intimidationAtBat(c,baseHitChance,rng);if(inducedMistake)bs.inducedMistakes=(bs.inducedMistakes||0)+1;
     const walkChance=Math.max(.025,Math.min(.17,.07+(br.eye-pr.control+adjust)*.0015));const roll=rng();
     if(roll<walkChance){bs.bb++;ps.bb++;if(bases[0]&&bases[1]&&bases[2]){score(bases[2]);bs.rbi++;}if(bases[0]&&bases[1])bases[2]=bases[1];if(bases[0])bases[1]=bases[0];bases[0]=c;}
     else if(roll<walkChance+hitChance){bs.ab++;bs.h++;ps.h++;let n=rng()<Math.max(.015,(br.power+adjust-35)*.0014)?4:rng()<.26?2:1;

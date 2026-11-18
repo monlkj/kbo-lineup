@@ -394,7 +394,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
           return (
               <div className="flex flex-col lg:flex-row h-[75vh] gap-6">
                   <div className="flex-1 com2us-panel p-8 flex flex-col items-center overflow-y-auto custom-scrollbar rounded-lg relative">
-                      <h2 className="text-4xl font-black mb-8 border-b-2 border-gray-600 pb-4 text-purple-400 w-full text-center">고유능력 변경 및 강화</h2><p className="muted">효과 입력은 이 코덱스 대화에서 5개씩 진행합니다. 확정한 핵심타자·베테랑·대포군단·타격의 달인은 실제 경기에 적용됩니다. 다른 능력은 입력 대기 중입니다.</p><a className="back-link" href="/skill-effects-template.csv" download>고유능력 효과 입력표 내려받기 (CSV)</a>
+                      <h2 className="text-4xl font-black mb-8 border-b-2 border-gray-600 pb-4 text-purple-400 w-full text-center">고유능력 변경 및 강화</h2><p className="muted">효과 입력은 이 코덱스 대화에서 5개씩 진행합니다. 확정한 핵심타자·위압감·베테랑·대포군단·타격의 달인은 실제 경기에 적용됩니다. 다른 능력은 입력 대기 중입니다.</p><a className="back-link" href="/skill-effects-template.csv" download>고유능력 효과 입력표 내려받기 (CSV)</a>
                       {!skillSelectedCard ? <div className="text-gray-500 font-bold text-xl text-center mt-10">우측에서 선수를 선택하세요.</div> : (
                           <div className="flex flex-col items-center w-full max-w-md">
                               <div className="w-full mb-6">{renderPlayerCard(skillSelectedCard)}</div>
