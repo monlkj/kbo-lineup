@@ -1,10 +1,10 @@
 import materials from '../data/scout-materials.json' with {type:'json'};
 export const COACH_CATALOG=materials.coaches;
-export const COACH_SLOTS={M:'감독',HD:'수석 코치',HC:'타격 코치',PC:'투수 코치',DC:'수비 코치',BC:'불펜·배터리 코치'};
-export function coachFits(coach,slot){const role=coach?.role||'';return ({M:/감독/,HD:/수석/,HC:/타격/,PC:/투수|불펜/,DC:/수비|외야/,BC:/불펜|배터리/}[slot])?.test(role)||false;}
+export const COACH_SLOTS={M:'감독',HD:'수석 코치',HC:'타격 코치',PC:'투수 코치',DC:'수비 코치',BC:'주수 코치'};
+export function coachFits(coach,slot){const role=coach?.role||'';return ({M:/감독/,HD:/수석/,HC:/타격/,PC:/투수|불펜/,DC:/수비|외야/,BC:/주루|작전/}[slot])?.test(role)||false;}
 // Reads legacy items for compatibility; writes always use the separate coach collection.
 export function ownedCoaches(state){const map=new Map();for(const c of [...(state.manager?.coachCards||[]),...(state.inventory||[]).filter(i=>i.packId==='coach_material')])if(!map.has(c.id))map.set(c.id,c);return [...map.values()];}
-export function migrateCoachStorage(state){const coachCards=ownedCoaches(state),manager=state.manager||{},old=manager.coaches||{},coaches=Object.fromEntries(Object.keys(COACH_SLOTS).map(slot=>[slot,old[slot]||null]));const hd=coachCards.find(i=>i.id===coaches.HD),record=COACH_CATALOG.find(c=>c.id===hd?.coachId);if(coaches.HD&&!coachFits(record,'HD')&&coachFits(record,'M')&&!coaches.M){coaches.M=coaches.HD;coaches.HD=null;}return {...state,inventory:(state.inventory||[]).filter(i=>i.packId!=='coach_material'),manager:{...manager,coaches,coachCards}};}
+export function migrateCoachStorage(state){const coachCards=ownedCoaches(state),manager=state.manager||{},old=manager.coaches||{},coaches=Object.fromEntries(Object.keys(COACH_SLOTS).map(slot=>[slot,old[slot]||null]));const hd=coachCards.find(i=>i.id===coaches.HD),record=COACH_CATALOG.find(c=>c.id===hd?.coachId);if(coaches.HD&&!coachFits(record,'HD')&&coachFits(record,'M')&&!coaches.M){coaches.M=coaches.HD;coaches.HD=null;}for(const slot of Object.keys(COACH_SLOTS)){const item=coachCards.find(i=>i.id===coaches[slot]),c=COACH_CATALOG.find(c=>c.id===item?.coachId);if(coaches[slot]&&!coachFits(c,slot))coaches[slot]=null;}return {...state,inventory:(state.inventory||[]).filter(i=>i.packId!=='coach_material'),manager:{...manager,coaches,coachCards}};}
 export const coachAssigned=(manager,id)=>Object.values(manager?.coaches||{}).some(v=>v===id);
 export const coachPledged=(manager,id)=>(manager?.legendScout?.pledges||[]).includes('coach:'+id);
 export function assignCoach(state,slot,id){

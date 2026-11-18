@@ -10,14 +10,14 @@ import PlayerCard from './player-card';
 import {skillEffectDescription} from './skill-effects.js';
 import ProgressionWorkshop, {CombinationResult} from './progression-workshop.jsx';
 import PlayerFilters from './player-filters.jsx';
-import {EMPTY_FILTERS,filterPlayers,unassignedPlayers} from './player-filters.js';
+import {EMPTY_FILTERS,filterPlayers} from './player-filters.js';
 import {simulateLeagueSeries,recordLeagueGame,finishLeagueSeason,advanceLeagueSeason,claimLeagueGoal,buyLeagueSupply,packCardGrade,leagueClub} from './league-progression.js';
-import LineupShowcase,{StadiumArtwork} from './lineup-showcase.jsx';
+
 import LineupControls from './lineup-controls.jsx';
 import {openCoachPacks,COACH_CATALOG,migrateCoachStorage} from './coaching.js';
 import {grantTestResources} from './test-resources.js';
 import {REWARDS,POINT_LOTTERY,startingMail,dailyMail,leagueMail,championMail,normalizeUnclaimedMail,claimMail,openLotteries} from './reward-rules.js';
-import {BAT_POS,overall,eligible} from './manager-engine';
+import {overall,eligible} from './manager-engine';
 import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSkills,changeSkills,playableCard,createStarterSquad,capacity,acquisitionCount,protectedIds,TICKETS,ROSTER_MAX,ROSTER_STEP,EXPAND_STARS} from './club-rules.js';
 
     const TEAMS = ['KIA', '삼성', 'LG', '두산', 'KT', 'SSG', '롯데', '한화', 'NC', '키움', '해태', 'SK', 'OB', '빙그레', '현대'];
@@ -66,8 +66,6 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       useEffect(()=>{const inspect=e=>{if(e.detail?.id)setDetailCard(myPlayers.find(c=>c.uniqueId&&c.uniqueId===e.detail.uniqueId)||e.detail);};window.addEventListener('kbo:inspect-player',inspect);return()=>window.removeEventListener('kbo:inspect-player',inspect);},[myPlayers]);
       const [lineup, setLineup] = useState({ CF: null, LF: null, RF: null, SS: null, '2B': null, '3B': null, '1B': null, C: null, DH: null, P: null });
 
-      const [activePos, setActivePos] = useState(null);
-      const [lineupEditorTab,setLineupEditorTab]=useState('ORDER');
       const [skillSelectedCard, setSkillSelectedCard] = useState(null);
       const [selectedSkillIdx, setSelectedSkillIdx] = useState(null);
 
@@ -75,10 +73,9 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       const protectedPlayers=protectedIds(lineup,manager);
       const [playerFilters,setPlayerFilters]=useState({...EMPTY_FILTERS});
       const filteredOwned=useMemo(()=>filterPlayers(myPlayers,playerFilters),[myPlayers,playerFilters]);
-      const lineupCandidates=useMemo(()=>filterPlayers(unassignedPlayers(myPlayers,lineup,manager.staff),playerFilters,activePos),[myPlayers,lineup,manager.staff,playerFilters,activePos]);
       const filterControls=(lockedPosition='')=><PlayerFilters compact value={playerFilters} onChange={value=>{setPlayerFilters(value);setVisibleCount(30);}} teams={[...new Set(myPlayers.map(c=>c.team))].sort()} lockedPosition={lockedPosition}/>;
 
-      const changeMenu = (menu) => { if(manager.pendingSkillChange||manager.pendingCombination){showToast('진행 중인 결과 선택을 먼저 완료해주세요.');return;} setCurrentMenu(menu); setVisibleCount(30);setPlayerFilters({...EMPTY_FILTERS});if(menu==='LINEUP')setActivePos(null); };
+      const changeMenu = (menu) => { if(manager.pendingSkillChange||manager.pendingCombination){showToast('진행 중인 결과 선택을 먼저 완료해주세요.');return;} setCurrentMenu(menu); setVisibleCount(30);setPlayerFilters({...EMPTY_FILTERS}); };
       const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2500); };
 
       const handleLogin = (e) => {
@@ -151,10 +148,6 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
         const first=myPlayers.find(c=>c.uniqueId===manager.staff.starters?.[0])||null;
         setLineup(prev=>prev.P===first?prev:{...prev,P:first});
       },[manager.staff,myPlayers]);
-      const clearFieldPosition=(pos)=>{
-        setLineup(prev=>({...prev,[pos]:null}));
-        if(pos==='P')setManager(prev=>({...prev,staff:{...prev.staff,starters:(prev.staff?.starters||[]).map((id,i)=>i===0?null:id)}}));
-      };
 
       const handleReset = () => {
           if(confirm('정말 데이터를 초기화하시겠습니까?')) {
@@ -311,60 +304,6 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       );
       const BigResultCard = ({p}) => <PlayerCard card={p} large/>;
 
-      const renderLineupScreen = () => {
-          const placePlayer = (player) => {
-              if(!activePos) { showToast('먼저 그라운드에서 포지션을 선택하세요.'); return; }
-              if(!eligible(player,activePos)) { showToast('확인된 포지션에 맞게 배치해주세요!'); return; }
-              if(!unassignedPlayers(myPlayers,lineup,manager.staff).some(c=>c.uniqueId===player.uniqueId)) { showToast('동일 선수는 한 명만 출전할 수 있습니다!'); return; }
-              setLineup(prev => ({...prev, [activePos]: player}));if(activePos==='P')setManager(prev=>({...prev,staff:{...prev.staff,starters:Array.from({length:5},(_,i)=>i===0?player.uniqueId:prev.staff?.starters?.[i]||null)}})); setActivePos(null);
-          };
-
-          return (
-              <div className="lineup-field-layout" id="lineup-diamond">
-                  <div className="stadium-panel"><div className="stadium-header"><span><i/> FIELD POSITION</span><b>우리 팀의 그라운드</b><small>선수 카드를 눌러 교체</small></div><div className="stadium-canvas"><StadiumArtwork/>
-                      <div className="stadium-save">
-                          <button onClick={()=>{handleSave(); showToast('저장 완료!');}} className="com2us-button px-6 py-2 font-black rounded shadow-lg">라인업 저장</button>
-                      </div>
-                      <div className="stadium-selection-hint">
-                          {activePos ? `후보 명단에서 [${activePos}] 선택` : '그라운드 포지션 클릭'}
-                      </div>
-                      {[
-                        { role: 'CF', b: '80%', l: '50%' }, { role: 'LF', b: '64%', l: '20%' }, { role: 'RF', b: '64%', l: '80%' },
-                        { role: 'SS', b: '47%', l: '35%' }, { role: '2B', b: '47%', l: '65%' }, { role: '3B', b: '36%', l: '20%' },
-                        { role: '1B', b: '36%', l: '80%' }, { role: 'P', b: '36%', l: '50%' }, { role: 'C', b: '12%', l: '50%' }, { role: 'DH', b: '12%', l: '20%' }
-                      ].map(pos => {
-                          const p = lineup[pos.role];
-                          return (
-                              <div key={pos.role} role="button" tabIndex={0} aria-label={`${pos.role} 포지션 선택`} onKeyDown={e=>{if(e.target===e.currentTarget&&(e.key==='Enter'||e.key===' ')){e.preventDefault();setActivePos(pos.role);}}} onClick={() => setActivePos(pos.role)} className={`stadium-position ${activePos===pos.role?'is-active':''}`} style={{ bottom: pos.b, left: pos.l }}>
-                                  {!p ? (
-                                      <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-black text-sm ${activePos === pos.role ? 'bg-yellow-500 border-white scale-125 z-20 text-black shadow-[0_0_15px_rgba(234,179,8,1)]' : 'bg-black/60 border-gray-400 text-gray-300'}`}>{pos.role}</div>
-                                  ) : (
-                                      <div className="field-card-wrap">
-                                        <PlayerCard compact card={p} role={pos.role} selected={activePos===pos.role}/>
-                                        <button className="field-card-remove" aria-label={`${pos.role} 선수 편성 해제`} onClick={e=>{e.stopPropagation();clearFieldPosition(pos.role);}}>×</button>
-                                      </div>
-                                  )}<span className="stadium-position-label">{pos.role}<i>{lineup[pos.role]?(manager.order||BAT_POS).indexOf(pos.role)>=0?`${(manager.order||BAT_POS).indexOf(pos.role)+1}번 타자`:pos.role==='P'?'투수':'선발':'미편성'}</i></span>
-                              </div>
-                          )
-                      })}
-                  </div></div>
-                  <div role="complementary" aria-label="라인업 교체 후보" className="lineup-sidebar squad-candidates">
-                      <small className="squad-sidebar-eyebrow">PLAYER SELECTION</small><h3 className="squad-sidebar-title">{activePos?`${activePos} 교체 후보`:'미편성 후보'} ({lineupCandidates.length})</h3>{filterControls(activePos)}
-                      <div className="classic-card-list flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">
-                          {lineupCandidates.length === 0 ? <p className="text-gray-500 font-bold text-center mt-10">배치 가능한 미편성 후보가 없습니다. 다른 포지션을 선택하거나 필터를 초기화해주세요.</p> :
-                            <>
-                                {lineupCandidates.slice(0,visibleCount).map(p=>renderPlayerCard(p,false,()=>placePlayer(p)))}
-                                {lineupCandidates.length > visibleCount && (
-                                    <button onClick={() => setVisibleCount(v => v + 30)} className="w-full bg-gray-800 border border-gray-600 text-gray-300 py-3 mt-4 font-black hover:bg-gray-700">▼ 더보기</button>
-                                )}
-                            </>
-                          }
-                      </div>
-                  </div>
-              </div>
-          );
-      };
-
       const renderSkillScreen = () => {
           const normalTicketCount = inventory.filter(i => i.packId === 'skill_ticket').length;
           const premiumTicketCount = inventory.filter(i => i.packId === 'premium_skill_ticket').length;
@@ -462,7 +401,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       };
 
       const progressionState={players:myPlayers,currency,inventory,lineup,manager};
-      const commitProgression=next=>{setMyPlayers(next.players);setCurrency(next.currency);setInventory(next.inventory);setManager(next.manager);};
+      const commitProgression=next=>{setMyPlayers(next.players);setCurrency(next.currency);setInventory(next.inventory);setManager(next.manager);if(next.lineup)setLineup(next.lineup);};
       const supportTestResources=()=>{try{commitProgression(grantTestResources(progressionState));showToast('시험용 지원 완료! 포인트·스타 999,999,999, 변경권·돌파권·계약서·만능 재료 각 999장으로 충전했습니다.');}catch(e){showToast(e.message);}};
 
       const groupedInventory = useMemo(() => {
@@ -558,7 +497,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
                       </div>
                   )}
 
-                  {currentMenu === 'LINEUP' && <><LineupShowcase team={favTeam} players={myPlayers} lineup={lineup} manager={manager} inventory={inventory} onSelect={setActivePos} onEdit={setLineupEditorTab}>{renderLineupScreen()}</LineupShowcase><section id="lineup-editor"><LineupControls key={lineupEditorTab} initialTab={lineupEditorTab} state={progressionState} onCommit={commitProgression} showToast={showToast}/></section></>}
+                  {currentMenu === 'LINEUP' && <section className="lineup-card-page"><header className="lineup-card-heading"><div><small>{favTeam} / TEAM LINEUP</small><h1>우리 팀 라인업</h1><p>타자 2장 선택 후 타순 교체 · 드래그 이동 · 이름 아래 화살표로 수비 변경</p></div><span>변경 내용 자동 저장</span></header><LineupControls state={progressionState} onCommit={commitProgression} showToast={showToast}/></section>}
                   {currentMenu === 'COACHES' && <LineupControls initialTab="COACH" state={progressionState} onCommit={commitProgression} showToast={showToast}/>}
                   {currentMenu === 'ROSTER' && <section className="com2us-panel p-6"><h2 className="text-2xl font-black">선수 보유함 · {myPlayers.length} / {rosterLimit}명</h2><div className="scout-toolbar"><button className="com2us-button" disabled={rosterLimit>=ROSTER_MAX} onClick={expandRoster}>보유함 +20칸 · 500 S (최대 300명)</button><p>편성된 선수는 방출·스카우트 재료로 사용할 수 없습니다. 편성 해제 후 정리하세요.</p></div><div>{filterControls()}<p className="muted">검색 결과 {filteredOwned.length}명</p></div><div className="space-y-3">{filteredOwned.slice(0,visibleCount).map(c=><div key={c.uniqueId} className="roster-release-row">{renderPlayerCard(c,false,()=>{})}<button disabled={protectedPlayers.has(c.uniqueId)} onClick={()=>releasePlayer(c)}>방출 · 1,000 P</button></div>)}</div>{filteredOwned.length>visibleCount&&<button className="com2us-button p-3 mt-4" onClick={()=>setVisibleCount(v=>v+30)}>더보기</button>}</section>}
                   {['TRAIN','LIMIT','COMBINE','LEGEND_SCOUT','SIGNATURE_AWAKEN'].includes(currentMenu) && <ProgressionWorkshop key={currentMenu} mode={currentMenu} state={progressionState} database={FULL_DATABASE} onCommit={commitProgression} onResult={card=>setPackResultMulti([card])} showToast={showToast}/>}
