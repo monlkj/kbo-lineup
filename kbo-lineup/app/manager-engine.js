@@ -12,7 +12,8 @@ export function ratings(card) {
 }
 export const overall=c=>Math.round(Object.values(ratings(c)).reduce((a,b)=>a+b,0)/Object.keys(ratings(c)).length);
 export function makeCard(c){return {...c,uniqueId:crypto.randomUUID(),upgrade:0,ovr:overall(c),xp:0,training:0,growth:{},condition:0,fatigue:0,skills:c.skills||[]};}
-export function eligible(c,pos){return pos==='DH'?c.pos!=='P':(c.positions||[c.pos]).includes(pos);}
+export const OUTFIELD_POSITIONS=['LF','CF','RF'];
+export function eligible(c,pos){if(pos==='DH')return c.pos!=='P';const positions=c.positions?.length?c.positions:[c.pos];if(OUTFIELD_POSITIONS.includes(pos)&&positions.some(p=>OUTFIELD_POSITIONS.includes(p)||p==='OF'))return true;return positions.includes(pos);}
 export function deckBonus(cards){
  const nationalCount=cards.filter(c=>c&&(c.cardType==='NATIONAL'||isNationalLegend(c))).length;const teams={},years={};cards.filter(Boolean).forEach(c=>{teams[c.team]=(teams[c.team]||0)+1;years[c.year]=(years[c.year]||0)+1;});
  const team=Object.entries(teams).sort((a,b)=>b[1]-a[1])[0]||['없음',0],year=Object.entries(years).sort((a,b)=>b[1]-a[1])[0]||['없음',0];
