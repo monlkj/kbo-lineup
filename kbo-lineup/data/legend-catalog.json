@@ -2413,49 +2413,49 @@
     "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=75421",
     "baseSeasonId": "75421-2022",
     "grade": "LEGEND",
-    "legendKind": "LIVING",
+    "legendKind": "CLASSIC",
     "legendSelection": "user-roster-2026-11-21"
   },
   {
     "id": "LEGEND-75847",
     "playerId": "75847",
     "name": "최정",
-    "year": 2023,
-    "team": "SSG",
+    "year": 2017,
+    "team": "SK",
     "positions": [
       "3B"
     ],
     "stats": {
-      "fpct": 0.95,
-      "g": 128,
-      "avg": 0.297,
-      "pa": 552,
-      "ab": 471,
-      "h": 140,
-      "hr": 29,
-      "rbi": 87,
-      "sb": 7
+      "fpct": 0.98,
+      "g": 130,
+      "avg": 0.316,
+      "pa": 527,
+      "ab": 430,
+      "h": 136,
+      "hr": 46,
+      "rbi": 113,
+      "sb": 1
     },
     "awards": [
       {
-        "type": "올스타",
-        "year": 2023,
-        "source": "https://www.koreabaseball.com/Schedule/Allstar/Game/Main2023.aspx"
+        "type": "골든글러브",
+        "year": 2017,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
       }
     ],
     "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
     "positionEvidence": [
       {
         "pos": "3B",
-        "innings": 934.333,
+        "innings": 936.667,
         "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
       }
     ],
     "pos": "3B",
-    "photo": "/players/75847.jpg",
-    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/75847.jpg",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2017/75847.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2017/75847.jpg",
     "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=75847",
-    "baseSeasonId": "75847-2023",
+    "baseSeasonId": "75847-2017",
     "grade": "LEGEND",
     "legendKind": "LIVING",
     "legendSelection": "user-roster-2026-11-21"
@@ -2464,42 +2464,42 @@
     "id": "LEGEND-72443",
     "playerId": "72443",
     "name": "최형우",
-    "year": 2023,
-    "team": "KIA",
+    "year": 2016,
+    "team": "삼성",
     "positions": [
       "LF"
     ],
     "stats": {
-      "fpct": 0.947,
-      "g": 121,
-      "avg": 0.302,
-      "pa": 508,
-      "ab": 431,
-      "h": 130,
-      "hr": 17,
-      "rbi": 81,
-      "sb": 0
+      "fpct": 0.987,
+      "g": 138,
+      "avg": 0.376,
+      "pa": 618,
+      "ab": 519,
+      "h": 195,
+      "hr": 31,
+      "rbi": 144,
+      "sb": 2
     },
     "awards": [
       {
-        "type": "올스타",
-        "year": 2023,
-        "source": "https://www.koreabaseball.com/Schedule/Allstar/Game/Main2023.aspx"
+        "type": "골든글러브",
+        "year": 2016,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
       }
     ],
     "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
     "positionEvidence": [
       {
         "pos": "LF",
-        "innings": 107.0,
+        "innings": 1094.0,
         "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
       }
     ],
     "pos": "LF",
-    "photo": "/players/72443.jpg",
-    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/72443.jpg",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2016/72443.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2016/72443.jpg",
     "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=72443",
-    "baseSeasonId": "72443-2023",
+    "baseSeasonId": "72443-2016",
     "grade": "LEGEND",
     "legendKind": "LIVING",
     "legendSelection": "user-roster-2026-11-21"
@@ -2508,46 +2508,42 @@
     "id": "LEGEND-74540",
     "playerId": "74540",
     "name": "강민호",
-    "year": 2023,
-    "team": "삼성",
+    "year": 2013,
+    "team": "롯데",
     "pos": "C",
     "positions": [
       "C"
     ],
     "stats": {
-      "avg": 0.29,
-      "g": 125,
-      "pa": 495,
-      "ab": 434,
-      "r": 60,
-      "h": 126,
-      "2b": 19,
-      "3b": 0,
-      "hr": 16,
-      "tb": 193,
-      "rbi": 77,
-      "sb": 6,
-      "cs": 1,
-      "bb": 49,
-      "hbp": 6,
-      "so": 65,
-      "gdp": 17,
-      "slg": 0.445,
-      "obp": 0.366,
-      "e": 3
+      "fpct": 0.988,
+      "g": 105,
+      "avg": 0.235,
+      "pa": 405,
+      "ab": 327,
+      "h": 77,
+      "hr": 11,
+      "rbi": 57,
+      "sb": 4
     },
-    "awards": [],
-    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=74540",
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2013,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
     "positionEvidence": [
       {
         "pos": "C",
-        "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=74540"
+        "innings": 792.667,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
       }
     ],
-    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=74540",
-    "photo": "/players/74540.jpg",
-    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/74540.jpg",
-    "baseSeasonId": "74540-2023",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=74540",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2017/74540.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2017/74540.jpg",
+    "baseSeasonId": "74540-2013",
     "grade": "LEGEND",
     "legendKind": "LIVING",
     "legendSelection": "user-roster-2026-11-21"
@@ -2556,47 +2552,42 @@
     "id": "LEGEND-76232",
     "playerId": "76232",
     "name": "양의지",
-    "year": 2023,
-    "team": "두산",
+    "year": 2019,
+    "team": "NC",
     "positions": [
       "C"
     ],
     "stats": {
-      "fpct": 0.996,
-      "g": 129,
-      "avg": 0.305,
-      "pa": 510,
-      "ab": 439,
-      "h": 134,
-      "hr": 17,
+      "fpct": 0.997,
+      "g": 118,
+      "avg": 0.354,
+      "pa": 459,
+      "ab": 390,
+      "h": 138,
+      "hr": 20,
       "rbi": 68,
-      "sb": 8
+      "sb": 4
     },
     "awards": [
       {
         "type": "골든글러브",
-        "year": 2023,
+        "year": 2019,
         "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
-      },
-      {
-        "type": "올스타",
-        "year": 2023,
-        "source": "https://www.koreabaseball.com/Schedule/Allstar/Game/Main2023.aspx"
       }
     ],
     "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
     "positionEvidence": [
       {
         "pos": "C",
-        "innings": 773.0,
+        "innings": 723.333,
         "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
       }
     ],
     "pos": "C",
-    "photo": "/players/76232.jpg",
-    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/76232.jpg",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2019/76232.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2019/76232.jpg",
     "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=76232",
-    "baseSeasonId": "76232-2023",
+    "baseSeasonId": "76232-2019",
     "grade": "LEGEND",
     "legendKind": "LIVING",
     "legendSelection": "user-roster-2026-11-21"
@@ -2605,52 +2596,48 @@
     "id": "LEGEND-76290",
     "playerId": "76290",
     "name": "김현수",
-    "year": 2020,
-    "team": "LG",
+    "year": 2015,
+    "team": "두산",
     "pos": "LF",
     "positions": [
-      "LF"
+      "LF",
+      "1B"
     ],
     "stats": {
-      "avg": 0.331,
-      "g": 142,
-      "pa": 619,
-      "ab": 547,
-      "r": 98,
-      "h": 181,
-      "2b": 35,
-      "3b": 2,
-      "hr": 22,
-      "tb": 286,
-      "rbi": 119,
-      "sb": 0,
-      "cs": 2,
-      "bb": 63,
-      "hbp": 2,
-      "so": 53,
-      "gdp": 9,
-      "slg": 0.523,
-      "obp": 0.397,
-      "e": 1
+      "fpct": 0.995,
+      "g": 141,
+      "avg": 0.326,
+      "pa": 630,
+      "ab": 512,
+      "h": 167,
+      "hr": 28,
+      "rbi": 121,
+      "sb": 11
     },
     "awards": [
       {
         "type": "골든글러브",
-        "year": 2020,
+        "year": 2015,
         "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
       }
     ],
-    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=76290",
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
     "positionEvidence": [
       {
         "pos": "LF",
-        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+        "innings": 962.667,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      },
+      {
+        "pos": "1B",
+        "innings": 211.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
       }
     ],
-    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=76290",
-    "photo": "/players/76290.jpg",
-    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/76290.jpg",
-    "baseSeasonId": "76290-2020",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=76290",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2016/76290.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2016/76290.jpg",
+    "baseSeasonId": "76290-2015",
     "grade": "LEGEND",
     "legendKind": "LIVING",
     "legendSelection": "user-roster-2026-11-21"
@@ -2659,27 +2646,26 @@
     "id": "LEGEND-77532",
     "playerId": "77532",
     "name": "손아섭",
-    "year": 2023,
-    "team": "NC",
+    "year": 2017,
+    "team": "롯데",
     "positions": [
-      "RF",
-      "LF"
+      "RF"
     ],
     "stats": {
-      "fpct": 0.974,
-      "g": 140,
-      "avg": 0.339,
-      "pa": 609,
-      "ab": 551,
-      "h": 187,
-      "hr": 5,
-      "rbi": 65,
-      "sb": 14
+      "fpct": 0.992,
+      "g": 144,
+      "avg": 0.335,
+      "pa": 667,
+      "ab": 576,
+      "h": 193,
+      "hr": 20,
+      "rbi": 80,
+      "sb": 25
     },
     "awards": [
       {
         "type": "골든글러브",
-        "year": 2023,
+        "year": 2017,
         "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
       }
     ],
@@ -2687,20 +2673,15 @@
     "positionEvidence": [
       {
         "pos": "RF",
-        "innings": 343.333,
-        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
-      },
-      {
-        "pos": "LF",
-        "innings": 66.333,
+        "innings": 1210.333,
         "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
       }
     ],
     "pos": "RF",
-    "photo": "/players/77532.jpg",
-    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/77532.jpg",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2017/77532.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2017/77532.jpg",
     "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=77532",
-    "baseSeasonId": "77532-2023",
+    "baseSeasonId": "77532-2017",
     "grade": "LEGEND",
     "legendKind": "LIVING",
     "legendSelection": "user-roster-2026-11-21"

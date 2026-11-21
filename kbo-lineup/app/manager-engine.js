@@ -106,14 +106,12 @@ export function advancePlayers(cards,participants,starterId,rng=Math.random){con
  });}
 export function trainStat(card,key){if(!(key in ratings(card)))throw new Error('선수에게 없는 능력치입니다.');if(!(card.training>0))throw new Error('성장 포인트가 없습니다.');if(ratings(card)[key]>=99)throw new Error('최대 능력치입니다.');const next={...card,training:card.training-1,growth:{...card.growth,[key]:(card.growth?.[key]||0)+1}};next.ovr=overall(next);return next;}
 export function startPostseason(season){const ranked=sortedStandings(season).map(([t])=>t);return {ranked,stage:0,wins:[0,0],match:[ranked[3],ranked[4]],games:[],champion:null};}
-export function playPostseason(post,userTeam,catalog,rng=Math.random){
- const p=structuredClone(post);if(p.champion)return p;
- const [a,b]=p.match;const game=playGame(a===userTeam.name?userTeam:buildTeam(a,catalog,p.games.length),b===userTeam.name?userTeam:buildTeam(b,catalog,p.games.length),{rng});
- // A tied wildcard advances fourth place; later series replay a tied game.
+export function rotationIndex(season,postGames=season?.postseason?.games?.length||0){const day=Number(season?.day)||0;return (day+(day>=144?postGames:0))%5;}
+export function recordPostseasonGame(post,game){const p=structuredClone(post);if(p.champion)return p;const [a,b]=p.match;if(game.home!==a||game.away!==b)throw Error('포스트시즌 대진과 경기 결과가 일치하지 않습니다.');if(![game.homeScore,game.awayScore].every(n=>Number.isInteger(n)&&n>=0))throw Error('포스트시즌 점수를 확인해주세요.');
+ // Fourth place needs one win or a tie; fifth place needs two wins.
  if(game.homeScore===game.awayScore){if(p.stage===0)p.wins[0]++;}else p.wins[game.homeScore>game.awayScore?0:1]++;
  p.games.unshift({...game,batters:undefined,pitchers:undefined,stage:p.stage});
- const targets=p.stage===0?[1,2]:[p.stage===3?4:3,p.stage===3?4:3];
- const winner=p.wins[0]>=targets[0]?a:p.wins[1]>=targets[1]?b:null;
- if(winner){if(p.stage===3)p.champion=winner;else{p.stage++;p.match=[p.ranked[3-p.stage],winner];p.wins=[0,0];}}
- return p;
+ const targets=p.stage===0?[1,2]:[p.stage===3?4:3,p.stage===3?4:3];const winner=p.wins[0]>=targets[0]?a:p.wins[1]>=targets[1]?b:null;
+ if(winner){if(p.stage===3)p.champion=winner;else{p.stage++;p.match=[p.ranked[3-p.stage],winner];p.wins=[0,0];}}return p;
 }
+export function playPostseason(post,userTeam,catalog,rng=Math.random){if(post.champion)return structuredClone(post);const [a,b]=post.match;const game=playGame(a===userTeam.name?userTeam:buildTeam(a,catalog,post.games.length),b===userTeam.name?userTeam:buildTeam(b,catalog,post.games.length),{rng,bonusHome:a===userTeam.name?userTeam.bonus||0:0,bonusAway:b===userTeam.name?userTeam.bonus||0:0});return recordPostseasonGame(post,game);}
