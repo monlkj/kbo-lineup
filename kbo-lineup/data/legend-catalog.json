@@ -1,0 +1,2791 @@
+[
+  {
+    "id": "LEGEND-85672",
+    "playerId": "85672",
+    "name": "선동열",
+    "year": 1986,
+    "team": "해태",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 0.99,
+      "g": 39,
+      "w": 24,
+      "l": 6,
+      "sv": 6,
+      "hld": 0,
+      "ip": 262.667,
+      "h": 153,
+      "hr": 2,
+      "bb": 52,
+      "so": 214
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1986,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 1986,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/07/29/%EC%B5%9C%EB%8B%A4%EB%93%9D%ED%91%9C%EC%9E%90_1_%EC%84%A0%EB%8F%99%EC%97%B4poster_190.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=85672",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "85672-1986",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-83540",
+    "playerId": "83540",
+    "name": "최동원",
+    "year": 1984,
+    "team": "롯데",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 2.4,
+      "g": 51,
+      "cg": 14,
+      "sho": 1,
+      "w": 27,
+      "l": 13,
+      "sv": 6,
+      "hld": 0,
+      "wpct": 0.675,
+      "tbf": 1132,
+      "ip": 284.6666666666667,
+      "h": 228,
+      "hr": 18,
+      "bb": 68,
+      "hbp": 14,
+      "so": 223,
+      "r": 91,
+      "er": 76
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1984,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 1984,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=83540",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=83540",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/07/29/%EC%B5%9C%EB%8B%A4%EB%93%9D%ED%91%9C%EC%9E%90_2_%EC%B5%9C%EB%8F%99%EC%9B%90poster_190.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "83540-1984",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-93607",
+    "playerId": "93607",
+    "name": "이종범",
+    "year": 1994,
+    "team": "해태",
+    "pos": "SS",
+    "positions": [
+      "SS"
+    ],
+    "stats": {
+      "avg": 0.393,
+      "g": 124,
+      "pa": 561,
+      "ab": 499,
+      "h": 196,
+      "hr": 19,
+      "rbi": 77
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1994,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 1994,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "SS",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/07/29/%EC%B5%9C%EB%8B%A4%EB%93%9D%ED%91%9C%EC%9E%90_3_%EC%9D%B4%EC%A2%85%EB%B2%94poster_190.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=93607",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "93607-1994",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-95436",
+    "playerId": "95436",
+    "name": "이승엽",
+    "year": 2003,
+    "team": "삼성",
+    "positions": [
+      "1B"
+    ],
+    "stats": {
+      "fpct": 0.996,
+      "g": 131,
+      "avg": 0.301,
+      "pa": 596,
+      "ab": 479,
+      "h": 144,
+      "hr": 56,
+      "rbi": 144,
+      "sb": 7
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2003,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 2003,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "1B",
+        "innings": 1076.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "1B",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/07/29/%EC%B5%9C%EB%8B%A4%EB%93%9D%ED%91%9C%EC%9E%90_4_%EC%9D%B4%EC%8A%B9%EC%97%BDposter_190.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=95436",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "95436-2003",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-71564",
+    "playerId": "71564",
+    "name": "이대호",
+    "year": 2010,
+    "team": "롯데",
+    "positions": [
+      "3B",
+      "1B"
+    ],
+    "stats": {
+      "fpct": 0.958,
+      "g": 127,
+      "avg": 0.364,
+      "pa": 552,
+      "ab": 478,
+      "h": 174,
+      "hr": 44,
+      "rbi": 133,
+      "sb": 0
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2010,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 2010,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "3B",
+        "innings": 796.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      },
+      {
+        "pos": "1B",
+        "innings": 119.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "3B",
+    "photo": "/players/71564.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2020/71564.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=71564",
+    "baseSeasonId": "71564-2010",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-92301",
+    "playerId": "92301",
+    "name": "정민태",
+    "year": 1999,
+    "team": "현대",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 2.54,
+      "g": 33,
+      "w": 20,
+      "l": 7,
+      "sv": 3,
+      "hld": 0,
+      "ip": 230.667,
+      "h": 208,
+      "hr": 24,
+      "bb": 63,
+      "so": 178
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1999,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/15/%EC%A0%95%EB%AF%BC%ED%83%9C.png",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=92301",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "92301-1999",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-82234",
+    "playerId": "82234",
+    "name": "박철순",
+    "year": 1982,
+    "team": "OB",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 1.84,
+      "g": 36,
+      "cg": 15,
+      "sho": 2,
+      "w": 24,
+      "l": 4,
+      "sv": 7,
+      "hld": 0,
+      "wpct": 0.857,
+      "tbf": 871,
+      "ip": 224.66666666666666,
+      "h": 151,
+      "hr": 7,
+      "bb": 67,
+      "hbp": 6,
+      "so": 108,
+      "r": 60,
+      "er": 46
+    },
+    "awards": [
+      {
+        "type": "MVP",
+        "year": 1982,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=82234",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=82234",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/07/29/%EC%9B%90%EB%85%84%EC%9D%98%EC%8A%A4%ED%83%80_1_%EB%B0%95%EC%B2%A0%EC%88%9Cposter_190.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "82234-1982",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-93410",
+    "playerId": "93410",
+    "name": "양준혁",
+    "year": 2004,
+    "team": "삼성",
+    "pos": "1B",
+    "positions": [
+      "1B"
+    ],
+    "stats": {
+      "avg": 0.315,
+      "g": 133,
+      "pa": 584,
+      "ab": 479,
+      "r": 95,
+      "h": 151,
+      "2b": 30,
+      "3b": 0,
+      "hr": 28,
+      "tb": 265,
+      "rbi": 103,
+      "sb": 5,
+      "cs": 2,
+      "bb": 89,
+      "hbp": 13,
+      "so": 53,
+      "gdp": 10,
+      "slg": 0.553,
+      "obp": 0.434,
+      "e": 11
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2004,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=93410",
+    "positionEvidence": [
+      {
+        "pos": "1B",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=93410",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/05/%EC%96%91%EC%A4%80%ED%98%81-poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "93410-2004",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-92809",
+    "playerId": "92809",
+    "name": "박경완",
+    "year": 2000,
+    "team": "현대",
+    "pos": "C",
+    "positions": [
+      "C"
+    ],
+    "stats": {
+      "avg": 0.282,
+      "g": 130,
+      "pa": 517,
+      "ab": 408,
+      "h": 115,
+      "hr": 40,
+      "rbi": 95
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2000,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 2000,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "C",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/22/%EB%B0%95%EA%B2%BD%EC%99%84poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=92809",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "92809-2000",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-82420",
+    "playerId": "82420",
+    "name": "이만수",
+    "year": 1984,
+    "team": "삼성",
+    "pos": "C",
+    "positions": [
+      "C"
+    ],
+    "stats": {
+      "avg": 0.34,
+      "g": 89,
+      "pa": 342,
+      "ab": 300,
+      "r": 45,
+      "h": 102,
+      "2b": 17,
+      "3b": 1,
+      "hr": 23,
+      "tb": 190,
+      "rbi": 80,
+      "sb": 3,
+      "cs": 8,
+      "bb": 26,
+      "hbp": 12,
+      "so": 37,
+      "gdp": 10,
+      "slg": 0.633,
+      "obp": 0.414,
+      "e": 1
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1984,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=82420",
+    "positionEvidence": [
+      {
+        "pos": "C",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=82420",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/07/29/%EC%9B%90%EB%85%84%EC%9D%98%EC%8A%A4%ED%83%80_2_%EC%9D%B4%EB%A7%8C%EC%88%98poster_190.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "82420-1984",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-83412",
+    "playerId": "83412",
+    "name": "김시진",
+    "year": 1985,
+    "team": "삼성",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 2,
+      "g": 47,
+      "w": 25,
+      "l": 5,
+      "sv": 10,
+      "hld": 0,
+      "ip": 269.667,
+      "h": 172,
+      "hr": 8,
+      "bb": 121,
+      "so": 201
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1985,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/08/%EA%B9%80%EC%8B%9C%EC%A7%84poster_%EC%97%85%EB%A1%9C%EB%93%9C%EC%9A%A9.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=83412",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "83412-1985",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-86572",
+    "playerId": "86572",
+    "name": "윤학길",
+    "year": 1988,
+    "team": "롯데",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 3.15,
+      "g": 35,
+      "w": 18,
+      "l": 10,
+      "sv": 3,
+      "hld": 0,
+      "ip": 234,
+      "h": 241,
+      "hr": 9,
+      "bb": 53,
+      "so": 123
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx"
+      }
+    ],
+    "photo": "/players/86572.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2016/86572.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=86572",
+    "baseSeasonId": "86572-1988",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-85110",
+    "playerId": "85110",
+    "name": "김용수",
+    "year": 1998,
+    "team": "LG",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 3.45,
+      "g": 32,
+      "cg": 1,
+      "sho": 0,
+      "w": 18,
+      "l": 6,
+      "sv": 2,
+      "hld": 0,
+      "wpct": 0.75,
+      "tbf": 742,
+      "ip": 175,
+      "h": 176,
+      "hr": 11,
+      "bb": 45,
+      "hbp": 7,
+      "so": 116,
+      "r": 74,
+      "er": 67
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=85110",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=85110"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=85110",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/19/%EA%B9%80%EC%9A%A9%EC%88%98poster_hp.png",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "85110-1998",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-87760",
+    "playerId": "87760",
+    "name": "장종훈",
+    "year": 1992,
+    "team": "빙그레",
+    "pos": "1B",
+    "positions": [
+      "1B"
+    ],
+    "stats": {
+      "avg": 0.299,
+      "g": 125,
+      "pa": 556,
+      "ab": 431,
+      "h": 129,
+      "hr": 41,
+      "rbi": 119
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1992,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 1992,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "1B",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/13/%EC%9E%A5%EC%A2%85%ED%9B%88-poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=87760",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "87760-1992",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-83460",
+    "playerId": "83460",
+    "name": "장효조",
+    "year": 1987,
+    "team": "삼성",
+    "pos": "RF",
+    "positions": [
+      "RF"
+    ],
+    "stats": {
+      "avg": 0.387,
+      "g": 88,
+      "pa": 335,
+      "ab": 284,
+      "r": 51,
+      "h": 110,
+      "2b": 16,
+      "3b": 4,
+      "hr": 2,
+      "tb": 140,
+      "rbi": 58,
+      "sb": 7,
+      "cs": 4,
+      "bb": 41,
+      "hbp": 3,
+      "so": 26,
+      "gdp": 1,
+      "slg": 0.493,
+      "obp": 0.461,
+      "e": 2
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1987,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 1987,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=83460",
+    "positionEvidence": [
+      {
+        "pos": "RF",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=83460",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/08/%EC%9E%A5%ED%9A%A8%EC%A1%B0poster_%EC%97%85%EB%A1%9C%EB%93%9C%EC%9A%A9.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "83460-1987",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-93715",
+    "playerId": "93715",
+    "name": "구대성",
+    "year": 1996,
+    "team": "한화",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 1.88,
+      "g": 55,
+      "cg": 1,
+      "sho": 0,
+      "w": 18,
+      "l": 3,
+      "sv": 24,
+      "hld": 0,
+      "wpct": 0.857,
+      "tbf": 521,
+      "ip": 139,
+      "h": 79,
+      "hr": 7,
+      "bb": 27,
+      "hbp": 6,
+      "so": 183,
+      "r": 32,
+      "er": 29
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1996,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 1996,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=93715",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=93715",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/19/%EA%B5%AC%EB%8C%80%EC%84%B1poster_hp.png",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "93715-1996",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-93147",
+    "playerId": "93147",
+    "name": "이상훈",
+    "year": 1995,
+    "team": "LG",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 2.01,
+      "g": 30,
+      "cg": 12,
+      "sho": 3,
+      "w": 20,
+      "l": 5,
+      "sv": 0,
+      "hld": 0,
+      "wpct": 0.8,
+      "tbf": 867,
+      "ip": 228.33333333333334,
+      "h": 150,
+      "hr": 12,
+      "bb": 48,
+      "hbp": 3,
+      "so": 142,
+      "r": 61,
+      "er": 51
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1995,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=93147",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=93147",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/01/%EC%9D%B4%EC%83%81%ED%9B%88poster_190244.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "93147-1995",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-61240",
+    "playerId": "61240",
+    "name": "니퍼트",
+    "year": 2016,
+    "team": "두산",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "fpct": 1,
+      "g": 28,
+      "era": 2.95,
+      "w": 22,
+      "l": 3,
+      "sv": 0,
+      "hld": 0,
+      "ip": 167.667,
+      "h": 151,
+      "hr": 15,
+      "bb": 57,
+      "so": 142
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2016,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 2016,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "innings": 167.667,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "P",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/01/%EB%8B%88%ED%8D%BC%ED%8A%B8poster_190224_%ED%94%BD%EC%85%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=61240",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "61240-2016",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-98233",
+    "playerId": "98233",
+    "name": "우즈",
+    "year": 1998,
+    "team": "OB",
+    "pos": "1B",
+    "positions": [
+      "1B"
+    ],
+    "stats": {
+      "avg": 0.305,
+      "g": 126,
+      "pa": 521,
+      "ab": 452,
+      "r": 77,
+      "h": 138,
+      "2b": 14,
+      "3b": 1,
+      "hr": 42,
+      "tb": 280,
+      "rbi": 103,
+      "sb": 1,
+      "cs": 2,
+      "bb": 65,
+      "hbp": 2,
+      "so": 115,
+      "gdp": 13,
+      "slg": 0.619,
+      "obp": 0.393,
+      "e": 5
+    },
+    "awards": [
+      {
+        "type": "MVP",
+        "year": 1998,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=98233",
+    "positionEvidence": [
+      {
+        "pos": "1B",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=98233",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/13/%ED%83%80%EC%9D%B4%EB%A1%A0%EC%9A%B0%EC%A6%88-poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "98233-1998",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-92704",
+    "playerId": "92704",
+    "name": "정민철",
+    "year": 1999,
+    "team": "한화",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 3.75,
+      "g": 32,
+      "w": 18,
+      "l": 8,
+      "sv": 1,
+      "hld": 0,
+      "ip": 201.667,
+      "h": 179,
+      "hr": 22,
+      "bb": 57,
+      "so": 151
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/15/%EC%A0%95%EB%AF%BC%EC%B2%A0190.png",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=92704",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "92704-1999",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-89670",
+    "playerId": "89670",
+    "name": "조계현",
+    "year": 1993,
+    "team": "해태",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 2.15,
+      "g": 28,
+      "cg": 10,
+      "sho": 4,
+      "w": 17,
+      "l": 6,
+      "sv": 1,
+      "hld": 0,
+      "wpct": 0.739,
+      "tbf": 760,
+      "ip": 196.33333333333334,
+      "h": 141,
+      "hr": 8,
+      "bb": 51,
+      "hbp": 7,
+      "so": 118,
+      "r": 54,
+      "er": 47
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=89670",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=89670"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=89670",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/15/%EC%A1%B0%EA%B3%84%ED%98%84.png",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "89670-1993",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-89620",
+    "playerId": "89620",
+    "name": "이강철",
+    "year": 1992,
+    "team": "해태",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 3.44,
+      "g": 33,
+      "cg": 12,
+      "sho": 2,
+      "w": 18,
+      "l": 9,
+      "sv": 0,
+      "hld": 0,
+      "wpct": 0.667,
+      "tbf": 899,
+      "ip": 217.33333333333334,
+      "h": 179,
+      "hr": 29,
+      "bb": 71,
+      "hbp": 16,
+      "so": 156,
+      "r": 88,
+      "er": 83
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=89620",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=89620"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=89620",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/15/%EC%9D%B4%EA%B0%95%EC%B2%A0190224.png",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "89620-1992",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-95657",
+    "playerId": "95657",
+    "name": "임창용",
+    "year": 1999,
+    "team": "삼성",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 2.14,
+      "g": 71,
+      "w": 13,
+      "l": 4,
+      "sv": 38,
+      "hld": 0,
+      "ip": 138.667,
+      "h": 91,
+      "hr": 10,
+      "bb": 29,
+      "so": 141
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/19/%EC%9E%84%EC%B0%BD%EC%9A%A9-poster%EC%88%98%EC%A0%95_%EC%B5%9C%EC%A2%85_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9A%A9.png",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=95657",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "95657-1999",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-70425",
+    "playerId": "70425",
+    "name": "배영수",
+    "year": 2004,
+    "team": "삼성",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "fpct": 0.933,
+      "g": 35,
+      "era": 2.61,
+      "w": 17,
+      "l": 2,
+      "sv": 0,
+      "hld": 0,
+      "ip": 189.667,
+      "h": 163,
+      "hr": 6,
+      "bb": 74,
+      "so": 144
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2004,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 2004,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "innings": 189.667,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "P",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/01/%EB%B0%B0%EC%98%81%EC%88%98poster_190244.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=70425",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "70425-2004",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-75620",
+    "playerId": "75620",
+    "name": "윤석민",
+    "year": 2011,
+    "team": "KIA",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 2.45,
+      "g": 27,
+      "cg": 3,
+      "sho": 3,
+      "w": 17,
+      "l": 5,
+      "sv": 1,
+      "hld": 0,
+      "wpct": 0.773,
+      "tbf": 679,
+      "ip": 172.33333333333334,
+      "h": 137,
+      "hr": 10,
+      "bb": 44,
+      "hbp": 6,
+      "so": 178,
+      "r": 53,
+      "er": 47
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2011,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 2011,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=75620",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Pitcher.aspx?playerId=75620",
+    "photo": "/players/75620.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2016/75620.jpg",
+    "baseSeasonId": "75620-2011",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-89351",
+    "playerId": "89351",
+    "name": "정명원",
+    "year": 1994,
+    "team": "태평양",
+    "pos": "P",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "era": 1.36,
+      "g": 50,
+      "w": 4,
+      "l": 2,
+      "sv": 40,
+      "hld": 0,
+      "ip": 105.667,
+      "h": 77,
+      "hr": 2,
+      "bb": 22,
+      "so": 74
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1994,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx"
+      }
+    ],
+    "photo": "/players/89351.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2020/89351.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=89351",
+    "baseSeasonId": "89351-1994",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-82116",
+    "playerId": "82116",
+    "name": "김재박",
+    "year": 1985,
+    "team": "MBC",
+    "pos": "SS",
+    "positions": [
+      "SS"
+    ],
+    "stats": {
+      "avg": 0.313,
+      "g": 100,
+      "pa": 431,
+      "ab": 377,
+      "r": 54,
+      "h": 118,
+      "2b": 15,
+      "3b": 3,
+      "hr": 3,
+      "tb": 148,
+      "rbi": 36,
+      "sb": 50,
+      "cs": 17,
+      "bb": 39,
+      "hbp": 5,
+      "so": 29,
+      "gdp": 3,
+      "slg": 0.393,
+      "obp": 0.385,
+      "e": 13
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1985,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=82116",
+    "positionEvidence": [
+      {
+        "pos": "SS",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=82116",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/08/%EA%B9%80%EC%9E%AC%EB%B0%95poster_%EC%97%85%EB%A1%9C%EB%93%9C%EC%9A%A9.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "82116-1985",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-85620",
+    "playerId": "85620",
+    "name": "이순철",
+    "year": 1985,
+    "team": "해태",
+    "pos": "3B",
+    "positions": [
+      "3B"
+    ],
+    "stats": {
+      "avg": 0.304,
+      "g": 99,
+      "pa": 411,
+      "ab": 369,
+      "r": 67,
+      "h": 112,
+      "2b": 18,
+      "3b": 5,
+      "hr": 12,
+      "tb": 176,
+      "rbi": 50,
+      "sb": 31,
+      "cs": 12,
+      "bb": 33,
+      "hbp": 4,
+      "so": 48,
+      "gdp": 6,
+      "slg": 0.477,
+      "obp": 0.367,
+      "e": 14
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1985,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=85620",
+    "positionEvidence": [
+      {
+        "pos": "3B",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=85620",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/29/%EC%9D%B4%EC%88%9C%EC%B2%A0poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "85620-1985",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-83270",
+    "playerId": "83270",
+    "name": "한대화",
+    "year": 1991,
+    "team": "해태",
+    "pos": "3B",
+    "positions": [
+      "3B"
+    ],
+    "stats": {
+      "avg": 0.301,
+      "g": 92,
+      "pa": 398,
+      "ab": 336,
+      "r": 62,
+      "h": 101,
+      "2b": 17,
+      "3b": 3,
+      "hr": 22,
+      "tb": 190,
+      "rbi": 73,
+      "sb": 8,
+      "cs": 8,
+      "bb": 53,
+      "hbp": 2,
+      "so": 45,
+      "gdp": 10,
+      "slg": 0.565,
+      "obp": 0.392,
+      "e": 16
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1991,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=83270",
+    "positionEvidence": [
+      {
+        "pos": "3B",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=83270",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/08/%ED%95%9C%EB%8C%80%ED%99%94poster_%EC%97%85%EB%A1%9C%EB%93%9C%EC%9A%A9.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "83270-1991",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-96480",
+    "playerId": "96480",
+    "name": "백인천",
+    "year": 1982,
+    "team": "MBC",
+    "pos": "DH",
+    "positions": [
+      "DH"
+    ],
+    "stats": {
+      "avg": 0.412,
+      "g": 71,
+      "pa": 298,
+      "ab": 250,
+      "r": 55,
+      "h": 103,
+      "2b": 23,
+      "3b": 1,
+      "hr": 19,
+      "tb": 185,
+      "rbi": 64,
+      "sb": 11,
+      "cs": 3,
+      "bb": 42,
+      "hbp": 3,
+      "so": 17,
+      "gdp": 5,
+      "slg": 0.74,
+      "obp": 0.502,
+      "e": 0
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=96480",
+    "positionEvidence": [
+      {
+        "pos": "DH",
+        "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=96480"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=96480",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/07/29/%EC%9B%90%EB%85%84%EC%9D%98%EC%8A%A4%ED%83%80_3_%EB%B0%B1%EC%9D%B8%EC%B2%9Cposter_190.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "96480-1982",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-82612",
+    "playerId": "82612",
+    "name": "김성한",
+    "year": 1989,
+    "team": "해태",
+    "pos": "1B",
+    "positions": [
+      "1B"
+    ],
+    "stats": {
+      "avg": 0.28,
+      "g": 118,
+      "pa": 513,
+      "ab": 414,
+      "h": 116,
+      "hr": 26,
+      "rbi": 84
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1989,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "1B",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/07/29/%EC%9B%90%EB%85%84%EC%9D%98%EC%8A%A4%ED%83%80_4_%EA%B9%80%EC%84%B1%ED%95%9Cposter_190.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=82612",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "82612-1989",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-91514",
+    "playerId": "91514",
+    "name": "박정태",
+    "year": 1999,
+    "team": "롯데",
+    "pos": "2B",
+    "positions": [
+      "2B"
+    ],
+    "stats": {
+      "avg": 0.329,
+      "g": 127,
+      "pa": 540,
+      "ab": 456,
+      "h": 150,
+      "hr": 11,
+      "rbi": 83
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1999,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "2B",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/01/%EB%B0%95%EC%A0%95%ED%83%9Cposter_190244.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=91514",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "91514-1999",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-91511",
+    "playerId": "91511",
+    "name": "전준호",
+    "year": 2004,
+    "team": "현대",
+    "positions": [
+      "LF",
+      "CF"
+    ],
+    "stats": {
+      "fpct": 0.977,
+      "g": 132,
+      "avg": 0.292,
+      "pa": 581,
+      "ab": 487,
+      "h": 142,
+      "hr": 4,
+      "rbi": 48,
+      "sb": 53
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "LF",
+        "innings": 962.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      },
+      {
+        "pos": "CF",
+        "innings": 6.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "LF",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/29/%EC%A0%84%EC%A4%80%ED%98%B8poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=91511",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "91511-2004",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-96362",
+    "playerId": "96362",
+    "name": "박재홍",
+    "year": 2001,
+    "team": "현대",
+    "positions": [
+      "CF",
+      "RF"
+    ],
+    "stats": {
+      "fpct": 0.96,
+      "g": 127,
+      "avg": 0.284,
+      "pa": 570,
+      "ab": 489,
+      "h": 139,
+      "hr": 18,
+      "rbi": 80,
+      "sb": 7
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "CF",
+        "innings": 355.667,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      },
+      {
+        "pos": "RF",
+        "innings": 277.667,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "CF",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/22/%EB%B0%95%EC%9E%AC%ED%99%8Dposter_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=96362",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "96362-2001",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-96610",
+    "playerId": "96610",
+    "name": "장성호",
+    "year": 2002,
+    "team": "KIA",
+    "pos": "1B",
+    "positions": [
+      "1B"
+    ],
+    "stats": {
+      "avg": 0.343,
+      "g": 133,
+      "pa": 586,
+      "ab": 481,
+      "r": 82,
+      "h": 165,
+      "2b": 29,
+      "3b": 0,
+      "hr": 19,
+      "tb": 251,
+      "rbi": 95,
+      "sb": 7,
+      "cs": 3,
+      "bb": 86,
+      "hbp": 9,
+      "so": 53,
+      "gdp": 15,
+      "slg": 0.522,
+      "obp": 0.445,
+      "e": 7
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=96610",
+    "positionEvidence": [
+      {
+        "pos": "1B",
+        "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=96610"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=96610",
+    "photo": "/legends/96610.png",
+    "photoSource": "https://koreabaseball.com/MediaNews/Notice/View.aspx?bdSe=12211",
+    "photoStyle": "archive-lesson",
+    "baseSeasonId": "96610-2002",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-75808",
+    "playerId": "75808",
+    "name": "정근우",
+    "year": 2009,
+    "team": "SK",
+    "positions": [
+      "2B",
+      "SS",
+      "RF"
+    ],
+    "stats": {
+      "fpct": 0.974,
+      "g": 127,
+      "avg": 0.35,
+      "pa": 565,
+      "ab": 480,
+      "h": 168,
+      "hr": 9,
+      "rbi": 59,
+      "sb": 53
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2009,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "2B",
+        "innings": 1025.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      },
+      {
+        "pos": "SS",
+        "innings": 10.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      },
+      {
+        "pos": "RF",
+        "innings": 1.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "2B",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/29/%EC%A0%95%EA%B7%BC%EC%9A%B0poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=75808",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "75808-2009",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-99222",
+    "playerId": "99222",
+    "name": "홍성흔",
+    "year": 2004,
+    "team": "두산",
+    "positions": [
+      "C"
+    ],
+    "stats": {
+      "fpct": 0.992,
+      "g": 133,
+      "avg": 0.329,
+      "pa": 552,
+      "ab": 501,
+      "h": 165,
+      "hr": 14,
+      "rbi": 86,
+      "sb": 10
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2004,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "C",
+        "innings": 710.667,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "C",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/22/%ED%99%8D%EC%84%B1%ED%9D%94poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=99222",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "99222-2004",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-96307",
+    "playerId": "96307",
+    "name": "박진만",
+    "year": 2001,
+    "team": "현대",
+    "positions": [
+      "SS"
+    ],
+    "stats": {
+      "fpct": 0.958,
+      "g": 122,
+      "avg": 0.3,
+      "pa": 449,
+      "ab": 383,
+      "h": 115,
+      "hr": 22,
+      "rbi": 63,
+      "sb": 9
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2001,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "SS",
+        "innings": 1015.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "SS",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/29/%EB%B0%95%EC%A7%84%EB%A7%8Cposter_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=96307",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "96307-2001",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-71752",
+    "playerId": "71752",
+    "name": "김태균",
+    "year": 2008,
+    "team": "한화",
+    "positions": [
+      "1B"
+    ],
+    "stats": {
+      "fpct": 0.997,
+      "g": 115,
+      "avg": 0.324,
+      "pa": 484,
+      "ab": 410,
+      "h": 133,
+      "hr": 31,
+      "rbi": 92,
+      "sb": 2
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2008,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "1B",
+        "innings": 930.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "1B",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/22/%EA%B9%80%ED%83%9C%EA%B7%A0poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=71752",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "71752-2008",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-94204",
+    "playerId": "94204",
+    "name": "심정수",
+    "year": 2003,
+    "team": "현대",
+    "pos": "RF",
+    "positions": [
+      "RF"
+    ],
+    "stats": {
+      "avg": 0.335,
+      "g": 133,
+      "pa": 601,
+      "ab": 460,
+      "r": 110,
+      "h": 154,
+      "2b": 16,
+      "3b": 1,
+      "hr": 53,
+      "tb": 331,
+      "rbi": 142,
+      "sb": 6,
+      "cs": 2,
+      "bb": 124,
+      "hbp": 9,
+      "so": 63,
+      "gdp": 14,
+      "slg": 0.72,
+      "obp": 0.478,
+      "e": 5
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2003,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=94204",
+    "positionEvidence": [
+      {
+        "pos": "RF",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=94204",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/13/%EC%8B%AC%EC%A0%95%EC%88%98-poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "94204-2003",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-97109",
+    "playerId": "97109",
+    "name": "이병규",
+    "year": 1999,
+    "team": "LG",
+    "pos": "CF",
+    "positions": [
+      "CF"
+    ],
+    "stats": {
+      "avg": 0.349,
+      "g": 131,
+      "pa": 599,
+      "ab": 550,
+      "r": 117,
+      "h": 192,
+      "2b": 43,
+      "3b": 8,
+      "hr": 30,
+      "tb": 341,
+      "rbi": 99,
+      "sb": 31,
+      "cs": 3,
+      "bb": 34,
+      "hbp": 9,
+      "so": 65,
+      "gdp": 11,
+      "slg": 0.62,
+      "obp": 0.394,
+      "e": 2
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 1999,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=97109",
+    "positionEvidence": [
+      {
+        "pos": "CF",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=97109",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/05/%EC%9D%B4%EB%B3%91%EA%B7%9C-poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "97109-1999",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-98218",
+    "playerId": "98218",
+    "name": "김동주",
+    "year": 2007,
+    "team": "두산",
+    "positions": [
+      "3B"
+    ],
+    "stats": {
+      "fpct": 0.968,
+      "g": 119,
+      "avg": 0.322,
+      "pa": 481,
+      "ab": 382,
+      "h": 123,
+      "hr": 19,
+      "rbi": 78,
+      "sb": 11
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2007,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "3B",
+        "innings": 932.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "3B",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/09/13/%EA%B9%80%EB%8F%99%EC%A3%BC-poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
+    "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=98218",
+    "photoStyle": "archive-poster",
+    "baseSeasonId": "98218-2007",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-87470",
+    "playerId": "87470",
+    "name": "류중일",
+    "year": 1993,
+    "team": "삼성",
+    "pos": "SS",
+    "positions": [
+      "SS"
+    ],
+    "stats": {
+      "avg": 0.281,
+      "g": 107,
+      "pa": 444,
+      "ab": 377,
+      "r": 58,
+      "h": 106,
+      "2b": 13,
+      "3b": 1,
+      "hr": 8,
+      "tb": 145,
+      "rbi": 45,
+      "sb": 6,
+      "cs": 4,
+      "bb": 57,
+      "hbp": 3,
+      "so": 44,
+      "gdp": 9,
+      "slg": 0.385,
+      "obp": 0.378,
+      "e": 8
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=87470",
+    "positionEvidence": [
+      {
+        "pos": "SS",
+        "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=87470"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=87470",
+    "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2020/87470.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2020/87470.jpg",
+    "baseSeasonId": "87470-1993",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-71432",
+    "playerId": "71432",
+    "name": "박한이",
+    "year": 2006,
+    "team": "삼성",
+    "positions": [
+      "CF"
+    ],
+    "stats": {
+      "fpct": 0.982,
+      "g": 126,
+      "avg": 0.285,
+      "pa": 567,
+      "ab": 471,
+      "h": 134,
+      "hr": 6,
+      "rbi": 43,
+      "sb": 15
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2006,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "CF",
+        "innings": 1072.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "CF",
+    "photo": "/players/71432.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/71432.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=71432",
+    "baseSeasonId": "71432-2006",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-70756",
+    "playerId": "70756",
+    "name": "이범호",
+    "year": 2006,
+    "team": "한화",
+    "positions": [
+      "3B"
+    ],
+    "stats": {
+      "fpct": 0.962,
+      "g": 126,
+      "avg": 0.257,
+      "pa": 497,
+      "ab": 421,
+      "h": 108,
+      "hr": 20,
+      "rbi": 73,
+      "sb": 0
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2006,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "3B",
+        "innings": 1059.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "3B",
+    "photo": "/players/70756.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/70756.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=70756",
+    "baseSeasonId": "70756-2006",
+    "grade": "LEGEND",
+    "legendKind": "CLASSIC",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-76715",
+    "playerId": "76715",
+    "name": "류현진",
+    "year": 2010,
+    "team": "한화",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "fpct": 0.974,
+      "g": 25,
+      "era": 1.82,
+      "w": 16,
+      "l": 4,
+      "sv": 0,
+      "hld": 0,
+      "ip": 192.667,
+      "h": 149,
+      "hr": 11,
+      "bb": 45,
+      "so": 187
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2010,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "innings": 192.667,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "P",
+    "photo": "/players/76715.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/76715.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=76715",
+    "baseSeasonId": "76715-2010",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-77829",
+    "playerId": "77829",
+    "name": "김광현",
+    "year": 2022,
+    "team": "SSG",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "fpct": 0.947,
+      "g": 28,
+      "era": 2.13,
+      "w": 13,
+      "l": 3,
+      "sv": 0,
+      "hld": 0,
+      "ip": 173.333,
+      "h": 141,
+      "hr": 10,
+      "bb": 45,
+      "so": 153
+    },
+    "awards": [
+      {
+        "type": "올스타",
+        "year": 2022,
+        "source": "https://www.koreabaseball.com/Schedule/Allstar/Game/Main2022.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "innings": 173.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "P",
+    "photo": "/players/77829.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/77829.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=77829",
+    "baseSeasonId": "77829-2022",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-77637",
+    "playerId": "77637",
+    "name": "양현종",
+    "year": 2017,
+    "team": "KIA",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "fpct": 0.857,
+      "g": 31,
+      "era": 3.44,
+      "w": 20,
+      "l": 6,
+      "sv": 0,
+      "hld": 0,
+      "ip": 193.333,
+      "h": 209,
+      "hr": 17,
+      "bb": 45,
+      "so": 158
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2017,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "MVP",
+        "year": 2017,
+        "source": "https://www.koreabaseball.com/Player/Awards/PlayerPrize.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "innings": 193.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "P",
+    "photo": "/players/77637.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/77637.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=77637",
+    "baseSeasonId": "77637-2017",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-75421",
+    "playerId": "75421",
+    "name": "오승환",
+    "year": 2022,
+    "team": "삼성",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "fpct": 0.8,
+      "g": 57,
+      "era": 3.32,
+      "w": 6,
+      "l": 2,
+      "sv": 31,
+      "hld": 2,
+      "ip": 57,
+      "h": 59,
+      "hr": 8,
+      "bb": 13,
+      "so": 51
+    },
+    "awards": [
+      {
+        "type": "올스타",
+        "year": 2022,
+        "source": "https://www.koreabaseball.com/Schedule/Allstar/Game/Main2022.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "innings": 57.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "P",
+    "photo": "/players/75421.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/75421.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=75421",
+    "baseSeasonId": "75421-2022",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-75847",
+    "playerId": "75847",
+    "name": "최정",
+    "year": 2023,
+    "team": "SSG",
+    "positions": [
+      "3B"
+    ],
+    "stats": {
+      "fpct": 0.95,
+      "g": 128,
+      "avg": 0.297,
+      "pa": 552,
+      "ab": 471,
+      "h": 140,
+      "hr": 29,
+      "rbi": 87,
+      "sb": 7
+    },
+    "awards": [
+      {
+        "type": "올스타",
+        "year": 2023,
+        "source": "https://www.koreabaseball.com/Schedule/Allstar/Game/Main2023.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "3B",
+        "innings": 934.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "3B",
+    "photo": "/players/75847.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/75847.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=75847",
+    "baseSeasonId": "75847-2023",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-72443",
+    "playerId": "72443",
+    "name": "최형우",
+    "year": 2023,
+    "team": "KIA",
+    "positions": [
+      "LF"
+    ],
+    "stats": {
+      "fpct": 0.947,
+      "g": 121,
+      "avg": 0.302,
+      "pa": 508,
+      "ab": 431,
+      "h": 130,
+      "hr": 17,
+      "rbi": 81,
+      "sb": 0
+    },
+    "awards": [
+      {
+        "type": "올스타",
+        "year": 2023,
+        "source": "https://www.koreabaseball.com/Schedule/Allstar/Game/Main2023.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "LF",
+        "innings": 107.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "LF",
+    "photo": "/players/72443.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/72443.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=72443",
+    "baseSeasonId": "72443-2023",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-74540",
+    "playerId": "74540",
+    "name": "강민호",
+    "year": 2023,
+    "team": "삼성",
+    "pos": "C",
+    "positions": [
+      "C"
+    ],
+    "stats": {
+      "avg": 0.29,
+      "g": 125,
+      "pa": 495,
+      "ab": 434,
+      "r": 60,
+      "h": 126,
+      "2b": 19,
+      "3b": 0,
+      "hr": 16,
+      "tb": 193,
+      "rbi": 77,
+      "sb": 6,
+      "cs": 1,
+      "bb": 49,
+      "hbp": 6,
+      "so": 65,
+      "gdp": 17,
+      "slg": 0.445,
+      "obp": 0.366,
+      "e": 3
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=74540",
+    "positionEvidence": [
+      {
+        "pos": "C",
+        "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=74540"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=74540",
+    "photo": "/players/74540.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/74540.jpg",
+    "baseSeasonId": "74540-2023",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-76232",
+    "playerId": "76232",
+    "name": "양의지",
+    "year": 2023,
+    "team": "두산",
+    "positions": [
+      "C"
+    ],
+    "stats": {
+      "fpct": 0.996,
+      "g": 129,
+      "avg": 0.305,
+      "pa": 510,
+      "ab": 439,
+      "h": 134,
+      "hr": 17,
+      "rbi": 68,
+      "sb": 8
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2023,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      },
+      {
+        "type": "올스타",
+        "year": 2023,
+        "source": "https://www.koreabaseball.com/Schedule/Allstar/Game/Main2023.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "C",
+        "innings": 773.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "C",
+    "photo": "/players/76232.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/76232.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=76232",
+    "baseSeasonId": "76232-2023",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-76290",
+    "playerId": "76290",
+    "name": "김현수",
+    "year": 2020,
+    "team": "LG",
+    "pos": "LF",
+    "positions": [
+      "LF"
+    ],
+    "stats": {
+      "avg": 0.331,
+      "g": 142,
+      "pa": 619,
+      "ab": 547,
+      "r": 98,
+      "h": 181,
+      "2b": 35,
+      "3b": 2,
+      "hr": 22,
+      "tb": 286,
+      "rbi": 119,
+      "sb": 0,
+      "cs": 2,
+      "bb": 63,
+      "hbp": 2,
+      "so": 53,
+      "gdp": 9,
+      "slg": 0.523,
+      "obp": 0.397,
+      "e": 1
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2020,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=76290",
+    "positionEvidence": [
+      {
+        "pos": "LF",
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "profileSource": "https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId=76290",
+    "photo": "/players/76290.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/76290.jpg",
+    "baseSeasonId": "76290-2020",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-77532",
+    "playerId": "77532",
+    "name": "손아섭",
+    "year": 2023,
+    "team": "NC",
+    "positions": [
+      "RF",
+      "LF"
+    ],
+    "stats": {
+      "fpct": 0.974,
+      "g": 140,
+      "avg": 0.339,
+      "pa": 609,
+      "ab": 551,
+      "h": 187,
+      "hr": 5,
+      "rbi": 65,
+      "sb": 14
+    },
+    "awards": [
+      {
+        "type": "골든글러브",
+        "year": 2023,
+        "source": "https://www.koreabaseball.com/Player/Awards/GoldenGlove.aspx"
+      }
+    ],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "RF",
+        "innings": 343.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      },
+      {
+        "pos": "LF",
+        "innings": 66.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "RF",
+    "photo": "/players/77532.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/77532.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=77532",
+    "baseSeasonId": "77532-2023",
+    "grade": "LEGEND",
+    "legendKind": "LIVING",
+    "legendSelection": "user-roster-2026-11-21"
+  },
+  {
+    "id": "LEGEND-62761",
+    "playerId": "62761",
+    "name": "박찬호",
+    "year": 2012,
+    "team": "한화",
+    "positions": [
+      "P"
+    ],
+    "stats": {
+      "fpct": 0.93,
+      "g": 23,
+      "era": 5.06,
+      "w": 5,
+      "l": 10,
+      "sv": 0,
+      "hld": 0,
+      "ip": 121,
+      "h": 134,
+      "hr": 11,
+      "bb": 52,
+      "so": 68
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "P",
+        "innings": 121.0,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "P",
+    "photo": "/players/62761.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2016/62761.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=62761",
+    "baseSeasonId": "62761-2012",
+    "grade": "LEGEND",
+    "legendKind": "NATIONAL",
+    "legendSelection": "user-roster-2026-11-21",
+    "nationalLegend": true,
+    "nationalEvidenceSource": "https://www.korea.kr/news/policyNewsView.do?newsId=148683879"
+  },
+  {
+    "id": "LEGEND-51817",
+    "playerId": "51817",
+    "name": "추신수",
+    "year": 2023,
+    "team": "SSG",
+    "positions": [
+      "RF"
+    ],
+    "stats": {
+      "fpct": 1,
+      "g": 112,
+      "avg": 0.254,
+      "pa": 462,
+      "ab": 382,
+      "h": 97,
+      "hr": 12,
+      "rbi": 41,
+      "sb": 6
+    },
+    "awards": [],
+    "source": "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx",
+    "positionEvidence": [
+      {
+        "pos": "RF",
+        "innings": 187.333,
+        "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
+      }
+    ],
+    "pos": "RF",
+    "photo": "/players/51817.jpg",
+    "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2024/51817.jpg",
+    "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=51817",
+    "baseSeasonId": "51817-2023",
+    "grade": "LEGEND",
+    "legendKind": "NATIONAL",
+    "legendSelection": "user-roster-2026-11-21",
+    "nationalLegend": true,
+    "nationalEvidenceSource": "https://www.korea.kr/news/policyNewsView.do?newsId=148683879"
+  }
+]

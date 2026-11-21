@@ -3,8 +3,10 @@
     import { useState, useEffect, useMemo } from "react";
 import baseCatalog from '../data/catalog.json';
 import nationalCards from '../data/national-cards.json';
-const catalog=[...baseCatalog,...nationalCards];
-import catalogMeta from '../data/catalog-meta.json';
+import {LEGEND_CATALOG} from './legend-registry.js';
+const catalog=[...baseCatalog,...nationalCards,...LEGEND_CATALOG];
+import baseCatalogMeta from '../data/catalog-meta.json';
+const catalogMeta={...baseCatalogMeta,uniquePlayers:new Set(catalog.map(c=>c.playerId)).size};
 import ManagerWorkbench, {PlayerDetail} from './manager-workbench';
 import PlayerCard from './player-card';
 import {skillEffectDescription} from './skill-effects.js';
@@ -25,7 +27,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
     const SKILL_LEVEL_UP = { 'E': 'D', 'D': 'C', 'C': 'B', 'B': 'A', 'A': 'S' };
 
     const FULL_DATABASE = catalog.map(c => {
-      const grade=c.awards.some(a=>a.type==='MVP')?'LEGEND':c.awards.some(a=>a.type==='골든글러브')?'PLATINUM':c.awards.some(a=>a.type==='올스타')?'HERO':overall(c)>=75?'SPECIAL':overall(c)>=65?'RARE':'NORMAL';
+      const grade=c.legendKind?'LEGEND':c.awards.some(a=>['MVP','골든글러브'].includes(a.type))?'PLATINUM':c.awards.some(a=>a.type==='올스타')?'HERO':overall(c)>=75?'SPECIAL':overall(c)>=65?'RARE':'NORMAL';
       return {...c,grade,ovr:overall(c),upgrade:0,tag:c.awards[0]?.type||null,skills:generateSkills(c.pos,grade)};
     });
 
@@ -168,7 +170,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
           count=acquisitionCount(myPlayers.length,rosterLimit,requested);
           if(count<1){showToast('선수 보유 한도입니다. 선수 정리 또는 보유함 확장 후 개봉해주세요.');return;}
           let pool = [];
-          const packFilteredDB = FULL_DATABASE.filter(p => p.grade !== 'SIGNATURE');
+          const packFilteredDB = FULL_DATABASE.filter(p => !p.legendKind&&p.grade !== 'SIGNATURE');
 
           switch(item.packId) {
               case 'award_only': pool = packFilteredDB.filter(p=>p.awards.length>0); break;

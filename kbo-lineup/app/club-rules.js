@@ -1,3 +1,4 @@
+import {legendCandidates} from './legend-registry.js';
 import {BAT_POS,eligible,overall,makeCard} from './manager-engine.js';
 
 export const SKILL_DB = {
@@ -61,11 +62,11 @@ export function acquisitionCount(count,limit,requested){return Math.max(0,Math.m
 export function protectedIds(lineup,manager){return new Set([...Object.values(lineup||{}).filter(Boolean).map(c=>c.uniqueId),...(manager?.staff?.starters||[]),...(manager?.staff?.relief||[]),manager?.pendingSkillChange?.cardId,...(manager?.legendScout?.pledges||[]).filter(id=>id&&!String(id).startsWith('item:'))].filter(Boolean));}
 export function scoutPool(database,grade,team=''){
  if(!['SIGNATURE','LEGEND'].includes(grade))throw new Error('스카우트 등급을 확인해주세요.');
- return database.filter(c=>(!team||c.team===team)&&(grade==='LEGEND'?c.grade==='LEGEND':['PLATINUM','SIGNATURE','LEGEND'].includes(c.grade)));
+ return grade==='LEGEND'?legendCandidates(team):database.filter(c=>!c.legendKind&&(!team||c.team===team)&&['PLATINUM','SIGNATURE','LEGEND'].includes(c.grade));
 }
 export function createStarterSquad(team,database){
  const family=({'해태':'KIA','SK':'SSG','OB':'두산','빙그레':'한화','현대':'키움'})[team]||team;
- const pool=[...database].sort((a,b)=>((a.team===team?0:a.team===family?1:2)-(b.team===team?0:b.team===family?1:2))||overall(b)-overall(a));
+ const pool=database.filter(c=>!c.legendKind).sort((a,b)=>((a.team===team?0:a.team===family?1:2)-(b.team===team?0:b.team===family?1:2))||overall(b)-overall(a));
  const used=new Set(),slots={};
  const positions=BAT_POS.filter(p=>p!=='DH').sort((a,b)=>pool.filter(c=>c.team===team&&c.pos!=='P'&&eligible(c,a)).length-pool.filter(c=>c.team===team&&c.pos!=='P'&&eligible(c,b)).length);
  for(const pos of [...positions,'DH']){const c=pool.find(c=>c.pos!=='P'&&!used.has(c.playerId)&&eligible(c,pos));if(!c)throw new Error('기본 선수단을 구성할 선수 자료가 부족합니다.');slots[pos]=c;used.add(c.playerId);}

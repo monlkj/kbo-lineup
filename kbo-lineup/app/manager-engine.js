@@ -1,3 +1,4 @@
+import {isNationalLegend} from './legend-registry.js';
 import {battingSkillBonuses,activeSkillNames,intimidationAtBat} from './skill-effects.js';
 export const BAT_POS = ['CF','LF','RF','SS','2B','3B','1B','C','DH'];
 export const TEAMS = ['KIA','삼성','LG','두산','KT','SSG','롯데','한화','NC','키움'];
@@ -13,10 +14,10 @@ export const overall=c=>Math.round(Object.values(ratings(c)).reduce((a,b)=>a+b,0
 export function makeCard(c){return {...c,uniqueId:crypto.randomUUID(),upgrade:0,ovr:overall(c),xp:0,training:0,growth:{},condition:0,fatigue:0,skills:c.skills||[]};}
 export function eligible(c,pos){return pos==='DH'?c.pos!=='P':(c.positions||[c.pos]).includes(pos);}
 export function deckBonus(cards){
- const teams={},years={};cards.filter(Boolean).forEach(c=>{teams[c.team]=(teams[c.team]||0)+1;years[c.year]=(years[c.year]||0)+1;});
+ const nationalCount=cards.filter(c=>c&&(c.cardType==='NATIONAL'||isNationalLegend(c))).length;const teams={},years={};cards.filter(Boolean).forEach(c=>{teams[c.team]=(teams[c.team]||0)+1;years[c.year]=(years[c.year]||0)+1;});
  const team=Object.entries(teams).sort((a,b)=>b[1]-a[1])[0]||['없음',0],year=Object.entries(years).sort((a,b)=>b[1]-a[1])[0]||['없음',0];
  const points=n=>n>=12?5:n>=9?3:n>=6?2:n>=3?1:0;
- return {team:team[0],teamCount:team[1],year:year[0],yearCount:year[1],teamBonus:points(team[1]),yearBonus:points(year[1]),total:points(team[1])+points(year[1])};
+ return {team:team[0],teamCount:team[1],year:year[0],yearCount:year[1],teamBonus:points(team[1]),yearBonus:points(year[1]),nationalCount,nationalBonus:points(nationalCount),total:points(team[1])+points(year[1])+points(nationalCount)};
 }
 export function lineupError(lineup,order,staff){
  if(BAT_POS.some(p=>!lineup[p]))return '야수 9개 포지션을 모두 채워주세요.';
@@ -81,7 +82,7 @@ export function buildTeam(name,catalog,day=0){
  if(!cached){cached={};teamCache.set(catalog,cached);}
  if(cached[name]){const x=cached[name];return {name,batters:x.selected,starter:x.ps[day%5],relief:x.ps.slice(5,8)};}
  const selected=[],used=new Set();
- const pool=[...catalog.filter(c=>c.team===name),...catalog].sort((a,b)=>(a.team===name?0:1)-(b.team===name?0:1)||overall(b)-overall(a));
+ const available=catalog.filter(c=>!c.legendKind);const pool=[...available.filter(c=>c.team===name),...available].sort((a,b)=>(a.team===name?0:1)-(b.team===name?0:1)||overall(b)-overall(a));
  for(const pos of BAT_POS){const c=pool.find(c=>!used.has(c.playerId)&&eligible(c,pos));if(!c)throw new Error('해당 포지션의 검증된 선수가 부족합니다: '+pos);used.add(c.playerId);selected.push({...c,uniqueId:`AI-${name}-${c.id}`});}
  const ps=pool.filter(c=>c.pos==='P'&&!used.has(c.playerId)).filter((c,i,arr)=>arr.findIndex(p=>p.playerId===c.playerId)===i).slice(0,8).map(c=>({...c,uniqueId:`AI-${name}-${c.id}`}));
  cached[name]={selected,ps};return {name,batters:selected,starter:ps[day%5],relief:ps.slice(5,8)};
