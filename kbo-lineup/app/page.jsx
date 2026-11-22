@@ -504,7 +504,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
                           <button onClick={() => changeMenu('SKILL')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg"><h2 className="text-3xl font-black text-purple-400">고유능력 변경</h2></button>
 
                           <button onClick={() => changeMenu('LEGEND_SCOUT')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-purple-500"><h2 className="text-3xl font-black text-purple-300">레전드 스카우트</h2><p className="text-sm mt-2 text-gray-400">후보 탐색 → 지정 재료 등록 → 영입</p></button>
-                          <button onClick={() => changeMenu('SIGNATURE_AWAKEN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-blue-400"><h2 className="text-3xl font-black text-blue-300">시그니처 스카우트</h2><p className="text-sm mt-2 text-gray-400">Lv.20 플래티넘 · 95 이상 · 5장 또는 10장＋수상 카드 · 계약서</p></button>
+                          <button onClick={() => changeMenu('SIGNATURE_AWAKEN')} className="com2us-panel aspect-video flex flex-col items-center justify-center shadow-lg hover:-translate-y-1 rounded-lg border-blue-400"><h2 className="text-3xl font-black text-blue-300">시그니처 스카우트</h2><p className="text-sm mt-2 text-gray-400">플래티넘 · 95 이상 · 5장 또는 10장＋수상 카드 · 계약서</p></button>
                       </div>
                   )}
 

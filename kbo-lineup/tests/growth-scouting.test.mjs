@@ -30,12 +30,12 @@ test('same season/type/grade limit breaks guarantee cap+2; 15 transcend tickets 
  next.inventory=Array.from({length:15},()=>ticket('transcend_ticket'));for(let i=1;i<=5;i++){const n=next.inventory.length;next=transcend(next,c.uniqueId).state;assert.equal(n-next.inventory.length,i);assert.equal(levelLimit(next.players[0]),20+2*i);assert.equal(cardLevel(next.players[0]),1);}assert.equal(next.inventory.length,0);assert.throws(()=>transcend(next,c.uniqueId),/20~28/);assert.equal(levelLimit({...next.players[0],transcendBreaks:1,level:22,upgrade:21}),22);
  const bad=state([{...c,limitBreaks:5}]),before=structuredClone(bad);assert.throws(()=>transcend(bad,c.uniqueId),/아이템/);assert.deepEqual(bad,before);
 });
-test('signature recipes depend on target type; 95 inclusive, extra award no stat condition, duplicates and wildcards validated atomically',()=>{
- const award=db.find(c=>c.pos!=='P'&&c.awards.some(a=>a.type==='MVP')),base={...card(award),level:20,limitBreaks:5},materials=Array.from({length:10},()=>({...card(db.find(c=>c.pos!=='P')),cardType:'NORMAL',enhancement:{power:100}}));
+test('Lv1 signature targets are allowed; recipes depend on target type; 95 inclusive, extra award no stat condition, duplicates and wildcards validated atomically',()=>{
+ const award=db.find(c=>c.pos!=='P'&&c.awards.some(a=>a.type==='MVP')),base=card(award),materials=Array.from({length:10},()=>({...card(db.find(c=>c.pos!=='P')),cardType:'NORMAL',enhancement:{power:100}}));
  const exact={...materials[0],enhancement:{power:95-ratings({...materials[0],enhancement:{}}).power}};assert.equal(ratings(exact).power,95);assert.ok(matchesSignature(exact,signatureRequirements(base,null,'power')[0]));assert.equal(signatureRequirements(base,null,'power').length,5);
  const normal={...base,cardType:'NORMAL'},slots=signatureRequirements(normal,null,'power');assert.equal(slots.length,11);const extra=card(award);assert.ok(matchesSignature(extra,slots[10]));
  let s={...state([normal,...materials,extra]),inventory:[ticket('signature_contract')],lineup:{DH:normal}},ids=[...materials.map(c=>c.uniqueId),extra.uniqueId],before=structuredClone(s);assert.throws(()=>awakenSignature(s,normal.uniqueId,ids.map((id,i)=>i===1?ids[0]:id),{stat:'power'}),/중복/);assert.deepEqual(s,before);
- const r=awakenSignature(s,normal.uniqueId,ids,{stat:'power'});assert.equal(r.state.players.length,1);assert.equal(r.card.uniqueId,normal.uniqueId);assert.equal(r.card.level,20);assert.equal(r.card.grade,'SIGNATURE');assert.deepEqual(s,before);
+ const r=awakenSignature(s,normal.uniqueId,ids,{stat:'power'});assert.equal(r.state.players.length,1);assert.equal(r.card.uniqueId,normal.uniqueId);assert.equal(r.card.level,1);assert.equal(r.card.grade,'SIGNATURE');assert.deepEqual(s,before);
  const wild={...state([base]),inventory:[ticket('signature_contract'),...Array.from({length:5},()=>ticket('signature_wild_material'))]};assert.throws(()=>awakenSignature(wild,base.uniqueId,Array(5).fill('item:signature_wild_material'),{stat:'power'}),/최대 2개/);
 });
 test('scout odds split LG and Doosan Jamsil and aliases; full queues and insufficient resources never charge',()=>{
