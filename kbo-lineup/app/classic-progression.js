@@ -41,8 +41,11 @@ export const STAT_NAMES={contact:'정확',power:'파워',eye:'선구',speed:'주
 export const COACHES=scoutMaterials.coaches;
 export const franchise=team=>({해태:'KIA',SK:'SSG',OB:'두산',MBC:'LG',빙그레:'한화',넥센:'키움',우리:'키움',히어로즈:'키움',현대:'키움',삼미:'키움',청보:'키움',태평양:'키움',쌍방울:'SSG'}[team]||team);
 export function nationalEvidence(card){return scoutMaterials.national.find(n=>n.name===card.name&&n.year===card.year&&n.team===card.team)||null;}
+const recipeRatingCache=new WeakMap();
 export function legendRecipe(target,database){
- const seen=new Set();const candidates=database.filter(c=>!c.legendKind).sort((a,b)=>(a.team===target.team?0:1)-(b.team===target.team?0:1)||Math.abs(a.year-target.year)-Math.abs(b.year-target.year)||overall(b)-overall(a));
+ // Catalog arrays are immutable; avoid recalculating all five stats on every sort comparison.
+ let scores=recipeRatingCache.get(database);if(!scores){scores=new Map(database.map(c=>[c,overall(c)]));recipeRatingCache.set(database,scores);}
+ const seen=new Set();const candidates=database.filter(c=>!c.legendKind).sort((a,b)=>(a.team===target.team?0:1)-(b.team===target.team?0:1)||Math.abs(a.year-target.year)-Math.abs(b.year-target.year)||scores.get(b)-scores.get(a));
  const required=[];for(const c of candidates)if(!seen.has(c.playerId)){seen.add(c.playerId);required.push({kind:'PLAYER',cardId:c.id,playerId:c.playerId,year:c.year,team:c.team,name:c.name,grade:'PLATINUM'});if(required.length===6)break;}
  const coaches=COACHES.filter(c=>c.team===franchise(target.team)).slice(0,2);
  if(required.length!==6||coaches.length!==2)throw Error('검증된 지정 재료 자료가 부족합니다.');

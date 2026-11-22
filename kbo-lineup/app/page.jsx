@@ -3,7 +3,7 @@
     import { useState, useEffect, useMemo } from "react";
 import {migrateGrowth} from './growth-rules.js';
 import {migrateScouting,prepareLegend} from './scouting-rules.js';
-import {materialLegends,setMaterialDatabase} from './legend-materials.js';
+import {setMaterialBooks,materialLegends,setMaterialDatabase} from './legend-materials.js';
 import baseCatalog from '../data/catalog.json';
 import nationalCards from '../data/national-cards.json';
 import {LEGEND_CATALOG} from './legend-registry.js';
@@ -55,6 +55,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       const [toast, setToast] = useState('');
       const [lastReward, setLastReward] = useState('');
       const [manager, setManager] = useState({});
+      setMaterialBooks(manager.scouting?.books);
       const [detailCard,setDetailCard] = useState(null);
       const [materialInfo,setMaterialInfo]=useState(null);
       useEffect(()=>{const inspect=e=>{setMaterialInfo(e.detail);setPackResultMulti([]);setCoachResults([]);};window.addEventListener('kbo:legend-material',inspect);return()=>window.removeEventListener('kbo:legend-material',inspect);},[]);
