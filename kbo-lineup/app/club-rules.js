@@ -65,11 +65,11 @@ export function createStarterSquad(team,database){
  const used=new Set(),slots={};
  const positions=BAT_POS.filter(p=>p!=='DH').sort((a,b)=>pool.filter(c=>c.team===team&&c.pos!=='P'&&eligible(c,a)).length-pool.filter(c=>c.team===team&&c.pos!=='P'&&eligible(c,b)).length);
  for(const pos of [...positions,'DH']){const c=pool.find(c=>c.pos!=='P'&&!used.has(c.playerId)&&eligible(c,pos));if(!c)throw new Error('기본 선수단을 구성할 선수 자료가 부족합니다.');slots[pos]=c;used.add(c.playerId);}
- const pitchers=[];for(const c of pool)if(c.pos==='P'&&!used.has(c.playerId)){pitchers.push(c);used.add(c.playerId);if(pitchers.length===8)break;}
- if(pitchers.length!==8)throw new Error('기본 투수 자료가 부족합니다.');
+ const pitchers=[];for(const c of pool)if(c.pos==='P'&&!used.has(c.playerId)){pitchers.push(c);used.add(c.playerId);if(pitchers.length===11)break;}
+ if(pitchers.length!==11)throw new Error('기본 투수 자료가 부족합니다.');
  const sources=[...BAT_POS.map(p=>slots[p]),...pitchers];
  for(const c of pool)if(!used.has(c.playerId)&&sources.length<26){sources.push(c);used.add(c.playerId);}
  const players=sources.map(c=>playableCard(c,'NORMAL'));
  const lineup=Object.fromEntries(BAT_POS.map((p,i)=>[p,players[i]]));lineup.P=players[9];
- return {players,lineup,manager:{starterGift:true,basicRosterGranted:true,rosterCapacity:ROSTER_BASE,order:BAT_POS,staff:{starters:players.slice(9,14).map(c=>c.uniqueId),relief:players.slice(14,17).map(c=>c.uniqueId)}}};
+ return {players,lineup,manager:{starterGift:true,basicRosterGranted:true,rosterCapacity:ROSTER_BASE,order:BAT_POS,staff:{starters:players.slice(9,14).map(c=>c.uniqueId),version:2,relief:players.slice(14,20).map(c=>c.uniqueId)}}};
 }

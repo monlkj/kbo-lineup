@@ -1,6 +1,7 @@
 "use client";
 
     import { useState, useEffect, useMemo } from "react";
+import {migratePitching} from './pitching-rules.js';
 import {migrateGrowth} from './growth-rules.js';
 import {migrateScouting,prepareLegend} from './scouting-rules.js';
 import {setMaterialBooks,materialLegends,setMaterialDatabase} from './legend-materials.js';
@@ -111,6 +112,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
             const realIds=Object.fromEntries(remapped.map(c=>[c.uniqueId,c]));
             data.myPlayers=remapped;
             data.lineup=Object.fromEntries(Object.entries(data.lineup||{}).map(([pos,c])=>{const real=c&&realIds[c.uniqueId];return [pos,real&&eligible(real,pos)?real:null];}));
+            data.manager=migratePitching({players:remapped,lineup:data.lineup,manager:data.manager}).manager;
             setFavTeam(data.favTeam || 'KIA'); setCurrency(data.currency || { points: 0, stars: 0 });
             setMailbox(normalizeUnclaimedMail(data.mailbox)); setInventory(data.inventory || []);
             if(!(data.manager?.basicRosterGranted || data.manager?.starterGift)) {

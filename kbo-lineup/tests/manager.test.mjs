@@ -10,5 +10,5 @@ for(let d=0;d<144;d++){own.starter=buildTeam('KIA',catalog,d).starter;const out=
 assert.equal(season.day,144);let w=0,l=0;for(const t of TEAMS){const s=season.standings[t];assert.equal(s.w+s.l+s.d,144);w+=s.w;l+=s.l;}assert.equal(w,l);
 const p=makeCard(catalog[0]);p.xp=9;const next=advancePlayers([p],[p],p.uniqueId,rng)[0];assert.equal(next.training,0);assert.equal(next.xp,10);const key=Object.keys(ratings(next)).find(k=>ratings(next)[k]<99);const trained=trainStat({...next,training:3},key);assert.equal(trained.training,2);assert.equal(ratings(trained)[key],ratings(next)[key]+1);
 let post=startPostseason(season);for(let i=0;i<100&&!post.champion;i++)post=playPostseason(post,own,catalog,rng);assert.ok(post.champion);
-const lineup=Object.fromEntries(BAT_POS.map((p,i)=>[p,own.batters[i]]));assert.equal(lineupError(lineup,BAT_POS,{starters:Array(5),relief:Array(3)}),'선발 5명과 중간·셋업·마무리 3명을 등록해주세요.');
+const lineup=Object.fromEntries(BAT_POS.map((p,i)=>[p,own.batters[i]]));assert.equal(lineupError(lineup,BAT_POS,{starters:Array(5),relief:Array(3)}),'선발 5명·필승조 2명·추격조 2명·롱릴리프 1명·마무리 1명을 등록해주세요.');
 console.log('PASS: 144-game schedule, 16 games/opponent, full-season balance, innings, growth, playoffs, sparse roster validation',sortedStandings(season)[0][0],post.champion);

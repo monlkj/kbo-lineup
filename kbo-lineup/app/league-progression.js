@@ -1,3 +1,4 @@
+import {normalizePitchingStaff} from './pitching-rules.js';
 import {newSeason,BAT_POS,deckBonus,lineupError,simulateDay,advancePlayers} from './manager-engine.js';
 import {leagueMail,championMail,lotteryMail,starMail} from './reward-rules.js';
 export const LEAGUE_SHOP=[{id:'premium_skill_ticket',name:'고급 스킬변경권',cost:15},{id:'limit_break_ticket',name:'한계돌파권',cost:35},{id:'signature_contract',name:'시그니처 각성 계약서',cost:80},{id:'signature_wild_material',name:'시그니처 만능 재료',cost:40}];
@@ -62,7 +63,7 @@ export function simulateLeagueSeries(state,team,catalog,count=5){
  let next={...state,manager:{...state.manager,season:state.manager.season||newSeason()}},games=[],tokens=0;
  const remaining=144-next.manager.season.day;if(remaining<=0)throw Error('정규시즌이 종료되었습니다.');
  for(let i=0;i<Math.min(count,remaining);i++){
-  const byId=Object.fromEntries(next.players.map(c=>[c.uniqueId,c])),order=next.manager.order||BAT_POS,staff=next.manager.staff||{starters:[],relief:[]};
+  const byId=Object.fromEntries(next.players.map(c=>[c.uniqueId,c])),order=next.manager.order||BAT_POS,staff=normalizePitchingStaff(next.manager.staff);
   const lineup=Object.fromEntries(Object.entries(next.lineup).map(([p,c])=>[p,c?byId[c.uniqueId]:null])),starters=staff.starters.map(id=>byId[id]),relief=staff.relief.map(id=>byId[id]);
   const error=lineupError(lineup,order,{starters,relief});if(error)throw Error(error);
   const active=[...BAT_POS.map(p=>lineup[p]),...starters,...relief],user={name:team,batters:order.map(p=>lineup[p]),starter:starters[next.manager.season.day%5],relief,bonus:deckBonus(active).total,tactic:next.manager.tactic||'BALANCED'};

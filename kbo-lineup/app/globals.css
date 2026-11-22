@@ -93,3 +93,5 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .workshop-panel>.material-card-wrap{width:180px}
 .player-detail-card .material-card-wrap{width:100%;max-width:250px}
 .enhance-result .material-card-wrap{width:200px;margin:18px auto}
+
+.classic-relief-editor{grid-template-columns:repeat(6,minmax(110px,1fr));min-width:760px;max-width:1100px}.pitching-game-log{margin:18px 0;border:1px solid #47607a;padding:14px}.pitching-game-log section{display:inline-block;vertical-align:top;min-width:45%;padding:8px}.pitching-game-log p{font-size:12px;line-height:1.9}

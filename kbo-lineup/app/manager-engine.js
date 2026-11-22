@@ -1,3 +1,4 @@
+import {normalizePitchingStaff,chooseGamePitcher} from './pitching-rules.js';
 import {migrateGrowth} from './growth-rules.js';
 import {isNationalLegend} from './legend-registry.js';
 import {battingSkillBonuses,activeSkillNames,intimidationAtBat} from './skill-effects.js';
@@ -27,7 +28,7 @@ export function lineupError(lineup,order,staff){
  if(order.length!==9||new Set(order).size!==9||order.some(p=>!BAT_POS.includes(p)))return '타순을 1~9번까지 구성해주세요.';
  const field=BAT_POS.map(p=>lineup[p]);
  if(field.some((c,i)=>!eligible(c,BAT_POS[i])))return '선수의 확인된 포지션에 맞게 배치해주세요.';
- if(staff.starters.length!==5||staff.relief.length!==3||Array.from({length:5},(_,i)=>staff.starters[i]).some(c=>!c)||Array.from({length:3},(_,i)=>staff.relief[i]).some(c=>!c))return '선발 5명과 중간·셋업·마무리 3명을 등록해주세요.';
+ if(staff.starters.length!==5||staff.relief.length!==6||Array.from({length:5},(_,i)=>staff.starters[i]).some(c=>!c)||Array.from({length:6},(_,i)=>staff.relief[i]).some(c=>!c))return '선발 5명·필승조 2명·추격조 2명·롱릴리프 1명·마무리 1명을 등록해주세요.';
  const all=[...field,...staff.starters,...staff.relief];
  if(new Set(all.map(c=>String(c.playerId))).size!==all.length)return '동일 선수는 연도가 달라도 한 명만 출전할 수 있습니다.';
  if([...staff.starters,...staff.relief].some(c=>c.pos!=='P'))return '투수 보직에는 투수만 등록해주세요.';
@@ -44,7 +45,7 @@ const randomInt=(n,r)=>Math.floor(r()*n);
 export const TACTICS={BALANCED:{name:'균형',contact:0,power:0,speed:0,note:'능력치 보정 없음'},CONTACT:{name:'정교',contact:6,power:-4,speed:0,note:'경기 중 정확 +6 / 파워 -4'},POWER:{name:'장타',contact:-5,power:8,speed:0,note:'경기 중 파워 +8 / 정확 -5'},RUN:{name:'기동력',contact:0,power:-4,speed:10,note:'경기 중 주력 +10 / 파워 -4'}};
 export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={}){
  const totals=[0,0], innings=[[],[]], batters={},pitchers={};let cursor=[0,0];
- const teams=[away,home],bonus=[bonusAway,bonusHome];
+ const teams=[away,home],bonus=[bonusAway,bonusHome],pitchUsage=[{},{}],pitchingLog=[];
  const effective=teams.map(team=>{const buffs=battingSkillBonuses(team.batters),tactic=TACTICS[team.tactic]||TACTICS.BALANCED;return team.batters.map((c,i)=>{const base=ratings(c);return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,(k in tactic?Math.round(v+tactic[k]):v)+buffs[i][k]]));});});
  const statById=teams.map((team,i)=>Object.fromEntries(team.batters.map((c,j)=>[c.uniqueId,effective[i][j]])));
  function batterStat(c){return batters[c.uniqueId] ||= {name:c.name,playerId:c.playerId,ab:0,h:0,hr:0,rbi:0,bb:0,so:0,r:0,sb:0};}
@@ -53,7 +54,8 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
   for(let side=0;side<2;side++){
    if(side===1&&inn>=8&&totals[1]>totals[0]){innings[side].push('X');continue;}
    const offense=teams[side],defense=teams[1-side];
-   const pc=inn<6?defense.starter:inn<7?defense.relief[0]:inn<8?defense.relief[1]:defense.relief[2];
+   const chosen=chooseGamePitcher(defense,inn,totals[1-side]-totals[side],pitchUsage[1-side],pitchers[defense.starter.uniqueId]?.er||0),pc=chosen.pitcher;
+   pitchingLog.push({team:defense.name,inning:inn+1,pitcherId:pc.uniqueId,name:pc.name,role:chosen.role});
    const raw=ratings(pc),pr={...raw,stuff:raw.stuff*.5+raw.fastball*.25+raw.breaking*.25},ps=pitcherStat(pc);let outs=0,bases=[null,null,null],runs=0;
    const score=c=>{runs++;batterStat(c).r++;};
    let plate=0;
@@ -76,19 +78,19 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
   }
   if(inn>=8&&totals[0]!==totals[1])break;
  }
- if(totals[0]!==totals[1]){const winner=totals[0]>totals[1]?0:1,loser=1-winner;pitcherStat(teams[winner].starter).w++;pitcherStat(teams[loser].starter).l++;if(Math.abs(totals[0]-totals[1])<=3){const closer=teams[winner].relief[2];if(pitchers[closer.uniqueId]?.outs)pitcherStat(closer).sv++;}}
- return {home:home.name,away:away.name,homeScore:totals[1],awayScore:totals[0],innings,batters,pitchers,tactics:{[home.name]:home.tactic||'BALANCED',[away.name]:away.tactic||'BALANCED'},skillEffects:{[home.name]:activeSkillNames(home.batters),[away.name]:activeSkillNames(away.batters)}};
+ if(totals[0]!==totals[1]){const winner=totals[0]>totals[1]?0:1,loser=1-winner;pitcherStat(teams[winner].starter).w++;pitcherStat(teams[loser].starter).l++;if(Math.abs(totals[0]-totals[1])<=3){const closer=normalizePitchingStaff({relief:teams[winner].relief}).relief[5];if(closer&&pitchUsage[winner].current?.uniqueId===closer.uniqueId&&pitchers[closer.uniqueId]?.outs)pitcherStat(closer).sv++;}}
+ return {home:home.name,away:away.name,homeScore:totals[1],awayScore:totals[0],innings,batters,pitchers,pitchingLog,tactics:{[home.name]:home.tactic||'BALANCED',[away.name]:away.tactic||'BALANCED'},skillEffects:{[home.name]:activeSkillNames(home.batters),[away.name]:activeSkillNames(away.batters)}};
 }
 const teamCache=new WeakMap();
 export function buildTeam(name,catalog,day=0){
  let cached=teamCache.get(catalog);
  if(!cached){cached={};teamCache.set(catalog,cached);}
- if(cached[name]){const x=cached[name];return {name,batters:x.selected,starter:x.ps[day%5],relief:x.ps.slice(5,8)};}
+ if(cached[name]){const x=cached[name];return {name,batters:x.selected,starter:x.ps[day%5],relief:x.ps.slice(5,11)};}
  const selected=[],used=new Set();
  const available=catalog.filter(c=>!c.legendKind);const pool=[...available.filter(c=>c.team===name),...available].sort((a,b)=>(a.team===name?0:1)-(b.team===name?0:1)||overall(b)-overall(a));
  for(const pos of BAT_POS){const c=pool.find(c=>!used.has(c.playerId)&&eligible(c,pos));if(!c)throw new Error('해당 포지션의 검증된 선수가 부족합니다: '+pos);used.add(c.playerId);selected.push({...c,uniqueId:`AI-${name}-${c.id}`});}
- const ps=pool.filter(c=>c.pos==='P'&&!used.has(c.playerId)).filter((c,i,arr)=>arr.findIndex(p=>p.playerId===c.playerId)===i).slice(0,8).map(c=>({...c,uniqueId:`AI-${name}-${c.id}`}));
- cached[name]={selected,ps};return {name,batters:selected,starter:ps[day%5],relief:ps.slice(5,8)};
+ const ps=pool.filter(c=>c.pos==='P'&&!used.has(c.playerId)).filter((c,i,arr)=>arr.findIndex(p=>p.playerId===c.playerId)===i).slice(0,11).map(c=>({...c,uniqueId:`AI-${name}-${c.id}`}));
+ cached[name]={selected,ps};return {name,batters:selected,starter:ps[day%5],relief:ps.slice(5,11)};
 }
 function addStats(target,source){for(const [id,s] of Object.entries(source)){if(!target[id])target[id]={...s};else for(const [k,v] of Object.entries(s))if(typeof v==='number'&&k!=='playerId')target[id][k]=(target[id][k]||0)+v;}}
 export function simulateDay(season,userTeam,catalog,rng=Math.random){

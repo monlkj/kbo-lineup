@@ -21,7 +21,7 @@ for(const team of [...TEAMS,'해태','SK','OB','빙그레','현대']){
  const starter=createStarterSquad(team,catalog);assert.equal(starter.players.length,26);assert.equal(new Set(starter.players.map(c=>c.playerId)).size,26);assert.ok(starter.players.every(c=>c.grade==='NORMAL'&&c.skills.length===1));
  const ids=Object.fromEntries(starter.players.map(c=>[c.uniqueId,c]));assert.equal(lineupError(starter.lineup,starter.manager.order,{starters:starter.manager.staff.starters.map(id=>ids[id]),relief:starter.manager.staff.relief.map(id=>ids[id])}), '');
  if(TEAMS.includes(team))assert.ok(starter.players.every(c=>c.team===team),`Starter club mismatch ${team}`);
- assert.equal(protectedIds(starter.lineup,starter.manager).size,17);
+ assert.equal(protectedIds(starter.lineup,starter.manager).size,20);
 }
 assert.equal(capacity({},0),100);assert.equal(capacity({rosterCapacity:120},101),120);assert.equal(capacity({rosterCapacity:400},10),300);assert.equal(capacity({},400),400);
 assert.equal(acquisitionCount(99,100,5),1);assert.equal(acquisitionCount(100,100,1),0);

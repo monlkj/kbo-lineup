@@ -15,3 +15,9 @@ These are this fan game's public settings, not official Com2uS probabilities.
 - Ordinary/select/protect skill grades: N30/H40/P30%, capped at HERO below platinum. Select excludes its previous name. No set contains duplicate names. Premium on legend cards: each slot independently has a 35% legend chance; first otherwise guarantees platinum, other slots otherwise use N30/H40/P30%. Nonlegend cards cannot roll legend skills. Premium still offers old/new set selection.
 
 Core implementations: `growth-rules.js`, `classic-progression.js`, `scouting-rules.js`, `club-rules.js`. Confirmations precede irreversible registrations and final recruitment. All validation runs before committing resources.
+
+## Pitching staff
+
+Five starters rotate in order. Six bullpen slots are fixed: winning group 1/2, chasing group 1/2, long relief, closer. Lineups require eleven distinct pitchers. Starter squads and AI teams include all eleven. Legacy three-slot bullpens retain the former middle/setup pair as the winning pair and the former closer as the closer; only the three new slots are filled from eligible owned reserves. Registered materials and duplicate players are skipped, and insufficient reserves leave visible empty slots.
+
+Games prefer the winning pair in close leads/ties, chasing pair while narrowly trailing, long relief for early starter removal, large margins and extras, and the closer for a lead of at most three runs in the ninth or later. A removed pitcher cannot reenter; long relief may stay for two innings, and an exhausted bullpen keeps its current pitcher. Game results include an inning-by-inning role log. Existing card stats, ownership and currencies are preserved.
