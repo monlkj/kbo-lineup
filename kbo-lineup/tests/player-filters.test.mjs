@@ -22,3 +22,23 @@ assert.equal(filterPlayers(players,{...filters,grade:'SIGNATURE'}).length,0);
 assert.equal(filterPlayers(bench,{...EMPTY_FILTERS,minOvr:''}).length,2);
 const order=players.map(c=>c.uniqueId);const sorted=filterPlayers(players,{...EMPTY_FILTERS,sort:'ovr-desc'});assert.ok(sorted.every((c,i)=>!i||overall(sorted[i-1])>=overall(c)));assert.deepEqual(players.map(c=>c.uniqueId),order);
 console.log('PASS: assigned Thames and other seasons excluded, real backup 1B kept, locked-position eligibility, combined grade/position/name/team/OVR filters, inclusive OVR and non-mutating sort');
+
+// Replacing the occupied slot must allow another rarity/year of that player.
+const replacements=unassignedPlayers(players,{'1B':a},{starters:['pitcher'],relief:[]},a.uniqueId);
+assert.ok(replacements.some(c=>c.uniqueId===same.uniqueId));
+assert.ok(!replacements.some(c=>c.uniqueId===a.uniqueId));
+assert.ok(!unassignedPlayers(players,{'1B':a,DH:a},{starters:['pitcher'],relief:[]},'different-slot').some(c=>c.uniqueId===same.uniqueId));
+const {LEGEND_CATALOG}=await import('../app/legend-registry.js');
+const {placeBatter}=await import('../app/lineup-actions.js');
+const {BAT_POS}=await import('../app/manager-engine.js');
+const platinum={...db.find(c=>c.name==='정근우'&&c.positions.includes('2B')),grade:'PLATINUM',uniqueId:'jeong-platinum'};
+const legend={...LEGEND_CATALOG.find(c=>c.name==='정근우'),grade:'LEGEND',uniqueId:'jeong-legend'};
+assert.equal(String(platinum.playerId),String(legend.playerId));
+const roster={players:[platinum,legend],lineup:{'2B':platinum},manager:{order:BAT_POS,staff:{starters:[],relief:[]}}};
+assert.deepEqual(unassignedPlayers(roster.players,roster.lineup,roster.manager.staff,platinum.uniqueId).map(c=>c.uniqueId),[legend.uniqueId]);
+const replaced=placeBatter(roster,BAT_POS.indexOf('2B'),legend.uniqueId);
+assert.equal(replaced.lineup['2B'].uniqueId,legend.uniqueId);
+assert.deepEqual(replaced.players,roster.players);
+assert.equal(roster.lineup['2B'].uniqueId,platinum.uniqueId);
+assert.throws(()=>placeBatter({...roster,lineup:{DH:platinum}},BAT_POS.indexOf('2B'),legend.uniqueId),/동일 선수/);
+console.log('PASS: platinum Jeong Keun-woo replaced by legend without consuming cards; duplicate elsewhere remains blocked');

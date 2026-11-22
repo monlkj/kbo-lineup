@@ -2,10 +2,10 @@ import {eligible,overall} from './manager-engine.js';
 export const GRADE_OPTIONS=[['NORMAL','노멀'],['RARE','레어'],['SPECIAL','스페셜'],['HERO','히어로'],['PLATINUM','플래티넘'],['SIGNATURE','시그니처'],['LEGEND','레전드']];
 export const EMPTY_FILTERS={query:'',grade:'',position:'',minOvr:'',team:'',awards:false,sort:'ovr-desc'};
 const identity=c=>c.playerId!=null?`p:${String(c.playerId)}`:`c:${c.uniqueId||c.id}`;
-export function unassignedPlayers(players,lineup={},staff={}){
+export function unassignedPlayers(players,lineup={},staff={},replacingId=null){
  const byId=new Map(players.map(c=>[c.uniqueId,c]));
- const assigned=[...Object.values(lineup).filter(Boolean),...(staff.starters||[]).map(id=>byId.get(id)),...(staff.relief||[]).map(id=>byId.get(id))].filter(Boolean);
- const used=new Set(assigned.map(identity));return players.filter(c=>!used.has(identity(c)));
+ const assigned=[...Object.values(lineup).filter(Boolean),...(staff.starters||[]).map(id=>byId.get(id)),...(staff.relief||[]).map(id=>byId.get(id))].filter(c=>c&&c.uniqueId!==replacingId);
+ const used=new Set(assigned.map(identity));return players.filter(c=>c.uniqueId!==replacingId&&!used.has(identity(c)));
 }
 export function filterPlayers(players,f=EMPTY_FILTERS,lockedPosition=''){
  const q=(f.query||'').trim().toLowerCase(),pos=lockedPosition||f.position;

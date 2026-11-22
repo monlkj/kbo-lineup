@@ -22,12 +22,13 @@ export default function ManagerWorkbench({catalog,meta,players,setPlayers,lineup
  const update=delta=>setManager(prev=>({...prev,...delta}));
  const results=useMemo(()=>filterPlayers(catalog,filters),[catalog,filters]);
  const owned=useMemo(()=>filterPlayers(players,filters),[players,filters]);
- const bench=useMemo(()=>unassignedPlayers(players.filter(c=>!registered.has(c.uniqueId)),lineup,staff),[players,lineup,staff,manager.scouting]);
+ const replacingId=pick?(pick.type==='bat'?lineup[pick.pos]?.uniqueId:staff[pick.type]?.[pick.index]):null;
+ const bench=useMemo(()=>unassignedPlayers(players.filter(c=>!registered.has(c.uniqueId)),lineup,staff,replacingId),[players,lineup,staff,manager.scouting,replacingId]);
  const candidates=pick?filterPlayers(bench,pickFilters,pick.type==='bat'?pick.pos:'P'):[];
  function openPick(spec){setPickFilters({...EMPTY_FILTERS});setPick(spec);}
  function clearSlot(type,index){if(type==='bat'){setLineup(prev=>({...prev,[index]:null}));return;}const next=[...staff[type]];next[index]=null;update({staff:{...staff,[type]:next}});}
  const selected=detail&&(byId[detail.uniqueId]||detail);
- function select(c){if(pick&&registered.has(c.uniqueId))return showToast('레전드 재료로 등록한 선수는 편성할 수 없습니다.');if(!pick)return setDetail(c);if(!bench.some(p=>p.uniqueId===c.uniqueId)){showToast('이미 편성된 선수는 후보로 등록할 수 없습니다.');return;}const elsewhere=active.find(p=>p.playerId===c.playerId&&p.uniqueId!==c.uniqueId);if(elsewhere){showToast('동일 선수는 한 명만 출전할 수 있습니다.');return;}
+ function select(c){if(pick&&registered.has(c.uniqueId))return showToast('레전드 재료로 등록한 선수는 편성할 수 없습니다.');if(!pick)return setDetail(c);if(!bench.some(p=>p.uniqueId===c.uniqueId)){showToast('이미 편성된 선수는 후보로 등록할 수 없습니다.');return;}const elsewhere=active.find(p=>String(p.playerId)===String(c.playerId)&&p.uniqueId!==c.uniqueId&&p.uniqueId!==replacingId);if(elsewhere){showToast('동일 선수는 한 명만 출전할 수 있습니다.');return;}
   if(pick.type==='bat'){if(!eligible(c,pick.pos))return showToast('확인된 수비 포지션에만 배치할 수 있습니다.');const used=BAT_POS.find(p=>lineup[p]?.playerId===c.playerId&&p!==pick.pos);if(used)return showToast('이미 다른 수비 위치에 등록한 선수입니다.');setLineup(prev=>({...prev,[pick.pos]:c}));}
   else{if(c.pos!=='P')return showToast('투수를 선택해주세요.');const all=[...staff.starters,...staff.relief];if(all.some((id)=>id===c.uniqueId)&&staff[pick.type][pick.index]!==c.uniqueId)return showToast('이미 다른 투수 보직에 등록한 선수입니다.');const next=[...staff[pick.type]];next[pick.index]=c.uniqueId;update({staff:{...staff,[pick.type]:next}});}
   setPick(null);
