@@ -1,17 +1,19 @@
+import {migrateGrowth} from './growth-rules.js';
 import {isNationalLegend} from './legend-registry.js';
 import {battingSkillBonuses,activeSkillNames,intimidationAtBat} from './skill-effects.js';
 export const BAT_POS = ['CF','LF','RF','SS','2B','3B','1B','C','DH'];
 export const TEAMS = ['KIA','삼성','LG','두산','KT','SSG','롯데','한화','NC','키움'];
 export const BATTING = {contact:'정확',power:'파워',eye:'선구',speed:'주력',field:'수비'};
-export const PITCHING = {control:'제구',stuff:'구위',stamina:'체력'};
+export const PITCHING = {control:'제구',stuff:'구위',stamina:'체력',fastball:'직구',breaking:'변화'};
 export const clamp=(n,a=30,b=99)=>Math.max(a,Math.min(b,Math.round(n)));
 export function ratings(card) {
  const s=card.stats||{};
  const base=card.pos==='P'?{control:clamp(91-(s.bb||0)/Math.max(1,s.ip||1)*30),stuff:clamp(45+(s.so||0)/Math.max(1,s.ip||1)*35),stamina:clamp(42+(s.ip||0)/Math.max(1,s.g||1)*8)}:{contact:clamp(35+(s.avg||0)*150),power:clamp(40+(s.hr||0)/Math.max(1,s.pa||1)*600),eye:clamp(50+Math.max(0,(s.pa||0)-(s.ab||0))/Math.max(1,s.pa||1)*160),speed:clamp(45+(s.sb||0)/Math.max(1,s.pa||1)*500),field:clamp((s.fpct||.95)*100-10)};
- return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,clamp(v+(card.growth?.[k]||0)+(card.upgrade||0))]));
+ if(card.pos==='P'){base.fastball=Math.round(base.stuff*.6+base.control*.4);base.breaking=Math.round(base.stuff*.6+base.stamina*.4);}
+ const c=migrateGrowth(card);return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,Math.round(v+(c.growth?.[k]||0)+(c.enhancement?.[k]||0))]));
 }
 export const overall=c=>Math.round(Object.values(ratings(c)).reduce((a,b)=>a+b,0)/Object.keys(ratings(c)).length);
-export function makeCard(c){return {...c,uniqueId:crypto.randomUUID(),upgrade:0,ovr:overall(c),xp:0,training:0,growth:{},condition:0,fatigue:0,skills:c.skills||[]};}
+export function makeCard(c){return {...c,uniqueId:crypto.randomUUID(),growthVersion:2,level:1,limitBreaks:0,transcendBreaks:0,enhancement:{},upgrade:0,ovr:overall(c),xp:0,training:0,growth:{},condition:0,fatigue:0,skills:c.skills||[]};}
 export const OUTFIELD_POSITIONS=['LF','CF','RF'];
 export function eligible(c,pos){if(pos==='DH')return c.pos!=='P';const positions=c.positions?.length?c.positions:[c.pos];if(OUTFIELD_POSITIONS.includes(pos)&&positions.some(p=>OUTFIELD_POSITIONS.includes(p)||p==='OF'))return true;return positions.includes(pos);}
 export function deckBonus(cards){
@@ -43,7 +45,7 @@ export const TACTICS={BALANCED:{name:'균형',contact:0,power:0,speed:0,note:'�
 export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={}){
  const totals=[0,0], innings=[[],[]], batters={},pitchers={};let cursor=[0,0];
  const teams=[away,home],bonus=[bonusAway,bonusHome];
- const effective=teams.map(team=>{const buffs=battingSkillBonuses(team.batters),tactic=TACTICS[team.tactic]||TACTICS.BALANCED;return team.batters.map((c,i)=>{const base=ratings(c);return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,(k in tactic?clamp(v+tactic[k]):v)+buffs[i][k]]));});});
+ const effective=teams.map(team=>{const buffs=battingSkillBonuses(team.batters),tactic=TACTICS[team.tactic]||TACTICS.BALANCED;return team.batters.map((c,i)=>{const base=ratings(c);return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,(k in tactic?Math.round(v+tactic[k]):v)+buffs[i][k]]));});});
  const statById=teams.map((team,i)=>Object.fromEntries(team.batters.map((c,j)=>[c.uniqueId,effective[i][j]])));
  function batterStat(c){return batters[c.uniqueId] ||= {name:c.name,playerId:c.playerId,ab:0,h:0,hr:0,rbi:0,bb:0,so:0,r:0,sb:0};}
  function pitcherStat(c){return pitchers[c.uniqueId] ||= {name:c.name,playerId:c.playerId,outs:0,er:0,so:0,bb:0,h:0,w:0,l:0,sv:0};}
@@ -52,22 +54,22 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
    if(side===1&&inn>=8&&totals[1]>totals[0]){innings[side].push('X');continue;}
    const offense=teams[side],defense=teams[1-side];
    const pc=inn<6?defense.starter:inn<7?defense.relief[0]:inn<8?defense.relief[1]:defense.relief[2];
-   const pr=ratings(pc),ps=pitcherStat(pc);let outs=0,bases=[null,null,null],runs=0;
+   const raw=ratings(pc),pr={...raw,stuff:raw.stuff*.5+raw.fastball*.25+raw.breaking*.25},ps=pitcherStat(pc);let outs=0,bases=[null,null,null],runs=0;
    const score=c=>{runs++;batterStat(c).r++;};
    let plate=0;
    while(outs<3&&plate++<100){
     const c=offense.batters[cursor[side]++%9],br=statById[side][c.uniqueId],bs=batterStat(c);const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
-    const tired=(pc.fatigue||0)*.001+Math.max(0,inn-3)*(100-pr.stamina)*.00015;
+    const tired=(pc.fatigue||0)*.001+Math.max(0,inn-3)*Math.max(0,100-pr.stamina)*.00015;
     const fielding=effective[1-side].reduce((sum,s)=>sum+s.field,0)/9;
     const baseHitChance=Math.max(.13,Math.min(.43,.25+(br.contact-pr.stuff+adjust)*.003+tired+(80-fielding)*.0006));
     const {hitChance,inducedMistake}=intimidationAtBat(c,baseHitChance,rng);if(inducedMistake)bs.inducedMistakes=(bs.inducedMistakes||0)+1;
     const walkChance=Math.max(.025,Math.min(.17,.07+(br.eye-pr.control+adjust)*.0015));const roll=rng();
     if(roll<walkChance){bs.bb++;ps.bb++;if(bases[0]&&bases[1]&&bases[2]){score(bases[2]);bs.rbi++;}if(bases[0]&&bases[1])bases[2]=bases[1];if(bases[0])bases[1]=bases[0];bases[0]=c;}
-    else if(roll<walkChance+hitChance){bs.ab++;bs.h++;ps.h++;let n=rng()<Math.max(.015,(br.power+adjust-35)*.0014)?4:rng()<.26?2:1;
+    else if(roll<walkChance+hitChance){bs.ab++;bs.h++;ps.h++;let n=rng()<Math.min(.65,Math.max(.015,(br.power+adjust-35)*.0014))?4:rng()<.26?2:1;
      if(n===4){bs.hr++;for(const base of bases)if(base){score(base);bs.rbi++;}score(c);bs.rbi++;bases=[null,null,null];}
      else{for(let b=2;b>=0;b--)if(bases[b]){if(b+n>=3){score(bases[b]);bs.rbi++;}else bases[b+n]=bases[b];bases[b]=null;}bases[n-1]=c;}
-    }else{bs.ab++;outs++;ps.outs++;if(rng()<Math.max(.1,.22+(pr.stuff-br.eye)*.003)){bs.so++;ps.so++;}else if(outs<3&&bases[2]&&rng()<.22){score(bases[2]);bs.rbi++;bases[2]=null;}}
-    if(bases[0]&&!bases[1]&&rng()<(statById[side][bases[0].uniqueId].speed-30)*.001){batterStat(bases[0]).sb++;bases[1]=bases[0];bases[0]=null;}
+    }else{bs.ab++;outs++;ps.outs++;if(rng()<Math.min(.85,Math.max(.1,.22+(pr.stuff-br.eye)*.003))){bs.so++;ps.so++;}else if(outs<3&&bases[2]&&rng()<.22){score(bases[2]);bs.rbi++;bases[2]=null;}}
+    if(bases[0]&&!bases[1]&&rng()<Math.min(.65,Math.max(0,(statById[side][bases[0].uniqueId].speed-30)*.001))){batterStat(bases[0]).sb++;bases[1]=bases[0];bases[0]=null;}
     if(side===1&&inn>=8&&totals[1]+runs>totals[0])break;
    }
    ps.er+=runs;totals[side]+=runs;innings[side].push(runs);
@@ -101,11 +103,11 @@ export function simulateDay(season,userTeam,catalog,rng=Math.random){
 }
 export function advancePlayers(cards,participants,starterId,rng=Math.random){const ids=new Set(participants.map(c=>c.uniqueId));return cards.map(c=>{
  const next={...c,fatigue:Math.max(0,(c.fatigue||0)-6)};if(!ids.has(c.uniqueId))return next;
- const xp=(c.xp||0)+1;next.training=(c.training||0)+(xp%10===0?3:0);next.xp=xp;
+ const xp=(c.xp||0)+1;next.training=c.training||0;next.xp=xp;
  next.condition=Math.max(-2,Math.min(2,(c.condition||0)+(rng()<.2?(rng()<.5?-1:1):0)));
  if(c.uniqueId===starterId)next.fatigue=Math.min(100,next.fatigue+30);return next;
  });}
-export function trainStat(card,key){if(!(key in ratings(card)))throw new Error('선수에게 없는 능력치입니다.');if(!(card.training>0))throw new Error('성장 포인트가 없습니다.');if(ratings(card)[key]>=99)throw new Error('최대 능력치입니다.');const next={...card,training:card.training-1,growth:{...card.growth,[key]:(card.growth?.[key]||0)+1}};next.ovr=overall(next);return next;}
+export function trainStat(card,key){if(!(key in ratings(card)))throw new Error('선수에게 없는 능력치입니다.');if(!(card.training>0))throw new Error('성장 포인트가 없습니다.');const next={...card,training:card.training-1,growth:{...card.growth,[key]:(card.growth?.[key]||0)+1}};next.ovr=overall(next);return next;}
 export function startPostseason(season){const ranked=sortedStandings(season).map(([t])=>t);return {ranked,stage:0,wins:[0,0],match:[ranked[3],ranked[4]],games:[],champion:null};}
 export function rotationIndex(season,postGames=season?.postseason?.games?.length||0){const day=Number(season?.day)||0;return (day+(day>=144?postGames:0))%5;}
 export function recordPostseasonGame(post,game){const p=structuredClone(post);if(p.champion)return p;const [a,b]=p.match;if(game.home!==a||game.away!==b)throw Error('포스트시즌 대진과 경기 결과가 일치하지 않습니다.');if(![game.homeScore,game.awayScore].every(n=>Number.isInteger(n)&&n>=0))throw Error('포스트시즌 점수를 확인해주세요.');

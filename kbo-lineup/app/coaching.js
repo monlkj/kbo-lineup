@@ -6,14 +6,14 @@ export function coachFits(coach,slot){const role=coach?.role||'';return ({M:/감
 export function ownedCoaches(state){const map=new Map();for(const c of [...(state.manager?.coachCards||[]),...(state.inventory||[]).filter(i=>i.packId==='coach_material')])if(!map.has(c.id))map.set(c.id,c);return [...map.values()];}
 export function migrateCoachStorage(state){const coachCards=ownedCoaches(state),manager=state.manager||{},old=manager.coaches||{},coaches=Object.fromEntries(Object.keys(COACH_SLOTS).map(slot=>[slot,old[slot]||null]));const hd=coachCards.find(i=>i.id===coaches.HD),record=COACH_CATALOG.find(c=>c.id===hd?.coachId);if(coaches.HD&&!coachFits(record,'HD')&&coachFits(record,'M')&&!coaches.M){coaches.M=coaches.HD;coaches.HD=null;}for(const slot of Object.keys(COACH_SLOTS)){const item=coachCards.find(i=>i.id===coaches[slot]),c=COACH_CATALOG.find(c=>c.id===item?.coachId);if(coaches[slot]&&!coachFits(c,slot))coaches[slot]=null;}return {...state,inventory:(state.inventory||[]).filter(i=>i.packId!=='coach_material'),manager:{...manager,coaches,coachCards}};}
 export const coachAssigned=(manager,id)=>Object.values(manager?.coaches||{}).some(v=>v===id);
-export const coachPledged=(manager,id)=>(manager?.legendScout?.pledges||[]).includes('coach:'+id);
+export const coachPledged=(manager,id)=>[...(manager?.legendScout?.pledges||[]),...Object.values(manager?.scouting?.books||{}).flatMap(b=>b.pledges||[])].includes('coach:'+id);
 export function assignCoach(state,slot,id){
  if(state.manager.pendingSkillChange||state.manager.pendingCombination)throw Error('진행 중인 결과 선택을 먼저 완료해주세요.');
  if(!COACH_SLOTS[slot])throw Error('코치 보직을 확인해주세요.');
  if(!id)return migrateCoachStorage({...state,manager:{...state.manager,coaches:{...state.manager.coaches,[slot]:null}}});
  const cards=ownedCoaches(state),item=cards.find(i=>i.id===id),coach=COACH_CATALOG.find(c=>c.id===item?.coachId);
  if(!coach||!coachFits(coach,slot))throw Error('실제 보직이 맞는 보유 코치를 선택해주세요.');
- if(coachPledged(state.manager,id))throw Error('레전드 재료로 등록된 코치입니다. 재료 등록을 먼저 해제해주세요.');
+ if(coachPledged(state.manager,id))throw Error('레전드 재료로 등록된 코치입니다. 등록한 재료는 회수할 수 없습니다.');
  for(const [position,uid] of Object.entries(state.manager.coaches||{})){if(position===slot||!uid)continue;const other=cards.find(i=>i.id===uid);if(uid===id||other?.coachId===item.coachId)throw Error('동일 코치는 한 보직에만 편성할 수 있습니다.');}
  return migrateCoachStorage({...state,manager:{...state.manager,coaches:{...state.manager.coaches,[slot]:id}}});
 }

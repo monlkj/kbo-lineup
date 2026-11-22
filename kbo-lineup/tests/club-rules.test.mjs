@@ -45,7 +45,7 @@ console.log('PASS: first-slot guarantee across 6000 rolls, exact 35% boundary an
 
 // Exactly 35% of uniformly spaced first-slot rolls must produce LEGEND.
 let legends=0;for(let i=0;i<1000;i++){let first=true;const rng=()=>{if(first){first=false;return i/1000;}return .5;};if(changeSkills({pos:'P',grade:'LEGEND',skills:[]},'PREMIUM',null,rng)[0].grade==='LEGEND')legends++;}assert.equal(legends,350);
-// Enumerate equally spaced second/third slot grade rolls: 32% two top-tier skills, 4% three.
-let double=0,triple=0;for(let a=0;a<10;a++)for(let b=0;b<10;b++){const draws=[.5,.5,(a+.5)/10,.5,.5,(b+.5)/10,.5,.5];const skills=changeSkills({grade:'PLATINUM',pos:'P',skills:[]},'PREMIUM',null,()=>draws.shift()??.5);const n=skills.filter(s=>['PLATINUM','LEGEND'].includes(s.grade)).length;if(n===2)double++;if(n===3)triple++;}assert.equal(double,32);assert.equal(triple,4);
+// Enumerate equally spaced second/third slot grade rolls: 42% two top-tier skills, 9% three.
+let double=0,triple=0;for(let a=0;a<10;a++)for(let b=0;b<10;b++){const draws=[.5,.5,(a+.5)/10,.5,.5,(b+.5)/10,.5,.5];const skills=changeSkills({grade:'PLATINUM',pos:'P',skills:[]},'PREMIUM',null,()=>draws.shift()??.5);const n=skills.filter(s=>['PLATINUM','LEGEND'].includes(s.grade)).length;if(n===2)double++;if(n===3)triple++;}assert.equal(double,42);assert.equal(triple,9);
 
 for(const pos of ['P','SS']){const card={pos,grade:'LEGEND',skills:[]};const three=changeSkills(card,'PREMIUM',null,()=>.34999);assert.equal(three.filter(s=>s.grade==='LEGEND').length,3);assert.equal(new Set(three.map(s=>s.name)).size,3);assert.deepEqual(sanitizeSkills({...card,skills:three}),three);const no=changeSkills(card,'PREMIUM',null,()=>.35);assert.equal(no.filter(s=>s.grade==='LEGEND').length,0);assert.equal(no[0].grade,'PLATINUM');for(const grade of ['PLATINUM','SIGNATURE'])assert.ok(changeSkills({...card,grade},'PREMIUM',null,()=>.01).every(s=>s.grade!=='LEGEND'));}

@@ -8,20 +8,6 @@ const db=['catalog.json','national-cards.json'].flatMap(file=>JSON.parse(fs.read
 const card=(base=db[0],grade='PLATINUM')=>playableCard(base,grade);
 const state=(players=[])=>({players,currency:{points:1e7,stars:1e5},inventory:[],lineup:{},manager:{rosterCapacity:100}});
 const clone=s=>JSON.parse(JSON.stringify(s));
-test('breakthrough uses same person across years; failure consumes source only; ticket/star and legacy cap',()=>{
- const c=card(),otherYear={...card(),year:c.year+1},otherPerson=card(db.find(p=>p.playerId!==c.playerId));let s=state([c,otherYear,otherPerson]);
- assert.throws(()=>rules.breakthrough(s,c.uniqueId,otherPerson.uniqueId),/동일 선수/);
- const before=clone(s),failed=rules.breakthrough(s,c.uniqueId,otherYear.uniqueId,'points',()=>.999);assert.equal(failed.success,false);assert.equal(failed.state.players.length,2);assert.equal(failed.state.players[0].limitBreaks,undefined);assert.equal(failed.state.currency.points,s.currency.points-10000);assert.deepEqual(s,before);
- let r=rules.breakthrough(s,c.uniqueId,otherYear.uniqueId,'stars',()=>.999);assert.equal(r.success,true);assert.equal(rules.upgradeLimit(r.state.players[0]),12);
- s={...r.state,inventory:Array.from({length:5},()=>({packId:rules.CLASSIC.limitTicket}))};
- for(let i=0;i<4;i++)s=rules.breakthrough(s,c.uniqueId,null,'ticket',()=>.999).state;assert.equal(rules.upgradeLimit(s.players[0]),20);assert.throws(()=>rules.breakthrough(s,c.uniqueId,null,'ticket'),/最大|최대/);assert.equal(s.inventory.length,1);
- assert.equal(rules.upgradeLimit({...c,upgrade:17}),18);
-});
-test('enhance respects expanded cap, 100% stars, points fail leaves level; protected material rejected',()=>{
- const c={...card(),upgrade:10},m=card();let s=state([c,m]);assert.throws(()=>rules.enhance(s,c.uniqueId),/상한/);
- s=rules.breakthrough(s,c.uniqueId,m.uniqueId,'stars').state;s=rules.enhance(s,c.uniqueId,'stars',()=>.999).state;assert.equal(s.players[0].upgrade,11);assert.equal(s.players[0].ovr,overall(s.players[0]));const r=rules.enhance(s,c.uniqueId,'points',()=>.999);assert.equal(r.success,false);assert.equal(r.state.players[0].upgrade,11);
- const protectedState={...state([c,m]),lineup:{C:m}};assert.throws(()=>rules.breakthrough(protectedState,c.uniqueId,m.uniqueId,'stars'),/편성/);
-});
 test('legend search cooldown, exact recipe, pledged protection, wildcard counts and fixed target recruitment',()=>{
  let s=rules.searchLegend(state(),db,'',false,1000,()=>0);const found=s.manager.legendScout.target;assert.equal(s.players.length,0);assert.equal(s.currency.points,1e7-3000);assert.throws(()=>rules.searchLegend(s,db,'',false,2000),/대기/);
  for(let i=0;i<12;i++){
@@ -32,22 +18,6 @@ test('legend search cooldown, exact recipe, pledged protection, wildcard counts 
  const w=clone(s);w.inventory.push({packId:rules.CLASSIC.legendWild},{packId:rules.CLASSIC.legendWild});let mixed=rules.pledgeLegend(w,6,'item:'+rules.CLASSIC.legendWild);mixed=rules.pledgeLegend(mixed,7,'item:'+rules.CLASSIC.legendWild);assert.throws(()=>rules.pledgeLegend(mixed,8,'item:'+rules.CLASSIC.legendWild),/최대 2개/);assert.throws(()=>rules.pledgeLegend(mixed,0,'item:'+rules.CLASSIC.legendWild),/실제 재료/);const wr=rules.recruitLegend(mixed);assert.equal(wr.state.inventory.length,0);assert.equal(wr.state.players.length,3);
 
 });
-test('invalid legend and signature transactions never consume original state',()=>{
- let s=rules.searchLegend(state(),db,'',false,1,()=>0);s.inventory=[{packId:rules.CLASSIC.legendWild}];s=rules.pledgeLegend(s,6,'item:'+rules.CLASSIC.legendWild);assert.throws(()=>rules.pledgeLegend(s,7,'item:'+rules.CLASSIC.legendWild),/부족/);
- const untrained=card();assert.throws(()=>rules.awakenSignature(state([untrained]),untrained.uniqueId,Array(5).fill('item:'+rules.CLASSIC.signatureWild)),/20/);
- const base={...card(),upgrade:20,limitBreaks:5,growth:{power:2}},sig=state([base]);sig.inventory=[{packId:rules.CLASSIC.signatureContract},...Array.from({length:5},()=>({packId:rules.CLASSIC.signatureWild}))];const before=clone(sig);const bad={...sig,currency:{points:0,stars:0}};assert.throws(()=>rules.awakenSignature(bad,base.uniqueId,Array(5).fill('item:'+rules.CLASSIC.signatureWild)),/포인트/);assert.deepEqual(sig,before);
- const result=rules.awakenSignature(sig,base.uniqueId,Array(5).fill('item:'+rules.CLASSIC.signatureWild));assert.equal(result.card.grade,'SIGNATURE');assert.equal(result.card.uniqueId,base.uniqueId);assert.equal(result.card.upgrade,20);assert.deepEqual(result.card.growth,base.growth);assert.equal(result.state.inventory.length,0);assert.equal(result.state.currency.points,1e7-100000);
-});
-test('signature strict selected ability threshold and 5/10 category routes',()=>{
- const award=db.find(c=>c.pos!=='P'&&c.awards.some(a=>a.type==='골든글러브'));const base=card(award),slots=rules.signatureRequirements(base,'AWARD','power');assert.equal(slots.length,5);
- const natural=overall(base);const start=rules.signatureRequirements(base,'AWARD','power')[0];
- const powerBase=40+(award.stats.hr||0)/Math.max(1,award.stats.pa||1)*600;const rounded=Math.max(30,Math.min(99,Math.round(powerBase)));
- const exact95={...base,growth:{power:95-rounded}},exact96={...base,growth:{power:96-rounded}};
- assert.equal(rules.matchesSignature(exact95,start),false);assert.equal(rules.matchesSignature(exact96,start),true);assert.ok(overall(exact96)<95);assert.equal(rules.matchesSignature({...exact96,awards:[]},start),false);
- const regular=rules.signatureRequirements(base,'REGULAR','power');assert.equal(regular.length,10);assert.equal(rules.matchesSignature({...exact96,cardType:'NORMAL'},regular[0]),true);assert.equal(rules.matchesSignature(exact96,regular[0]),false);
- assert.throws(()=>rules.signatureRequirements(base,'AWARD','stuff'),/능력치/);
- const national=db.find(c=>rules.nationalEvidence(c));assert.ok(national);assert.equal(rules.signatureCategory({...national,cardType:'NATIONAL'}),'NATIONAL');assert.equal(rules.signatureCategory({...base,cardType:'NATIONAL',year:1900}),'INVALID');
-});
 test('combination consumes once, persists blind choices, claims once and enforces protection/position',()=>{
  const material=Array.from({length:3},()=>card(db[0]));const s=state(material),ids=material.map(c=>c.uniqueId),snapshot=clone(s);let next=rules.startCombination(s,ids,'STAR',db,'',()=>.4);assert.equal(next.players.length,0);assert.equal(next.currency.stars,s.currency.stars-500);assert.equal(next.manager.pendingCombination.choices.length,7);assert.deepEqual(s,snapshot);assert.throws(()=>rules.claimCombination(next,0),/選|선택/);assert.throws(()=>rules.startCombination(next,ids,'STAR',db),/결과/);
  next=rules.shuffleCombination(clone(next),()=>.3);const saved=clone(next);assert.equal(next.manager.pendingCombination.phase,'hidden');assert.throws(()=>rules.shuffleCombination(next),/섞을/);const result=rules.claimCombination(saved,2);assert.equal(result.state.players.length,1);assert.equal(result.card.uniqueId,saved.manager.pendingCombination.choices[2].uniqueId);assert.equal(result.card.grade,'PLATINUM');assert.throws(()=>rules.claimCombination(result.state,0),/선택/);
@@ -55,15 +25,6 @@ test('combination consumes once, persists blind choices, claims once and enforce
  const normals=Array.from({length:3},()=>card(db[0],'NORMAL'));const single=rules.startCombination(state(normals),normals.map(c=>c.uniqueId),'NORMAL',db,'',()=>0);assert.equal(single.manager.pendingCombination.phase,'single');assert.equal(rules.claimCombination(single,0).state.players.length,1);
 });
 
-test('actual card signature recipe validates every material and preserves assigned base',()=>{
- const award=db.find(c=>c.awards.some(a=>['골든글러브','MVP'].includes(a.type)));const base={...card(award),upgrade:20,limitBreaks:5};
- const boosted=()=>({...card(award),upgrade:20,growth:{contact:99,power:99,eye:99,speed:99,field:99,control:99,stuff:99,stamina:99}});
- const materials=Array.from({length:5},boosted);const ids=materials.map(c=>c.uniqueId);const s={...state([base,...materials]),lineup:{DH:base},inventory:[{packId:rules.CLASSIC.signatureContract}]};
- assert.throws(()=>rules.awakenSignature(s,base.uniqueId,ids.map((id,i)=>i===1?ids[0]:id)),/같은 카드/);
- const wrong={...s,players:s.players.map(c=>c.uniqueId===ids[0]?{...c,awards:[]}:c)};assert.throws(()=>rules.awakenSignature(wrong,base.uniqueId,ids),/능력치|재료 유형/);
- const busy={...s,lineup:{...s.lineup,C:materials[0]}};assert.throws(()=>rules.awakenSignature(busy,base.uniqueId,ids),/편성/);
- const result=rules.awakenSignature(s,base.uniqueId,ids);assert.equal(result.state.players.length,1);assert.equal(result.card.grade,'SIGNATURE');assert.equal(result.state.players[0].uniqueId,base.uniqueId);
-});
 
 test('all legend recipes require own-franchise awards, verified national card, and two exact coaches; legacy migration preserves resources',()=>{
  for(const target of db.filter(c=>c.grade==='LEGEND')){const r=rules.legendRecipe(target,db);assert.equal(r.length,12);for(const slot of r.slice(6,10))assert.ok(db.some(c=>rules.matchesLegend({...c,grade:'PLATINUM',...(slot.kind==='NATIONAL'?{cardType:'NATIONAL'}:{})},slot)),JSON.stringify({target:target.name,team:target.team,slot}));for(const slot of r.slice(10))assert.ok(rules.COACHES.some(c=>c.id===slot.coachId));}
@@ -71,17 +32,6 @@ test('all legend recipes require own-franchise awards, verified national card, a
  const coach=next.manager.legendScout.requirements[10];const wrong={id:'wrong',packId:'coach_material',coachId:'not-real'};assert.equal(rules.matchesCoach(wrong,coach),false);assert.throws(()=>rules.pledgeLegend({...next,inventory:[...next.inventory,wrong]},10,'coach:wrong'),/코치/);
 });
 
-test('limit-break availability explains blockers and allows a ticket without material or currency',()=>{
- const target={...card(),upgrade:10};const s=state([target]);s.currency={points:0,stars:0};s.inventory=[{packId:rules.CLASSIC.limitTicket}];
- assert.match(rules.breakthroughBlockReason(s,target.uniqueId,null,'points'),/재료|돌파권/);
- assert.equal(rules.breakthroughBlockReason(s,target.uniqueId,null,'ticket'),'');
- const result=rules.breakthrough(s,target.uniqueId,null,'ticket',()=>.999);assert.equal(rules.upgradeLimit(result.state.players[0]),12);assert.equal(result.state.players[0].upgrade,10);assert.equal(result.state.inventory.length,0);assert.deepEqual(result.state.currency,{points:0,stars:0});
- assert.match(rules.breakthroughBlockReason({...s,players:[{...target,grade:'NORMAL'}]},target.uniqueId,null,'ticket'),/스페셜 이상/);
- const material=card();const other={...s,players:[target,material]};assert.match(rules.breakthroughBlockReason(other,target.uniqueId,material.uniqueId,'stars'),/스타/);
- assert.match(rules.breakthroughBlockReason({...other,lineup:{P:material}},target.uniqueId,material.uniqueId,'stars'),/편성/);
- assert.match(rules.breakthroughBlockReason({...s,players:[{...target,limitBreaks:5}]},target.uniqueId,null,'ticket'),/최대/);
- assert.match(rules.breakthroughBlockReason({...s,inventory:[]},target.uniqueId,null,'ticket'),/없습니다/);
-});
 
 test('legend difficulty migration releases excess wildcard pledges without consuming inventory and material packs spend earned coins',()=>{
  let s=rules.searchLegend(state(),db,'',false,1000,()=>0);s.manager.legendScout.pledges=Array(12).fill('item:'+rules.CLASSIC.legendWild);delete s.manager.legendScout.difficultyVersion;s.inventory=Array.from({length:12},()=>({packId:rules.CLASSIC.legendWild}));const next=rules.migrateLegendDifficulty(s);assert.equal(next.manager.legendScout.pledges.filter(Boolean).length,2);assert.deepEqual(next.inventory,s.inventory);assert.ok(next.manager.legendScout.pledges.slice(0,6).every(x=>x===null));assert.ok(next.manager.legendScout.pledges.slice(10).every(x=>x===null));

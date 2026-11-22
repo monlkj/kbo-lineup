@@ -27,19 +27,14 @@ export function skillCeiling(grade,type='PREMIUM'){
 }
 export function generateSingleSkill(pos,grade,rng=Math.random,excluded=[]){
  const pool=SKILL_DB[pos==='P'?'P':'B'][grade].filter(n=>!excluded.includes(n));
- const choices=pool.length?pool:SKILL_DB[pos==='P'?'P':'B'][grade];
+ if(!pool.length)throw Error('중복 없는 고유능력 후보가 없습니다.');const choices=pool;
  const name=choices[Math.min(choices.length-1,Math.floor(rng()*choices.length))];
  const roll=rng();return {name,grade,level:roll>.9?'B':roll>.6?'C':roll>.3?'D':'E'};
 }
-function rollGrade(max,rng){const r=rng();const rank=r>.95?3:r>.8?2:r>.5?1:0;return Object.keys(SKILL_RANK).find(k=>SKILL_RANK[k]===Math.min(rank,SKILL_RANK[max]));}
+function rollGrade(max,rng){const r=rng();const rank=r>=.95&&max==='LEGEND'?3:r>=.7?2:r>=.3?1:0;return Object.keys(SKILL_RANK).find(k=>SKILL_RANK[k]===Math.min(rank,SKILL_RANK[max]));}
 export function generateSkills(pos,grade,type='INITIAL',rng=Math.random){const list=[];for(let i=0;i<skillCount(grade);i++)list.push(generateSingleSkill(pos,rollGrade(skillCeiling(grade,type),rng),rng,list.map(s=>s.name)));return list;}
-export function sanitizeSkills(card){
- const max=SKILL_RANK[skillCeiling(card.grade)];const old=Array.isArray(card.skills)?card.skills:[];
- return Array.from({length:skillCount(card.grade)},(_,i)=>{
-  const s=old[i];const pool=s&&SKILL_DB[card.pos==='P'?'P':'B'][s.grade];
-  return s&&SKILL_RANK[s.grade]<=max&&pool?.includes(s.name)&&['S','A','B','C','D','E'].includes(s.level)?{...s}:generateSingleSkill(card.pos,'NORMAL');
- });
-}
+export function sanitizeSkills(card){const max=SKILL_RANK[skillCeiling(card.grade)],old=Array.isArray(card.skills)?card.skills:[],next=[];
+ for(let i=0;i<skillCount(card.grade);i++){const s=old[i],grade=s&&SKILL_RANK[s.grade]<=max&&SKILL_DB[card.pos==='P'?'P':'B'][s.grade]?.includes(s.name)?s.grade:'NORMAL';const valid=s&&grade===s.grade&&['S','A','B','C','D','E'].includes(s.level)&&!next.some(x=>x.name===s.name);next.push(valid?{...s}:{...generateSingleSkill(card.pos,grade,Math.random,next.map(x=>x.name)),...(['S','A','B','C','D','E'].includes(s?.level)?{level:s.level}:{})});}return next;}
 export function changeSkills(card,type,slot=null,rng=Math.random){
  if(!TICKETS[type])throw new Error('지원하지 않는 변경권입니다.');
  const before=sanitizeSkills(card);
@@ -54,12 +49,12 @@ export function changeSkills(card,type,slot=null,rng=Math.random){
  if(type==='NORMAL_TICKET')return generateSkills(card.pos,card.grade,type,rng);
  if(!Number.isInteger(slot)||slot<0||slot>=before.length)throw new Error(type==='PROTECT'?'보호할 슬롯을 선택해주세요.':'변경할 슬롯을 선택해주세요.');
  if(type==='PROTECT'&&before.length<2)throw new Error('보호할 슬롯 외에 변경할 고유능력이 없습니다.');
- return before.map((s,i)=>((type==='SELECT'&&i===slot)||(type==='PROTECT'&&i!==slot))?generateSingleSkill(card.pos,rollGrade(skillCeiling(card.grade,type),rng),rng):s);
+ const next=[...before];for(let i=0;i<next.length;i++)if((type==='SELECT'&&i===slot)||(type==='PROTECT'&&i!==slot)){next[i]=generateSingleSkill(card.pos,rollGrade(skillCeiling(card.grade,type),rng),rng,[...next.filter((_,j)=>j!==i).map(s=>s.name),...(type==='SELECT'?[before[i].name]:[])]);}return next;
 }
 export function playableCard(base,grade=base.grade){return {...makeCard({...base,grade}),grade,skills:generateSkills(base.pos,grade)};}
 export function capacity(manager,count=0){const n=Number(manager?.rosterCapacity);return Math.max(ROSTER_BASE,count,Number.isFinite(n)?Math.min(ROSTER_MAX,Math.floor(n)):ROSTER_BASE);}
 export function acquisitionCount(count,limit,requested){return Math.max(0,Math.min(Math.max(0,Math.floor(requested)),limit-count));}
-export function protectedIds(lineup,manager){return new Set([...Object.values(lineup||{}).filter(Boolean).map(c=>c.uniqueId),...(manager?.staff?.starters||[]),...(manager?.staff?.relief||[]),manager?.pendingSkillChange?.cardId,...(manager?.legendScout?.pledges||[]).filter(id=>id&&!String(id).startsWith('item:'))].filter(Boolean));}
+export function protectedIds(lineup,manager){return new Set([...Object.values(lineup||{}).filter(Boolean).map(c=>c.uniqueId),...(manager?.staff?.starters||[]),...(manager?.staff?.relief||[]),manager?.pendingSkillChange?.cardId,...Object.values(manager?.scouting?.books||{}).flatMap(b=>b.pledges||[]),...(manager?.legendScout?.pledges||[]).filter(id=>id&&!String(id).startsWith('item:'))].filter(Boolean));}
 export function scoutPool(database,grade,team=''){
  if(!['SIGNATURE','LEGEND'].includes(grade))throw new Error('스카우트 등급을 확인해주세요.');
  return grade==='LEGEND'?legendCandidates(team):database.filter(c=>!c.legendKind&&(!team||c.team===team)&&['PLATINUM','SIGNATURE','LEGEND'].includes(c.grade));

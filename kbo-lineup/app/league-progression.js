@@ -35,7 +35,7 @@ export function finishLeagueSeason(state,season,team){
  if(Number(season.day)!==144||!season.postseason?.champion)throw Error('한국시리즈까지 완료해야 시즌 보상을 받을 수 있습니다.');
  season={...season,day:Number(season.day),year:Number(season.year),complete:true};
  if((state.manager.completedLeagueSeasons||[]).includes(season.year))return {...state,manager:{...state.manager,season},summary:{already:true}};
- const mail=[packMail(`${season.year} 시즌 완주 · 레전드 영입 증서`,'legend_recruit_permit',1),packMail(`${season.year} 시즌 완주 · 구단선택팩`,'premium_team',3),lotteryMail(`${season.year} 시즌 완주 포인트 복권`,20)];
+ const mail=[packMail(`${season.year} 시즌 완주 · 고급 스킬변경권`,'premium_skill_ticket',5),packMail(`${season.year} 시즌 완주 · 구단선택팩`,'premium_team',3),lotteryMail(`${season.year} 시즌 완주 포인트 복권`,20)];
  const champion=season.postseason.champion===team;
  if(champion&&!state.manager.rewardedChampionships?.includes(season.year))mail.push(...championMail(season.year));
  if(champion)mail.push(packMail(`${season.year} 우승 · 고급 스변`,'premium_skill_ticket',10),packMail(`${season.year} 우승 · 한계돌파권`,'limit_break_ticket',2));
