@@ -212,8 +212,8 @@
     "year": 2010,
     "team": "롯데",
     "positions": [
-      "3B",
-      "1B"
+      "1B",
+      "3B"
     ],
     "stats": {
       "fpct": 0.958,
@@ -251,14 +251,20 @@
         "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
       }
     ],
-    "pos": "3B",
+    "pos": "1B",
     "photo": "/players/71564.jpg",
     "photoSource": "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2020/71564.jpg",
     "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=71564",
     "baseSeasonId": "71564-2010",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "3B",
+    "recordPositions": [
+      "3B",
+      "1B"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-92301",
@@ -367,7 +373,8 @@
     "team": "삼성",
     "pos": "1B",
     "positions": [
-      "1B"
+      "1B",
+      "RF"
     ],
     "stats": {
       "avg": 0.315,
@@ -412,7 +419,12 @@
     "baseSeasonId": "93410-2004",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "1B",
+    "recordPositions": [
+      "1B"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-92809",
@@ -656,7 +668,8 @@
     "team": "빙그레",
     "pos": "1B",
     "positions": [
-      "1B"
+      "1B",
+      "SS"
     ],
     "stats": {
       "avg": 0.299,
@@ -693,7 +706,12 @@
     "baseSeasonId": "87760-1992",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "1B",
+    "recordPositions": [
+      "1B"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-83460",
@@ -701,9 +719,9 @@
     "name": "장효조",
     "year": 1987,
     "team": "삼성",
-    "pos": "RF",
+    "pos": "LF",
     "positions": [
-      "RF"
+      "LF"
     ],
     "stats": {
       "avg": 0.387,
@@ -753,7 +771,12 @@
     "baseSeasonId": "83460-1987",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "RF",
+    "recordPositions": [
+      "RF"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-93715",
@@ -1364,9 +1387,9 @@
     "name": "이순철",
     "year": 1985,
     "team": "해태",
-    "pos": "3B",
+    "pos": "CF",
     "positions": [
-      "3B"
+      "CF"
     ],
     "stats": {
       "avg": 0.304,
@@ -1411,7 +1434,12 @@
     "baseSeasonId": "85620-1985",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "3B",
+    "recordPositions": [
+      "3B"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-83270",
@@ -1474,9 +1502,9 @@
     "name": "백인천",
     "year": 1982,
     "team": "MBC",
-    "pos": "DH",
+    "pos": "LF",
     "positions": [
-      "DH"
+      "LF"
     ],
     "stats": {
       "avg": 0.412,
@@ -1515,7 +1543,12 @@
     "baseSeasonId": "96480-1982",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "DH",
+    "recordPositions": [
+      "DH"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-82612",
@@ -1608,7 +1641,6 @@
     "year": 2004,
     "team": "현대",
     "positions": [
-      "LF",
       "CF"
     ],
     "stats": {
@@ -1636,7 +1668,7 @@
         "source": "https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx"
       }
     ],
-    "pos": "LF",
+    "pos": "CF",
     "photo": "https://6ptotvmi5753.edge.naverncp.com/KBO_FILE/legend/images/2022/08/29/%EC%A0%84%EC%A4%80%ED%98%B8poster_%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80.jpg",
     "photoSource": "https://www.koreabaseball.com/Player/Legend40.aspx",
     "profileSource": "https://www.koreabaseball.com/Record/Player/HitterDetail/Basic.aspx?playerId=91511",
@@ -1644,7 +1676,13 @@
     "baseSeasonId": "91511-2004",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "LF",
+    "recordPositions": [
+      "LF",
+      "CF"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-96362",
@@ -1699,7 +1737,8 @@
     "team": "KIA",
     "pos": "1B",
     "positions": [
-      "1B"
+      "1B",
+      "LF"
     ],
     "stats": {
       "avg": 0.343,
@@ -1738,7 +1777,12 @@
     "baseSeasonId": "96610-2002",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "1B",
+    "recordPositions": [
+      "1B"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-75808",
@@ -1804,7 +1848,8 @@
     "year": 2004,
     "team": "두산",
     "positions": [
-      "C"
+      "C",
+      "DH"
     ],
     "stats": {
       "fpct": 0.992,
@@ -1840,7 +1885,12 @@
     "baseSeasonId": "99222-2004",
     "grade": "LEGEND",
     "legendKind": "CLASSIC",
-    "legendSelection": "user-roster-2026-11-21"
+    "legendSelection": "user-roster-2026-11-21",
+    "recordPosition": "C",
+    "recordPositions": [
+      "C"
+    ],
+    "positionRule": "사용자 지정 레전드 수비 포지션"
   },
   {
     "id": "LEGEND-96307",

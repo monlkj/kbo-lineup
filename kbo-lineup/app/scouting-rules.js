@@ -1,4 +1,4 @@
-import {legendCandidates} from './legend-registry.js';
+import {refreshLegendPositions,legendCandidates} from './legend-registry.js';
 import {migrateLegendRecipe,legendRecipe,matchesLegend,matchesCoach,CLASSIC} from './classic-progression.js';
 import {playableCard,protectedIds,capacity} from './club-rules.js';
 import {ownedCoaches,coachAssigned} from './coaching.js';
@@ -11,7 +11,7 @@ export function migrateScouting(state,database){if(database&&state.manager?.lege
  if(old?.target&&!scouting.legacyImported){const id=old.target.id;scouting={...scouting,legacyImported:true,queue:[...scouting.queue,{id:old.target.uniqueId||crypto.randomUUID(),card:old.target,foundAt:old.foundAt}],books:{...scouting.books,[id]:{...old,pledges:[...(old.pledges||Array(12).fill(null))]}}};}
  const convert=i=>i.packId==='legend_recruit_permit'?{...i,packId:'legend_scout_ticket',name:'레전드 스카우트권'}:i;
  const inventory=(state.inventory||[]).map(convert);const mailbox=(state.mailbox||[]).map(m=>{if(m.packId==='legend_recruit_permit')return {...m,packId:'legend_scout_ticket',title:'기존 영입 증서 → 레전드 스카우트권'};return m;});
- return {...state,inventory,mailbox,manager:{...manager,legendScout:null,scouting:{...scouting,capacity:Math.min(12,Math.max(1,scouting.capacity||1,scouting.queue.length))}}};
+ return {...state,inventory,mailbox,manager:{...manager,legendScout:null,scouting:{...scouting,queue:scouting.queue.map(q=>({...q,card:refreshLegendPositions(q.card)})),books:Object.fromEntries(Object.entries(scouting.books).map(([id,b])=>[id,{...b,target:refreshLegendPositions(b.target)}])),capacity:Math.min(12,Math.max(1,scouting.capacity||1,scouting.queue.length))}}};
 }
 export function prepareLegend(state,target,database){state=migrateScouting(state);const sc=state.manager.scouting;if(sc.books[target.id])return state;return {...state,manager:{...state.manager,scouting:{...sc,books:{...sc.books,[target.id]:{target,requirements:legendRecipe(target,database),pledges:Array(12).fill(null)}}}}};}
 export function expandScout(state){busy(state);state=migrateScouting(state);const sc=state.manager.scouting;if(sc.capacity>=12)throw Error('최대 12칸입니다.');if(state.currency.stars<500)throw Error('500스타가 필요합니다.');return {...state,currency:{...state.currency,stars:state.currency.stars-500},manager:{...state.manager,scouting:{...sc,capacity:sc.capacity+1}}};}

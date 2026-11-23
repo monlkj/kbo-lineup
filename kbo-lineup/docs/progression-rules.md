@@ -21,3 +21,15 @@ Core implementations: `growth-rules.js`, `classic-progression.js`, `scouting-rul
 Five starters rotate in order. Six bullpen slots are fixed: winning group 1/2, chasing group 1/2, long relief, closer. Lineups require eleven distinct pitchers. Starter squads and AI teams include all eleven. Legacy three-slot bullpens retain the former middle/setup pair as the winning pair and the former closer as the closer; only the three new slots are filled from eligible owned reserves. Registered materials and duplicate players are skipped, and insufficient reserves leave visible empty slots.
 
 Games prefer the winning pair in close leads/ties, chasing pair while narrowly trailing, long relief for early starter removal, large margins and extras, and the closer for a lead of at most three runs in the ninth or later. A removed pitcher cannot reenter; long relief may stay for two innings, and an exhausted bullpen keeps its current pitcher. Game results include an inning-by-inning role log. Existing card stats, ownership and currencies are preserved.
+
+## Five batting reserves
+
+The lineup has nine starting batters, five batting bench slots, and eleven pitchers (25 registered players). Starter gifts remain 26 owned cards and now include at least fourteen distinct batters. Existing saves fill new bench slots from eligible unassigned owned batters once, without creating or consuming cards. Missing reserves may stay empty and do not block league play.
+
+Bench cards are protected from release, combination and scout materials and count for team/year deck bonuses. Selecting a bench card and then an eligible starting batter swaps their assignments, preserving the batting-order position and all card growth. A direct upgrade to another card of the currently starting player is still allowed from owned cards. Duplicate players across starting and bench slots, pitchers on the batting bench, false field positions and registered scout materials are rejected. Bench editing is pregame; this change does not enable automatic in-game pinch hitting.
+
+## Legend positions and set decks
+
+Legend game positions: Jang Jong-hoon 1B/SS; Yang Joon-hyuk 1B/RF; Jang Hyo-jo LF; Lee Soon-cheol CF; Baek In-cheon LF; Jeon Jun-ho CF; Hong Sung-heun C/DH; Jang Sung-ho 1B/LF; Lee Dae-ho 1B/3B. Original season stats and recorded season positions remain in metadata; owned cards and waiting candidates update their game positions without consuming or rerolling anything. The existing outfield compatibility rule remains.
+
+Every LEGEND card counts once toward the strongest ordinary-card year deck regardless of its recorded season. An all-legend lineup displays “all years”. Legend card faces omit the year; the source-stat year remains in player details and recipes. Club decks group Haitai/KIA, OB/Doosan, Binggrae/Hanwha, MBC/LG, SK/SSG and Woori/Nexen/Heroes/Kiwoom while retaining original club names on cards. Hyundai is not grouped with Kiwoom. Club, year and national bonuses continue stacking using the existing thresholds.

@@ -1,3 +1,4 @@
+import {battingBench} from './batting-bench.js';
 import {normalizePitchingStaff} from './pitching-rules.js';
 import {newSeason,BAT_POS,deckBonus,lineupError,simulateDay,advancePlayers} from './manager-engine.js';
 import {leagueMail,championMail,lotteryMail,starMail} from './reward-rules.js';
@@ -64,9 +65,9 @@ export function simulateLeagueSeries(state,team,catalog,count=5){
  const remaining=144-next.manager.season.day;if(remaining<=0)throw Error('정규시즌이 종료되었습니다.');
  for(let i=0;i<Math.min(count,remaining);i++){
   const byId=Object.fromEntries(next.players.map(c=>[c.uniqueId,c])),order=next.manager.order||BAT_POS,staff=normalizePitchingStaff(next.manager.staff);
-  const lineup=Object.fromEntries(Object.entries(next.lineup).map(([p,c])=>[p,c?byId[c.uniqueId]:null])),starters=staff.starters.map(id=>byId[id]),relief=staff.relief.map(id=>byId[id]);
-  const error=lineupError(lineup,order,{starters,relief});if(error)throw Error(error);
-  const active=[...BAT_POS.map(p=>lineup[p]),...starters,...relief],user={name:team,batters:order.map(p=>lineup[p]),starter:starters[next.manager.season.day%5],relief,bonus:deckBonus(active).total,tactic:next.manager.tactic||'BALANCED'};
+  const lineup=Object.fromEntries(Object.entries(next.lineup).map(([p,c])=>[p,c?byId[c.uniqueId]:null])),starters=staff.starters.map(id=>byId[id]),relief=staff.relief.map(id=>byId[id]),bench=battingBench(next.manager).map(id=>byId[id]);
+  const error=lineupError(lineup,order,{starters,relief},bench);if(error)throw Error(error);
+  const active=[...BAT_POS.map(p=>lineup[p]),...starters,...relief,...bench.filter(Boolean)],user={name:team,batters:order.map(p=>lineup[p]),starter:starters[next.manager.season.day%5],relief,bonus:deckBonus(active).total,tactic:next.manager.tactic||'BALANCED'};
   const out=simulateDay(next.manager.season,user,catalog);next=recordLeagueGame(next,out.season,out.result,team);tokens+=next.summary.tokens;games.push(out.result);
   next={...next,players:advancePlayers(next.players,active.filter(c=>out.result.batters[c.uniqueId]||out.result.pitchers[c.uniqueId]),user.starter.uniqueId)};
  }

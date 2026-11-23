@@ -54,7 +54,7 @@ export function changeSkills(card,type,slot=null,rng=Math.random){
 export function playableCard(base,grade=base.grade){return {...makeCard({...base,grade}),grade,skills:generateSkills(base.pos,grade)};}
 export function capacity(manager,count=0){const n=Number(manager?.rosterCapacity);return Math.max(ROSTER_BASE,count,Number.isFinite(n)?Math.min(ROSTER_MAX,Math.floor(n)):ROSTER_BASE);}
 export function acquisitionCount(count,limit,requested){return Math.max(0,Math.min(Math.max(0,Math.floor(requested)),limit-count));}
-export function protectedIds(lineup,manager){return new Set([...Object.values(lineup||{}).filter(Boolean).map(c=>c.uniqueId),...(manager?.staff?.starters||[]),...(manager?.staff?.relief||[]),manager?.pendingSkillChange?.cardId,...Object.values(manager?.scouting?.books||{}).flatMap(b=>b.pledges||[]),...(manager?.legendScout?.pledges||[]).filter(id=>id&&!String(id).startsWith('item:'))].filter(Boolean));}
+export function protectedIds(lineup,manager){return new Set([...Object.values(lineup||{}).filter(Boolean).map(c=>c.uniqueId),...(manager?.staff?.starters||[]),...(manager?.staff?.relief||[]),...(manager?.bench||[]),manager?.pendingSkillChange?.cardId,...Object.values(manager?.scouting?.books||{}).flatMap(b=>b.pledges||[]),...(manager?.legendScout?.pledges||[]).filter(id=>id&&!String(id).startsWith('item:'))].filter(Boolean));}
 export function scoutPool(database,grade,team=''){
  if(!['SIGNATURE','LEGEND'].includes(grade))throw new Error('스카우트 등급을 확인해주세요.');
  return grade==='LEGEND'?legendCandidates(team):database.filter(c=>!c.legendKind&&(!team||c.team===team)&&['PLATINUM','SIGNATURE','LEGEND'].includes(c.grade));
@@ -68,8 +68,9 @@ export function createStarterSquad(team,database){
  const pitchers=[];for(const c of pool)if(c.pos==='P'&&!used.has(c.playerId)){pitchers.push(c);used.add(c.playerId);if(pitchers.length===11)break;}
  if(pitchers.length!==11)throw new Error('기본 투수 자료가 부족합니다.');
  const sources=[...BAT_POS.map(p=>slots[p]),...pitchers];
+ for(const c of pool)if(c.pos!=='P'&&!used.has(c.playerId)&&sources.length<25){sources.push(c);used.add(c.playerId);}
  for(const c of pool)if(!used.has(c.playerId)&&sources.length<26){sources.push(c);used.add(c.playerId);}
  const players=sources.map(c=>playableCard(c,'NORMAL'));
  const lineup=Object.fromEntries(BAT_POS.map((p,i)=>[p,players[i]]));lineup.P=players[9];
- return {players,lineup,manager:{starterGift:true,basicRosterGranted:true,rosterCapacity:ROSTER_BASE,order:BAT_POS,staff:{starters:players.slice(9,14).map(c=>c.uniqueId),version:2,relief:players.slice(14,20).map(c=>c.uniqueId)}}};
+ return {players,lineup,manager:{starterGift:true,basicRosterGranted:true,rosterCapacity:ROSTER_BASE,order:BAT_POS,bench:players.slice(20,25).map(c=>c.uniqueId),benchVersion:1,staff:{starters:players.slice(9,14).map(c=>c.uniqueId),version:2,relief:players.slice(14,20).map(c=>c.uniqueId)}}};
 }

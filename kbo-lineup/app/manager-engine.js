@@ -1,6 +1,6 @@
 import {normalizePitchingStaff,chooseGamePitcher} from './pitching-rules.js';
 import {migrateGrowth} from './growth-rules.js';
-import {isNationalLegend} from './legend-registry.js';
+import {deckFranchise,isNationalLegend} from './legend-registry.js';
 import {battingSkillBonuses,activeSkillNames,intimidationAtBat} from './skill-effects.js';
 export const BAT_POS = ['CF','LF','RF','SS','2B','3B','1B','C','DH'];
 export const TEAMS = ['KIA','삼성','LG','두산','KT','SSG','롯데','한화','NC','키움'];
@@ -18,18 +18,21 @@ export function makeCard(c){return {...c,uniqueId:crypto.randomUUID(),growthVers
 export const OUTFIELD_POSITIONS=['LF','CF','RF'];
 export function eligible(c,pos){if(pos==='DH')return c.pos!=='P';const positions=c.positions?.length?c.positions:[c.pos];if(OUTFIELD_POSITIONS.includes(pos)&&positions.some(p=>OUTFIELD_POSITIONS.includes(p)||p==='OF'))return true;return positions.includes(pos);}
 export function deckBonus(cards){
- const nationalCount=cards.filter(c=>c&&(c.cardType==='NATIONAL'||isNationalLegend(c))).length;const teams={},years={};cards.filter(Boolean).forEach(c=>{teams[c.team]=(teams[c.team]||0)+1;years[c.year]=(years[c.year]||0)+1;});
- const team=Object.entries(teams).sort((a,b)=>b[1]-a[1])[0]||['없음',0],year=Object.entries(years).sort((a,b)=>b[1]-a[1])[0]||['없음',0];
+ const present=cards.filter(Boolean),legendYearCount=present.filter(c=>c.grade==='LEGEND').length;
+ const nationalCount=present.filter(c=>c.cardType==='NATIONAL'||isNationalLegend(c)).length,teams={},years={};
+ present.forEach(c=>{const team=deckFranchise(c.team);if(team)teams[team]=(teams[team]||0)+1;if(c.grade!=='LEGEND'&&c.year!=null)years[c.year]=(years[c.year]||0)+1;});
+ const team=Object.entries(teams).sort((a,b)=>b[1]-a[1])[0]||['없음',0],normalYear=Object.entries(years).sort((a,b)=>b[1]-a[1])[0],year=normalYear?[normalYear[0],normalYear[1]+legendYearCount]:[legendYearCount?'전체 연도':'없음',legendYearCount];
  const points=n=>n>=12?5:n>=9?3:n>=6?2:n>=3?1:0;
- return {team:team[0],teamCount:team[1],year:year[0],yearCount:year[1],teamBonus:points(team[1]),yearBonus:points(year[1]),nationalCount,nationalBonus:points(nationalCount),total:points(team[1])+points(year[1])+points(nationalCount)};
+ return {team:team[0],teamCount:team[1],year:year[0],yearCount:year[1],legendYearCount,teamBonus:points(team[1]),yearBonus:points(year[1]),nationalCount,nationalBonus:points(nationalCount),total:points(team[1])+points(year[1])+points(nationalCount)};
 }
-export function lineupError(lineup,order,staff){
+export function lineupError(lineup,order,staff,bench=[]){
  if(BAT_POS.some(p=>!lineup[p]))return '야수 9개 포지션을 모두 채워주세요.';
  if(order.length!==9||new Set(order).size!==9||order.some(p=>!BAT_POS.includes(p)))return '타순을 1~9번까지 구성해주세요.';
  const field=BAT_POS.map(p=>lineup[p]);
  if(field.some((c,i)=>!eligible(c,BAT_POS[i])))return '선수의 확인된 포지션에 맞게 배치해주세요.';
  if(staff.starters.length!==5||staff.relief.length!==6||Array.from({length:5},(_,i)=>staff.starters[i]).some(c=>!c)||Array.from({length:6},(_,i)=>staff.relief[i]).some(c=>!c))return '선발 5명·필승조 2명·추격조 2명·롱릴리프 1명·마무리 1명을 등록해주세요.';
- const all=[...field,...staff.starters,...staff.relief];
+ if(bench.length>5||bench.filter(Boolean).some(c=>c.pos==='P'))return '후보 타자는 최대 5명이며 타자만 편성할 수 있습니다.';
+ const all=[...field,...staff.starters,...staff.relief,...bench.filter(Boolean)];
  if(new Set(all.map(c=>String(c.playerId))).size!==all.length)return '동일 선수는 연도가 달라도 한 명만 출전할 수 있습니다.';
  if([...staff.starters,...staff.relief].some(c=>c.pos!=='P'))return '투수 보직에는 투수만 등록해주세요.';
  return '';
