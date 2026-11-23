@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {migrateScouting} from '../app/scouting-rules.js';
+import {awakenSignature} from '../app/classic-progression.js';
+import {eraMaterialReason} from '../app/era-signature.js';
+const card={id:'yang17',uniqueId:'owned-yang',name:'양현종',year:2017,grade:'SIGNATURE',cardType:'SIGNATURE',pos:'P',level:17,enhancement:{stuff:30},skills:[{name:'에이스',grade:'PLATINUM',level:'S'}]};
+const slot={kind:'PLAYER',cardId:'yang17',grade:'PLATINUM'};
+const state=(c=card)=>({players:[c],inventory:[],currency:{points:123,stars:456},manager:{scouting:{version:2,capacity:1,queue:[],books:{legend:{target:{id:'legend'},requirements:[slot],pledges:[c.uniqueId]}}}},lineup:{}});
+test('repair stale signature pledge without altering card, growth, inventory or currency; idempotent',()=>{const s=state(),before=structuredClone(s),r=migrateScouting(s);assert.equal(r.manager.scouting.books.legend.pledges[0],null);assert.equal(r.manager.scouting.repairedRegistrations,1);assert.deepEqual(r.players,s.players);assert.deepEqual(r.currency,s.currency);assert.deepEqual(r.inventory,s.inventory);assert.equal(eraMaterialReason(r,{...card,uniqueId:'target'},card),'');assert.deepEqual(migrateScouting(r),r);assert.deepEqual(s,before);});
+test('valid platinum pledge stays locked and cannot become signature, including legacy scout',()=>{const c={...card,grade:'PLATINUM',cardType:'NORMAL'},s=state(c),before=structuredClone(s);assert.equal(migrateScouting(s).manager.scouting.books.legend.pledges[0],c.uniqueId);assert.throws(()=>awakenSignature(s,c.uniqueId,[]),/레전드 재료로 등록/);assert.deepEqual(s,before);assert.throws(()=>awakenSignature({...s,manager:{legendScout:{pledges:[c.uniqueId]}}},c.uniqueId,[]),/레전드 재료로 등록/);});
+test('login-shaped saves and legacy scout registrations receive same repair; assigned pitchers stay assigned',()=>{const s=state(),old=s.manager.scouting.books.legend;s.myPlayers=s.players;delete s.players;s.manager={legendScout:old,staff:{starters:[card.uniqueId]}};const r=migrateScouting(s);assert.equal(r.manager.scouting.books.legend.pledges[0],null);assert.deepEqual(r.myPlayers,[card]);assert.equal(r.manager.staff.starters[0],card.uniqueId);assert.equal(eraMaterialReason(r,{...card,uniqueId:'target'},card),'선발 투수 편성 중');});

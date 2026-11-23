@@ -9,6 +9,10 @@ const busy=s=>{if(s.manager.pendingSkillChange||s.manager.pendingCombination)thr
 const pick=(a,rng)=>{if(!a.length)throw Error('선택한 장소의 후보가 없습니다.');return a[Math.min(a.length-1,Math.floor(rng()*a.length))];};
 export function migrateScouting(state,database){if(database&&state.manager?.legendScout?.target&&state.manager.legendScout.requirements?.length!==12)state=migrateLegendRecipe(state,database);const manager=state.manager||{};let scouting=manager.scouting||{version:2,capacity:1,queue:[],books:{}};const old=manager.legendScout;
  if(old?.target&&!scouting.legacyImported){const id=old.target.id;scouting={...scouting,legacyImported:true,queue:[...scouting.queue,{id:old.target.uniqueId||crypto.randomUUID(),card:old.target,foundAt:old.foundAt}],books:{...scouting.books,[id]:{...old,pledges:[...(old.pledges||Array(12).fill(null))]}}};}
+ // Repair the old awakening loophole without releasing valid irrevocable pledges.
+ const players=state.players||state.myPlayers||[];let repaired=0;
+ scouting={...scouting,books:Object.fromEntries(Object.entries(scouting.books||{}).map(([id,book])=>[id,{...book,pledges:(book.pledges||[]).map((value,index)=>{const card=players.find(c=>c.uniqueId===value),slot=book.requirements?.[index];if(card&&slot&&!matchesLegend(card,slot)){repaired++;return null;}return value;})}]))};
+ if(repaired)scouting={...scouting,repairedRegistrations:(scouting.repairedRegistrations||0)+repaired};
  const convert=i=>i.packId==='legend_recruit_permit'?{...i,packId:'legend_scout_ticket',name:'레전드 스카우트권'}:i;
  const inventory=(state.inventory||[]).map(convert);const mailbox=(state.mailbox||[]).map(m=>{if(m.packId==='legend_recruit_permit')return {...m,packId:'legend_scout_ticket',title:'기존 영입 증서 → 레전드 스카우트권'};return m;});
  return {...state,inventory,mailbox,manager:{...manager,legendScout:null,scouting:{...scouting,queue:scouting.queue.map(q=>({...q,card:refreshLegendPositions(q.card)})),books:Object.fromEntries(Object.entries(scouting.books).map(([id,b])=>[id,{...b,target:refreshLegendPositions(b.target)}])),capacity:Math.min(12,Math.max(1,scouting.capacity||1,scouting.queue.length))}}};

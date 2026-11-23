@@ -104,7 +104,9 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
             try { data = JSON.parse(savedData); if (!data || !Array.isArray(data.myPlayers) || !data.currency) throw new Error(); }
             catch { showToast('저장 데이터를 읽을 수 없습니다. 다른 구단 코드를 사용해주세요.'); return; }
             setLastReward(data.lastReward || '');
+            const priorRepairs=data.manager?.scouting?.repairedRegistrations||0;
             data=migrateScouting(migrateCoachStorage(data),FULL_DATABASE);
+            const repairedRegistrations=(data.manager?.scouting?.repairedRegistrations||0)-priorRepairs;
             setManager(data.manager || {});
             // Upgrade older synthetic cards only when identity and season match real records.
             const remapped=(data.myPlayers||[]).flatMap(old=>{
@@ -129,7 +131,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
               setMyPlayers(remapped); setLineup(data.lineup || {});
               setManager({...data.manager,basicRosterGranted:true,rosterCapacity:capacity(data.manager,remapped.length)});
             }
-            setIsLoggedIn(true); showToast(`[${code}] 구단을 불러왔습니다.`);
+            setIsLoggedIn(true); showToast(repairedRegistrations?`잘못 남은 레전드 재료 등록 ${repairedRegistrations}건을 복구했습니다. 선수와 성장은 유지됩니다.`:`[${code}] 구단을 불러왔습니다.`);
         } else {
             if(!favTeam) { showToast('선호 구단을 선택해주세요!'); return; }
             setMailbox(startingMail());
