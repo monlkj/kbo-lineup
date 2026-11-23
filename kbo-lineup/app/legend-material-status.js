@@ -26,3 +26,14 @@ export function legendMaterialReason(state,book,index,card){
  if(protectedIds(state.lineup,m).has(id))return '다른 작업에서 사용 중';
  return '';
 }
+
+export function legendMaterialOptions(state,book,index){
+ const status=legendMaterialStatus(state,book,index),coach=book.requirements[index].kind==='COACH';
+ return status.owned.map(card=>{
+  const ready=status.ready.some(c=>(coach?c.id:c.uniqueId)===(coach?card.id:card.uniqueId));
+  const low=status.low.some(c=>(coach?c.id:c.uniqueId)===(coach?card.id:card.uniqueId));
+  let reason=coach?'':legendMaterialReason(state,book,index,card);
+  if(coach&&!ready){const ref='coach:'+card.id,registered=Object.values(state.manager.scouting?.books||{}).find(b=>(b.pledges||[]).includes(ref));reason=registered?`${registered.target?.name||'레전드'} 재료로 등록됨 · 회수 불가`:coachPledged(state.manager,card.id)?'레전드 재료로 등록됨 · 회수 불가':coachAssigned(state.manager,card.id)?'코치 편성 중 · 코치진에서 교체 필요':'등급상승 후 등록 가능 · 플래티넘 필요';}
+  return {card,ready,low,reason,order:ready?0:low?1:2};
+ }).sort((a,b)=>a.order-b.order);
+}
