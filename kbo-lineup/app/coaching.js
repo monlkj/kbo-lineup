@@ -22,6 +22,6 @@ export function openCoachPacks(state,requested,rng=Math.random){
  if(!Number.isInteger(requested)||requested<1)throw Error('개봉 수량을 확인해주세요.');
  const packs=state.inventory.filter(i=>i.packId==='coach_pack').slice(0,requested);if(!packs.length)throw Error('보유 코치팩이 없습니다.');
  const pool=COACH_CATALOG.filter(c=>Object.keys(COACH_SLOTS).some(slot=>coachFits(c,slot)));
- const ids=new Set(packs.map(i=>i.id)),coaches=packs.map(()=>{const c=pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))];return {id:crypto.randomUUID(),packId:'coach_material',coachId:c.id,name:`${c.team} '${String(c.year).slice(-2)} ${c.name} 코치`,source:c.source};});
+ const ids=new Set(packs.map(i=>i.id)),coaches=packs.map(()=>{const c=pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))];return {id:crypto.randomUUID(),packId:'coach_material',coachId:c.id,grade:(()=>{const r=rng();return r<.6?'SPECIAL':r<.9?'HERO':'PLATINUM';})(),name:`${c.team} '${String(c.year).slice(-2)} ${c.name} 코치`,source:c.source};});
  const next=migrateCoachStorage(state);return {state:{...next,inventory:next.inventory.filter(i=>!ids.has(i.id)),manager:{...next.manager,coachCards:[...next.manager.coachCards,...coaches]}},coaches};
 }

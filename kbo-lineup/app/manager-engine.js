@@ -11,19 +11,20 @@ export function ratings(card) {
  const s=card.stats||{};
  const base=card.pos==='P'?{control:clamp(91-(s.bb||0)/Math.max(1,s.ip||1)*30),stuff:clamp(45+(s.so||0)/Math.max(1,s.ip||1)*35),stamina:clamp(42+(s.ip||0)/Math.max(1,s.g||1)*8)}:{contact:clamp(35+(s.avg||0)*150),power:clamp(40+(s.hr||0)/Math.max(1,s.pa||1)*600),eye:clamp(50+Math.max(0,(s.pa||0)-(s.ab||0))/Math.max(1,s.pa||1)*160),speed:clamp(45+(s.sb||0)/Math.max(1,s.pa||1)*500),field:clamp((s.fpct||.95)*100-10)};
  if(card.pos==='P'){base.fastball=Math.round(base.stuff*.6+base.control*.4);base.breaking=Math.round(base.stuff*.6+base.stamina*.4);}
- const c=migrateGrowth(card);return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,Math.round(v+(c.growth?.[k]||0)+(c.enhancement?.[k]||0))]));
+ const c=migrateGrowth(card);return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,Math.round(v+(c.growth?.[k]||0)+(c.enhancement?.[k]||0)+(card.gradeBonus||0))]));
 }
 export const overall=c=>Math.round(Object.values(ratings(c)).reduce((a,b)=>a+b,0)/Object.keys(ratings(c)).length);
 export function makeCard(c){return {...c,uniqueId:crypto.randomUUID(),growthVersion:2,level:1,limitBreaks:0,transcendBreaks:0,enhancement:{},upgrade:0,ovr:overall(c),xp:0,training:0,growth:{},condition:0,fatigue:0,skills:c.skills||[]};}
 export const OUTFIELD_POSITIONS=['LF','CF','RF'];
 export function eligible(c,pos){if(pos==='DH')return c.pos!=='P';const positions=c.positions?.length?c.positions:[c.pos];if(OUTFIELD_POSITIONS.includes(pos)&&positions.some(p=>OUTFIELD_POSITIONS.includes(p)||p==='OF'))return true;return positions.includes(pos);}
 export function deckBonus(cards){
- const present=cards.filter(Boolean),legendYearCount=present.filter(c=>c.grade==='LEGEND').length;
- const nationalCount=present.filter(c=>c.cardType==='NATIONAL'||isNationalLegend(c)).length,teams={},years={};
- present.forEach(c=>{const team=deckFranchise(c.team);if(team)teams[team]=(teams[team]||0)+1;if(c.grade!=='LEGEND'&&c.year!=null)years[c.year]=(years[c.year]||0)+1;});
- const team=Object.entries(teams).sort((a,b)=>b[1]-a[1])[0]||['없음',0],normalYear=Object.entries(years).sort((a,b)=>b[1]-a[1])[0],year=normalYear?[normalYear[0],normalYear[1]+legendYearCount]:[legendYearCount?'전체 연도':'없음',legendYearCount];
+ const present=cards.filter(Boolean),isEra=c=>c.grade==='SIGNATURE'&&c.cardType==='ERA_SIGNATURE',era=c=>Math.floor(c.year/10)*10,legendYearCount=present.filter(c=>c.grade==='LEGEND').length;
+ const nationalCount=present.filter(c=>c.cardType==='NATIONAL'||isNationalLegend(c)).length,teams={},years={},eras={};
+ present.forEach(c=>{const team=deckFranchise(c.team);if(team)teams[team]=(teams[team]||0)+1;if(isEra(c))eras[era(c)]=(eras[era(c)]||0)+1;else if(c.grade!=='LEGEND'&&c.year!=null)years[c.year]=(years[c.year]||0)+1;});
+ const team=Object.entries(teams).sort((a,b)=>b[1]-a[1])[0]||['없음',0],candidates=[...new Set([...Object.keys(years).map(Number),...Object.keys(eras).map(Number)])],choices=candidates.map(y=>[y,(years[y]||0)+(eras[Math.floor(y/10)*10]||0)+legendYearCount]).sort((a,b)=>b[1]-a[1]||((years[b[0]]||0)-(years[a[0]]||0))||a[0]-b[0]);
+ const chosen=choices[0],year=chosen?[years[chosen[0]]?String(chosen[0]):`${Math.floor(chosen[0]/10)*10}년대`,chosen[1]]:[legendYearCount?'전체 연도':'없음',legendYearCount],eraSet=Object.entries(eras).sort((a,b)=>b[1]-a[1])[0]||['없음',0];
  const points=n=>n>=12?5:n>=9?3:n>=6?2:n>=3?1:0;
- return {team:team[0],teamCount:team[1],year:year[0],yearCount:year[1],legendYearCount,teamBonus:points(team[1]),yearBonus:points(year[1]),nationalCount,nationalBonus:points(nationalCount),total:points(team[1])+points(year[1])+points(nationalCount)};
+ return {team:team[0],teamCount:team[1],year:year[0],yearCount:year[1],legendYearCount,signatureEra:eraSet[0],eraCount:eraSet[1],eraBonus:points(eraSet[1]),teamBonus:points(team[1]),yearBonus:points(year[1]),nationalCount,nationalBonus:points(nationalCount),total:points(team[1])+points(year[1])+points(nationalCount)+points(eraSet[1])};
 }
 export function lineupError(lineup,order,staff,bench=[]){
  if(BAT_POS.some(p=>!lineup[p]))return '야수 9개 포지션을 모두 채워주세요.';

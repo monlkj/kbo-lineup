@@ -5,11 +5,13 @@ import PlayerFilters from './player-filters.jsx';
 import {EMPTY_FILTERS,filterPlayers} from './player-filters.js';
 import {protectedIds} from './club-rules.js';
 import {TIER,COMBO_PROBABILITIES,startCombination,shuffleCombination,claimCombination} from './classic-progression.js';
+import GradeUpWorkshop from './grade-up-workshop.jsx';
+import EraSignatureWorkshop from './era-signature-workshop.jsx';
 import GrowthWorkshop from './growth-workshop.jsx';
 import SignatureWorkshop from './signature-workshop.jsx';
 import ScoutWorkshop from './scout-workshop.jsx';
 const LABEL={NORMAL:'노멀',RARE:'레어',SPECIAL:'스페셜',HERO:'히어로',PLATINUM:'플래티넘'};
-export default function ProgressionWorkshop(props){if(['TRAIN','LIMIT','TRANSCEND'].includes(props.mode))return <GrowthWorkshop key={props.mode} {...props}/>;if(props.mode==='LEGEND_SCOUT')return <ScoutWorkshop {...props}/>;if(props.mode==='SIGNATURE_AWAKEN')return <SignatureWorkshop {...props}/>;return <CombinationWorkshop {...props}/>;}
+export default function ProgressionWorkshop(props){if(props.mode==='GRADE_UP')return <GradeUpWorkshop {...props}/>;if(props.mode==='ERA_SIGNATURE')return <EraSignatureWorkshop {...props}/>;if(['TRAIN','LIMIT','TRANSCEND'].includes(props.mode))return <GrowthWorkshop key={props.mode} {...props}/>;if(props.mode==='LEGEND_SCOUT')return <ScoutWorkshop {...props}/>;if(props.mode==='SIGNATURE_AWAKEN')return <SignatureWorkshop {...props}/>;return <CombinationWorkshop {...props}/>;}
 function CombinationWorkshop({state,database,onCommit,onResult,showToast}){
  const [filters,setFilters]=useState({...EMPTY_FILTERS}),[comboMode,setComboMode]=useState('NORMAL'),[position,setPosition]=useState('P'),[selected,setSelected]=useState([]);const {players,manager}=state,locked=protectedIds(state.lineup,manager);
  const run=(fn,message)=>{try{const r=fn();onCommit(r.state||r);if(message)showToast(message);return true;}catch(e){showToast(e.message);return false;}};

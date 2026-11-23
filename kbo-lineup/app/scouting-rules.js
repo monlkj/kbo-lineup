@@ -29,7 +29,7 @@ export function scout(state,database,kind,team,rng=Math.random){busy(state);stat
 }
 export function registerMaterial(state,targetId,index,value){busy(state);state=migrateScouting(state);const sc=state.manager.scouting,book=sc.books[targetId],slot=book?.requirements[index];if(!slot)throw Error('재료 칸을 확인해주세요.');if(!value||book.pledges[index])throw Error('사전등록은 취소·교체할 수 없습니다.');
  const used=new Set(Object.values(sc.books).flatMap(b=>b.pledges).filter(Boolean));if(used.has(value))throw Error('다른 레전드에 이미 등록한 재료입니다.');
- if(String(value).startsWith('wild:')){const item=state.inventory.find(x=>String(x.id)===String(value).slice(5));if(!item||item.packId!==CLASSIC.legendWild||!['AWARD','NATIONAL'].includes(slot.kind)||book.pledges.filter(v=>String(v).startsWith('wild:')||String(v).startsWith('item:')).length>=2)throw Error('만능 재료는 수상·국가대표 칸에 최대 2개까지 등록할 수 있습니다.');}
+ if(String(value).startsWith('wild:')){const item=state.inventory.find(x=>String(x.id)===String(value).slice(5));if(!item||!availableLegendWilds(state).some(i=>i.id===item.id)||item.packId!==CLASSIC.legendWild||!['AWARD','NATIONAL'].includes(slot.kind)||book.pledges.filter(v=>String(v).startsWith('wild:')||String(v).startsWith('item:')).length>=2)throw Error('만능 재료는 수상·국가대표 칸에 최대 2개까지 등록할 수 있습니다.');}
  else if(String(value).startsWith('coach:')){const c=ownedCoaches(state).find(i=>String(i.id)===String(value).slice(6));if(coachAssigned(state.manager,c?.id)||!matchesCoach(c,slot))throw Error('편성하지 않은 지정 코치가 필요합니다.');}
  else{const card=state.players.find(c=>c.uniqueId===value);if(protectedIds(state.lineup,state.manager).has(value)||!card||!matchesLegend(card,slot))throw Error('편성하지 않은 지정 조건의 카드가 필요합니다.');}
  const pledges=book.pledges.map((v,i)=>i===index?value:v);return {...state,manager:{...state.manager,scouting:{...sc,books:{...sc.books,[targetId]:{...book,pledges}}}}};
@@ -42,3 +42,5 @@ export function recruitScout(state,targetId){busy(state);state=migrateScouting(s
  const books={...sc.books,[targetId]:{...book,pledges:Array(12).fill(null)}};return {state:{...state,inventory,currency:{...state.currency,points:state.currency.points-CLASSIC.legendPoints},players:[candidate.card,...players],manager:{...state.manager,coachCards:ownedCoaches(state).filter(c=>!coachIds.has(String(c.id))),scouting:{...sc,books,queue:sc.queue.filter(c=>c.id!==candidate.id)}}},card:candidate.card};
 }
 export function dismissScout(state,id){busy(state);state=migrateScouting(state);const sc=state.manager.scouting;return {...state,manager:{...state.manager,scouting:{...sc,queue:sc.queue.filter(c=>c.id!==id)}}};}
+
+export function availableLegendWilds(state){const pledges=Object.values(state.manager.scouting?.books||{}).flatMap(b=>b.pledges||[]),used=new Set(pledges),legacy=pledges.filter(v=>v==='item:'+CLASSIC.legendWild).length;return state.inventory.filter(i=>i.packId===CLASSIC.legendWild&&!used.has('wild:'+i.id)).slice(legacy);}
