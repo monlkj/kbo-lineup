@@ -138,3 +138,9 @@ BC의 표시와 자격을 사용자 지시대로 주수 코치(실제 주루·�
 ## 외야 포지션 호환
 
 LF/CF/RF 중 하나라도 확인된 외야수는 세 외야 자리에 모두 편성할 수 있다. 공통 eligible 규칙을 사용하므로 포지션 화살표/목록, 후보 교체, 후보 필터, 라인업 저장·로드 검사, 리그 출전 및 자동 편성에 동일하게 적용된다. 선수의 원본 pos/positions/수비 근거와 능력치는 바꾸지 않는다. 포수·내야·투수는 기존의 확인된 포지션 제한을 유지하고 동일 선수 중복 편성도 계속 막는다.
+
+The platinum skill guarantee costs 300 stars and is used with one SELECT skill ticket. It replaces exactly one selected skill with PLATINUM (including on LEGEND players), excluding the removed name and the other two names. HERO and lower cards cannot use it. Both tickets are checked before any state changes, and other slots, growth and currency remain unchanged.
+
+Live league play offers ATTACK, DEFENSE, FULL and AUTO modes. Browser controls resolve one plate appearance at a time with course selection and a timing meter; this is a simplified interactive game, not a pitch-by-pitch or 3D simulation. Timing and aim adjust hit chance while the existing ratings, skill effects, deck bonuses and bullpen roles remain active. Straight/ breaking pitch choice uses the respective pitching stat. Each action is stored with the seeded game and team snapshots, allowing exact replay after reload. Saved club participants are protected from consumption until the game ends. Completed games feed actual results into league standings, individual records and the existing once-per-day reward path. Our team's postseason matches can be played directly too. Existing instant and five-game simulations remain available when no live game is pending.
+
+Player filters accept inclusive minimum and maximum OVR; either bound may be omitted. A reversed range yields no results rather than silently changing the input.

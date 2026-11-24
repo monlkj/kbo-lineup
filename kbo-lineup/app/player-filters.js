@@ -1,6 +1,6 @@
 import {eligible,overall} from './manager-engine.js';
 export const GRADE_OPTIONS=[['NORMAL','노멀'],['RARE','레어'],['SPECIAL','스페셜'],['HERO','히어로'],['PLATINUM','플래티넘'],['SIGNATURE','시그니처'],['ERA_SIGNATURE','연대 시그니처'],['LEGEND','레전드']];
-export const EMPTY_FILTERS={query:'',grade:'',position:'',minOvr:'',team:'',awards:false,sort:'ovr-desc'};
+export const EMPTY_FILTERS={query:'',grade:'',position:'',minOvr:'',maxOvr:'',team:'',awards:false,sort:'ovr-desc'};
 const identity=c=>c.playerId!=null?`p:${String(c.playerId)}`:`c:${c.uniqueId||c.id}`;
 export function unassignedPlayers(players,lineup={},staff={},replacingId=null){
  const byId=new Map(players.map(c=>[c.uniqueId,c]));
@@ -10,6 +10,7 @@ export function unassignedPlayers(players,lineup={},staff={},replacingId=null){
 export function filterPlayers(players,f=EMPTY_FILTERS,lockedPosition=''){
  const q=(f.query||'').trim().toLowerCase(),pos=lockedPosition||f.position;
  const min=String(f.minOvr??'').trim()===''?0:Number(f.minOvr);
- const found=players.filter(c=>(!q||`${c.name} ${c.year} ${c.team}`.toLowerCase().includes(q))&&(!f.grade||(f.grade==='ERA_SIGNATURE'?c.grade==='SIGNATURE'&&c.cardType==='ERA_SIGNATURE':f.grade==='SIGNATURE'?c.grade==='SIGNATURE'&&c.cardType!=='ERA_SIGNATURE':c.grade===f.grade))&&(!pos||eligible(c,pos))&&(!f.team||c.team===f.team)&&(!f.awards||c.awards?.length)&&(!Number.isFinite(min)||overall(c)>=min));
+ const max=String(f.maxOvr??'').trim()===''?Infinity:Number(f.maxOvr);
+ const found=players.filter(c=>(!q||`${c.name} ${c.year} ${c.team}`.toLowerCase().includes(q))&&(!f.grade||(f.grade==='ERA_SIGNATURE'?c.grade==='SIGNATURE'&&c.cardType==='ERA_SIGNATURE':f.grade==='SIGNATURE'?c.grade==='SIGNATURE'&&c.cardType!=='ERA_SIGNATURE':c.grade===f.grade))&&(!pos||eligible(c,pos))&&(!f.team||c.team===f.team)&&(!f.awards||c.awards?.length)&&(!Number.isFinite(min)||overall(c)>=min)&&(!Number.isFinite(max)||overall(c)<=max));
  return found.sort((a,b)=>f.sort==='ovr-asc'?overall(a)-overall(b):f.sort==='name'?a.name.localeCompare(b.name,'ko')||b.year-a.year:f.sort==='year'?b.year-a.year||overall(b)-overall(a):overall(b)-overall(a)||b.year-a.year);
 }

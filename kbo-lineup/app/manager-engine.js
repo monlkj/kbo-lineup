@@ -47,8 +47,8 @@ export function newSeason(year=2026){return {year,day:0,standings:Object.fromEnt
 export function sortedStandings(s){return Object.entries(s.standings).sort((a,b)=>b[1].w/Math.max(1,b[1].w+b[1].l)-a[1].w/Math.max(1,a[1].w+a[1].l)||b[1].w-a[1].w||(b[1].rf-b[1].ra)-(a[1].rf-a[1].ra));}
 const randomInt=(n,r)=>Math.floor(r()*n);
 export const TACTICS={BALANCED:{name:'균형',contact:0,power:0,speed:0,note:'능력치 보정 없음'},CONTACT:{name:'정교',contact:6,power:-4,speed:0,note:'경기 중 정확 +6 / 파워 -4'},POWER:{name:'장타',contact:-5,power:8,speed:0,note:'경기 중 파워 +8 / 정확 -5'},RUN:{name:'기동력',contact:0,power:-4,speed:10,note:'경기 중 주력 +10 / 파워 -4'}};
-export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={}){
- const totals=[0,0], innings=[[],[]], batters={},pitchers={};let cursor=[0,0];
+export function* playGameFlow(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={}){
+ const totals=[0,0], innings=[[],[]], batters={},pitchers={};let cursor=[0,0],lastPlay=null;
  const teams=[away,home],bonus=[bonusAway,bonusHome],pitchUsage=[{},{}],pitchingLog=[];
  const effective=teams.map(team=>{const buffs=battingSkillBonuses(team.batters),tactic=TACTICS[team.tactic]||TACTICS.BALANCED;return team.batters.map((c,i)=>{const base=ratings(c);return Object.fromEntries(Object.entries(base).map(([k,v])=>[k,(k in tactic?Math.round(v+tactic[k]):v)+buffs[i][k]]));});});
  const statById=teams.map((team,i)=>Object.fromEntries(team.batters.map((c,j)=>[c.uniqueId,effective[i][j]])));
@@ -67,7 +67,11 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
     const c=offense.batters[cursor[side]++%9],br=statById[side][c.uniqueId],bs=batterStat(c);const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
     const tired=(pc.fatigue||0)*.001+Math.max(0,inn-3)*Math.max(0,100-pr.stamina)*.00015;
     const fielding=effective[1-side].reduce((sum,s)=>sum+s.field,0)/9;
-    const baseHitChance=Math.max(.13,Math.min(.43,.25+(br.contact-pr.stuff+adjust)*.003+tired+(80-fielding)*.0006));
+    const previous={h:bs.h,hr:bs.hr,bb:bs.bb,so:bs.so,runs};
+    const control=yield {lastPlay,inning:inn+1,side,offense:offense.name,defense:defense.name,batter:{name:c.name,photo:c.photo},pitcher:{name:pc.name,photo:pc.photo},outs,bases:bases.map(b=>b?.name||null),homeScore:totals[1]+(side===1?runs:0),awayScore:totals[0]+(side===0?runs:0),cursor:cursor[side]-1};
+    const quality=Number.isFinite(control?.quality)?Math.max(0,Math.min(1,control.quality)):null;
+    const manualAdjust=quality===null?0:(quality-.5)*.20*(control.kind==='BAT'?1:-1)-(control.kind==='PITCH'?((control.pitch==='BREAKING'?pr.breaking:pr.fastball)-pr.stuff)*.0008:0);
+    const baseHitChance=Math.max(.13,Math.min(.43,.25+manualAdjust+(br.contact-pr.stuff+adjust)*.003+tired+(80-fielding)*.0006));
     const {hitChance,inducedMistake}=intimidationAtBat(c,baseHitChance,rng);if(inducedMistake)bs.inducedMistakes=(bs.inducedMistakes||0)+1;
     const walkChance=Math.max(.025,Math.min(.17,.07+(br.eye-pr.control+adjust)*.0015));const roll=rng();
     if(roll<walkChance){bs.bb++;ps.bb++;if(bases[0]&&bases[1]&&bases[2]){score(bases[2]);bs.rbi++;}if(bases[0]&&bases[1])bases[2]=bases[1];if(bases[0])bases[1]=bases[0];bases[0]=c;}
@@ -76,6 +80,7 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
      else{for(let b=2;b>=0;b--)if(bases[b]){if(b+n>=3){score(bases[b]);bs.rbi++;}else bases[b+n]=bases[b];bases[b]=null;}bases[n-1]=c;}
     }else{bs.ab++;outs++;ps.outs++;if(rng()<Math.min(.85,Math.max(.1,.22+(pr.stuff-br.eye)*.003))){bs.so++;ps.so++;}else if(outs<3&&bases[2]&&rng()<.22){score(bases[2]);bs.rbi++;bases[2]=null;}}
     if(bases[0]&&!bases[1]&&rng()<Math.min(.65,Math.max(0,(statById[side][bases[0].uniqueId].speed-30)*.001))){batterStat(bases[0]).sb++;bases[1]=bases[0];bases[0]=null;}
+    lastPlay={name:c.name,text:bs.hr>previous.hr?'홈런!':bs.h>previous.h?'안타!':bs.bb>previous.bb?'볼넷':bs.so>previous.so?'삼진':'아웃',runs:runs-previous.runs};
     if(side===1&&inn>=8&&totals[1]+runs>totals[0])break;
    }
    ps.er+=runs;totals[side]+=runs;innings[side].push(runs);
@@ -85,6 +90,7 @@ export function playGame(home,away,{rng=Math.random,bonusHome=0,bonusAway=0}={})
  if(totals[0]!==totals[1]){const winner=totals[0]>totals[1]?0:1,loser=1-winner;pitcherStat(teams[winner].starter).w++;pitcherStat(teams[loser].starter).l++;if(Math.abs(totals[0]-totals[1])<=3){const closer=normalizePitchingStaff({relief:teams[winner].relief}).relief[5];if(closer&&pitchUsage[winner].current?.uniqueId===closer.uniqueId&&pitchers[closer.uniqueId]?.outs)pitcherStat(closer).sv++;}}
  return {home:home.name,away:away.name,homeScore:totals[1],awayScore:totals[0],innings,batters,pitchers,pitchingLog,tactics:{[home.name]:home.tactic||'BALANCED',[away.name]:away.tactic||'BALANCED'},skillEffects:{[home.name]:activeSkillNames(home.batters),[away.name]:activeSkillNames(away.batters)}};
 }
+export function playGame(home,away,options={}){const flow=playGameFlow(home,away,options);let step=flow.next();while(!step.done)step=flow.next();return step.value;}
 const teamCache=new WeakMap();
 export function buildTeam(name,catalog,day=0){
  let cached=teamCache.get(catalog);
@@ -97,10 +103,12 @@ export function buildTeam(name,catalog,day=0){
  cached[name]={selected,ps};return {name,batters:selected,starter:ps[day%5],relief:ps.slice(5,11)};
 }
 function addStats(target,source){for(const [id,s] of Object.entries(source)){if(!target[id])target[id]={...s};else for(const [k,v] of Object.entries(s))if(typeof v==='number'&&k!=='playerId')target[id][k]=(target[id][k]||0)+v;}}
-export function simulateDay(season,userTeam,catalog,rng=Math.random){
+export function simulateDay(season,userTeam,catalog,rng=Math.random,playedResult=null){
  if(season.day>=144)throw new Error('정규시즌이 종료되었습니다.');
  const s=structuredClone(season),games=schedule()[s.day];let result;
- for(const [h,a] of games){const home=h===userTeam.name?userTeam:buildTeam(h,catalog,s.day),away=a===userTeam.name?userTeam:buildTeam(a,catalog,s.day);const res=playGame(home,away,{rng,bonusHome:h===userTeam.name?userTeam.bonus:0,bonusAway:a===userTeam.name?userTeam.bonus:0});
+ for(const [h,a] of games){const home=h===userTeam.name?userTeam:buildTeam(h,catalog,s.day),away=a===userTeam.name?userTeam:buildTeam(a,catalog,s.day);const isUser=h===userTeam.name||a===userTeam.name;
+  if(isUser&&playedResult&&(playedResult.home!==h||playedResult.away!==a))throw Error('경기 일정이 일치하지 않습니다.');
+  const res=isUser&&playedResult?playedResult:playGame(home,away,{rng,bonusHome:h===userTeam.name?userTeam.bonus:0,bonusAway:a===userTeam.name?userTeam.bonus:0});
   const hs=s.standings[h],as=s.standings[a];hs.rf+=res.homeScore;hs.ra+=res.awayScore;as.rf+=res.awayScore;as.ra+=res.homeScore;
   if(res.homeScore===res.awayScore){hs.d++;as.d++;}else if(res.homeScore>res.awayScore){hs.w++;as.l++;}else{as.w++;hs.l++;}
   if(h===userTeam.name||a===userTeam.name){result=res;addStats(s.batters,res.batters);addStats(s.pitchers,res.pitchers);s.history.unshift({day:s.day+1,...res,batters:undefined,pitchers:undefined});}
