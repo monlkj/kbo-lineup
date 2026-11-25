@@ -8,7 +8,7 @@ export function migratePitching(state){const manager=state.manager||{},old=manag
  for(const i of [2,3,4])if(!staff.relief[i]){const c=state.players.find(c=>c.pos==='P'&&!used.has(String(c.playerId))&&!locked.has(c.uniqueId));if(c){staff.relief[i]=c.uniqueId;used.add(String(c.playerId));}}
  return {...state,manager:{...manager,staff}};
 }
-export function chooseGamePitcher(team,inning,lead,usage={},starterRuns=0){const relief=normalizePitchingStaff({relief:team.relief}).relief;usage.used??=new Set();usage.counts??={};const starter=team.starter,removed=usage.current&&usage.current.uniqueId!==starter.uniqueId;
+export function chooseGamePitcher(team,inning,lead,usage={},starterRuns=0){const relief=normalizePitchingStaff({relief:team.relief}).relief;usage.used??=new Set();usage.counts??={};if(usage.manual&&usage.current){usage.counts[usage.current.uniqueId]=(usage.counts[usage.current.uniqueId]||0)+1;return {pitcher:usage.current,role:usage.role};}const starter=team.starter,removed=usage.current&&usage.current.uniqueId!==starter.uniqueId;
  let wanted=-1;
  if(inning>=6||removed||inning>=3&&(starterRuns>=5||(starter.fatigue||0)>=80)){
   wanted=inning<6||Math.abs(lead)>=5?4:inning>=8&&lead>0&&lead<=3?5:inning>=9?4:lead>=0?Math.min(1,Math.max(0,inning-6)):2+Math.min(1,Math.max(0,inning-6));

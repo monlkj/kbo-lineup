@@ -7,10 +7,11 @@ export function unassignedPlayers(players,lineup={},staff={},replacingId=null){
  const assigned=[...Object.values(lineup).filter(Boolean),...(staff.starters||[]).map(id=>byId.get(id)),...(staff.relief||[]).map(id=>byId.get(id))].filter(c=>c&&c.uniqueId!==replacingId);
  const used=new Set(assigned.map(identity));return players.filter(c=>c.uniqueId!==replacingId&&!used.has(identity(c)));
 }
-export function filterPlayers(players,f=EMPTY_FILTERS,lockedPosition=''){
+export function filterPlayers(players,f=EMPTY_FILTERS,lockedPosition='',favoriteIds=[]){
  const q=(f.query||'').trim().toLowerCase(),pos=lockedPosition||f.position;
  const min=String(f.minOvr??'').trim()===''?0:Number(f.minOvr);
  const max=String(f.maxOvr??'').trim()===''?Infinity:Number(f.maxOvr);
  const found=players.filter(c=>(!q||`${c.name} ${c.year} ${c.team}`.toLowerCase().includes(q))&&(!f.grade||(f.grade==='ERA_SIGNATURE'?c.grade==='SIGNATURE'&&c.cardType==='ERA_SIGNATURE':f.grade==='SIGNATURE'?c.grade==='SIGNATURE'&&c.cardType!=='ERA_SIGNATURE':c.grade===f.grade))&&(!pos||eligible(c,pos))&&(!f.team||c.team===f.team)&&(!f.awards||c.awards?.length)&&(!Number.isFinite(min)||overall(c)>=min)&&(!Number.isFinite(max)||overall(c)<=max));
- return found.sort((a,b)=>f.sort==='ovr-asc'?overall(a)-overall(b):f.sort==='name'?a.name.localeCompare(b.name,'ko')||b.year-a.year:f.sort==='year'?b.year-a.year||overall(b)-overall(a):overall(b)-overall(a)||b.year-a.year);
+ const favorites=new Set(favoriteIds);
+ return found.sort((a,b)=>Number(favorites.has(b.uniqueId))-Number(favorites.has(a.uniqueId))||(f.sort==='ovr-asc'?overall(a)-overall(b):f.sort==='name'?a.name.localeCompare(b.name,'ko')||b.year-a.year:f.sort==='year'?b.year-a.year||overall(b)-overall(a):overall(b)-overall(a)||b.year-a.year));
 }

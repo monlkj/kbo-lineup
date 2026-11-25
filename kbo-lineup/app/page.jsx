@@ -2,6 +2,8 @@
 
     import { useState, useEffect, useMemo } from "react";
 import {PLATINUM_GUARANTEE,usePlatinumSelect} from './platinum-skill.js';
+import {PlayerPreferencesProvider} from './player-preferences.jsx';
+import RosterManagement from './roster-management.jsx';
 import {GRADE_TICKETS} from './grade-up.js';
 import {ERA_COACH_VOUCHER,ERA_COACH_PRICE} from './era-signature.js';
 import {migrateBattingBench} from './batting-bench.js';
@@ -86,7 +88,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       const rosterLimit=capacity(manager,myPlayers.length);
       const protectedPlayers=protectedIds(lineup,manager);
       const [playerFilters,setPlayerFilters]=useState({...EMPTY_FILTERS});
-      const filteredOwned=useMemo(()=>filterPlayers(myPlayers,playerFilters),[myPlayers,playerFilters]);
+      const filteredOwned=useMemo(()=>filterPlayers(myPlayers,playerFilters,'',manager.favoritePlayerIds||[]),[myPlayers,playerFilters,manager.favoritePlayerIds]);
       const filterControls=(lockedPosition='')=><PlayerFilters compact value={playerFilters} onChange={value=>{setPlayerFilters(value);setVisibleCount(30);}} teams={[...new Set(myPlayers.map(c=>c.team))].sort()} lockedPosition={lockedPosition}/>;
 
       const changeMenu = (menu) => { if(manager.pendingSkillChange||manager.pendingCombination){showToast('진행 중인 결과 선택을 먼저 완료해주세요.');return;} setCurrentMenu(menu); setVisibleCount(30);setPlayerFilters({...EMPTY_FILTERS}); };
@@ -460,7 +462,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
       );
 
       return (
-          <div className={`min-h-screen bg-slate-900 flex flex-col ${currentMenu==='LINEUP'?'lineup-mode':''}`}>
+          <PlayerPreferencesProvider lockedIds={manager.lockedPlayerIds} favoriteIds={manager.favoritePlayerIds}><div className={`min-h-screen bg-slate-900 flex flex-col ${currentMenu==='LINEUP'?'lineup-mode':''}`}>
               {toast && ( <div role="status" className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-black/90 text-white px-6 py-3 rounded border border-gray-500 font-black shadow-2xl animate-bounce">{toast}</div> )}
 
               <div inert={!!(manager.pendingCombination||manager.pendingSkillChange)}>
@@ -522,7 +524,7 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
 
                   {currentMenu === 'LINEUP' && <section className="lineup-card-page"><header className="lineup-card-heading"><div><small>{favTeam} / TEAM LINEUP</small><h1>우리 팀 라인업</h1><p>타자 2장 선택 후 타순 교체 · 드래그 이동 · 이름 아래 화살표로 수비 변경</p></div><span>변경 내용 자동 저장</span></header><LineupControls state={progressionState} onCommit={commitProgression} showToast={showToast}/></section>}
                   {currentMenu === 'COACHES' && <LineupControls initialTab="COACH" state={progressionState} onCommit={commitProgression} showToast={showToast}/>}
-                  {currentMenu === 'ROSTER' && <section className="com2us-panel p-6"><h2 className="text-2xl font-black">선수 보유함 · {myPlayers.length} / {rosterLimit}명</h2><div className="scout-toolbar"><button className="com2us-button" disabled={rosterLimit>=ROSTER_MAX} onClick={expandRoster}>보유함 +20칸 · 500 S (최대 300명)</button><p>편성된 선수는 방출·스카우트 재료로 사용할 수 없습니다. 편성 해제 후 정리하세요.</p></div><div>{filterControls()}<p className="muted">검색 결과 {filteredOwned.length}명</p></div><div className="space-y-3">{filteredOwned.slice(0,visibleCount).map(c=><div key={c.uniqueId} className="roster-release-row">{renderPlayerCard(c,false,()=>{})}<button disabled={protectedPlayers.has(c.uniqueId)} onClick={()=>releasePlayer(c)}>방출 · 1,000 P</button></div>)}</div>{filteredOwned.length>visibleCount&&<button className="com2us-button p-3 mt-4" onClick={()=>setVisibleCount(v=>v+30)}>더보기</button>}</section>}
+                  {currentMenu === 'ROSTER' && <RosterManagement state={progressionState} onCommit={commitProgression} showToast={showToast} onExpand={expandRoster} rosterLimit={rosterLimit}/>}
                   {['GRADE_UP','ERA_SIGNATURE','TRAIN','LIMIT','TRANSCEND','COMBINE','LEGEND_SCOUT','SIGNATURE_AWAKEN'].includes(currentMenu) && <ProgressionWorkshop key={`${currentMenu}-${manager.requestedLegendId||''}`} mode={currentMenu} state={progressionState} database={FULL_DATABASE} onCommit={commitProgression} onNavigate={changeMenu} onGradeTarget={(id,kind,legendId)=>{setManager(m=>({...m,requestedGradeTarget:{id,kind},requestedGradeTicket:undefined,requestedLegendId:legendId}));changeMenu('GRADE_UP');}} onResult={card=>setPackResultMulti([card])} showToast={showToast}/>}
                   {currentMenu === 'SKILL' && renderSkillScreen()}
 
@@ -644,6 +646,6 @@ import {LEGEND_SKILL_RATE,SKILL_DB,generateSingleSkill,generateSkills,sanitizeSk
                       </div>
                   </div>
               )}
-          </div>
+          </div></PlayerPreferencesProvider>
       );
     }

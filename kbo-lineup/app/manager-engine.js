@@ -1,4 +1,4 @@
-import {normalizePitchingStaff,chooseGamePitcher} from './pitching-rules.js';
+import {BULLPEN_ROLES,normalizePitchingStaff,chooseGamePitcher} from './pitching-rules.js';
 import {migrateGrowth} from './growth-rules.js';
 import {deckFranchise,isNationalLegend} from './legend-registry.js';
 import {battingSkillBonuses,activeSkillNames,intimidationAtBat} from './skill-effects.js';
@@ -58,17 +58,29 @@ export function* playGameFlow(home,away,{rng=Math.random,bonusHome=0,bonusAway=0
   for(let side=0;side<2;side++){
    if(side===1&&inn>=8&&totals[1]>totals[0]){innings[side].push('X');continue;}
    const offense=teams[side],defense=teams[1-side];
-   const chosen=chooseGamePitcher(defense,inn,totals[1-side]-totals[side],pitchUsage[1-side],pitchers[defense.starter.uniqueId]?.er||0),pc=chosen.pitcher;
+   const chosen=chooseGamePitcher(defense,inn,totals[1-side]-totals[side],pitchUsage[1-side],pitchers[defense.starter.uniqueId]?.er||0);let pc=chosen.pitcher;
    pitchingLog.push({team:defense.name,inning:inn+1,pitcherId:pc.uniqueId,name:pc.name,role:chosen.role});
-   const raw=ratings(pc),pr={...raw,stuff:raw.stuff*.5+raw.fastball*.25+raw.breaking*.25},ps=pitcherStat(pc);let outs=0,bases=[null,null,null],runs=0;
+   let raw=ratings(pc),pr={...raw,stuff:raw.stuff*.5+raw.fastball*.25+raw.breaking*.25},ps=pitcherStat(pc);let outs=0,bases=[null,null,null],runs=0;
    const score=c=>{runs++;batterStat(c).r++;};
    let plate=0;
    while(outs<3&&plate++<100){
-    const c=offense.batters[cursor[side]++%9],br=statById[side][c.uniqueId],bs=batterStat(c);const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
-    const tired=(pc.fatigue||0)*.001+Math.max(0,inn-3)*Math.max(0,100-pr.stamina)*.00015;
+    const c=offense.batters[cursor[side]++%9],br=statById[side][c.uniqueId],bs=batterStat(c);
     const fielding=effective[1-side].reduce((sum,s)=>sum+s.field,0)/9;
     const previous={h:bs.h,hr:bs.hr,bb:bs.bb,so:bs.so,runs};
-    const control=yield {lastPlay,inning:inn+1,side,offense:offense.name,defense:defense.name,batter:{name:c.name,photo:c.photo},pitcher:{name:pc.name,photo:pc.photo},outs,bases:bases.map(b=>b?.name||null),homeScore:totals[1]+(side===1?runs:0),awayScore:totals[0]+(side===0?runs:0),cursor:cursor[side]-1};
+    let control;
+    while(true){
+    control=yield {lastPlay,inning:inn+1,side,offense:offense.name,defense:defense.name,batter:{uniqueId:c.uniqueId,name:c.name,photo:c.photo,stats:{...bs}},pitcher:{uniqueId:pc.uniqueId,name:pc.name,photo:pc.photo},usedPitchers:[...pitchUsage[1-side].used],outs,bases:bases.map(b=>b?.name||null),homeScore:totals[1]+(side===1?runs:0),awayScore:totals[0]+(side===0?runs:0),cursor:cursor[side]-1};
+     if(control?.kind!=='SUB_PITCHER')break;
+     if(control.club!==defense.name)throw Error('수비 중인 우리 팀 투수만 교체할 수 있습니다.');
+     const replacement=defense.relief.find(p=>p?.uniqueId===control.pitcherId);
+     if(!replacement||pitchUsage[1-side].used.has(replacement.uniqueId))throw Error('아직 등판하지 않은 불펜 투수만 선택할 수 있습니다.');
+     pc=replacement;raw=ratings(pc);pr={...raw,stuff:raw.stuff*.5+raw.fastball*.25+raw.breaking*.25};ps=pitcherStat(pc);
+     Object.assign(pitchUsage[1-side],{current:pc,manual:true,role:'직접 교체 · '+BULLPEN_ROLES[defense.relief.findIndex(p=>p?.uniqueId===pc.uniqueId)]});pitchUsage[1-side].used.add(pc.uniqueId);
+     pitchingLog.push({team:defense.name,inning:inn+1,pitcherId:pc.uniqueId,name:pc.name,role:pitchUsage[1-side].role});
+    }
+
+    const adjust=bonus[side]+(c.condition||0)*2-(pc.condition||0)*2;
+    const tired=(pc.fatigue||0)*.001+Math.max(0,inn-3)*Math.max(0,100-pr.stamina)*.00015;
     const quality=Number.isFinite(control?.quality)?Math.max(0,Math.min(1,control.quality)):null;
     const manualAdjust=quality===null?0:(quality-.5)*.20*(control.kind==='BAT'?1:-1)-(control.kind==='PITCH'?((control.pitch==='BREAKING'?pr.breaking:pr.fastball)-pr.stuff)*.0008:0);
     const baseHitChance=Math.max(.13,Math.min(.43,.25+manualAdjust+(br.contact-pr.stuff+adjust)*.003+tired+(80-fielding)*.0006));
@@ -80,10 +92,11 @@ export function* playGameFlow(home,away,{rng=Math.random,bonusHome=0,bonusAway=0
      else{for(let b=2;b>=0;b--)if(bases[b]){if(b+n>=3){score(bases[b]);bs.rbi++;}else bases[b+n]=bases[b];bases[b]=null;}bases[n-1]=c;}
     }else{bs.ab++;outs++;ps.outs++;if(rng()<Math.min(.85,Math.max(.1,.22+(pr.stuff-br.eye)*.003))){bs.so++;ps.so++;}else if(outs<3&&bases[2]&&rng()<.22){score(bases[2]);bs.rbi++;bases[2]=null;}}
     if(bases[0]&&!bases[1]&&rng()<Math.min(.65,Math.max(0,(statById[side][bases[0].uniqueId].speed-30)*.001))){batterStat(bases[0]).sb++;bases[1]=bases[0];bases[0]=null;}
+    ps.er+=runs-previous.runs;
     lastPlay={name:c.name,text:bs.hr>previous.hr?'홈런!':bs.h>previous.h?'안타!':bs.bb>previous.bb?'볼넷':bs.so>previous.so?'삼진':'아웃',runs:runs-previous.runs};
     if(side===1&&inn>=8&&totals[1]+runs>totals[0])break;
    }
-   ps.er+=runs;totals[side]+=runs;innings[side].push(runs);
+   totals[side]+=runs;innings[side].push(runs);
   }
   if(inn>=8&&totals[0]!==totals[1])break;
  }
