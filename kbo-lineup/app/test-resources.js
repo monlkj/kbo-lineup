@@ -1,6 +1,6 @@
 // Explicit user-requested test aid. It refills this browser's club save only.
 export const TEST_BALANCE=999999999;
-export const TEST_ITEMS=[['platinum_skill_guarantee','플래티넘 고유능력 확정권',999],
+export const TEST_ITEMS=[['legend_select_scout_ticket','레전드 선수 지정 스카우트권',999],['platinum_skill_guarantee','플래티넘 고유능력 확정권',999],
  ['skill_ticket','스킬변경권',999],['premium_skill_ticket','고급 스킬변경권',999],
  ['select_skill_ticket','스킬 선택변경권',999],['protect_skill_ticket','스킬 보호변경권',999],
  ['low_grade_up','하급 등급상승권',999],['mid_grade_up','중급 등급상승권',999],['grade_up','등급상승권',999],['era_coach_material','연대 코치 재료권',999],['transcend_ticket','초월돌파권',999],['limit_break_ticket','한계돌파권',999],['signature_contract','시그니처 각성 계약서',999],

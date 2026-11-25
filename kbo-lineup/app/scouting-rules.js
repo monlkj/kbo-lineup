@@ -2,6 +2,7 @@ import {refreshLegendPositions,legendCandidates} from './legend-registry.js';
 import {migrateLegendRecipe,legendRecipe,matchesLegend,matchesCoach,CLASSIC} from './classic-progression.js';
 import {playableCard,protectedIds,capacity} from './club-rules.js';
 import {ownedCoaches,coachAssigned} from './coaching.js';
+export const LEGEND_SELECT_SCOUT={id:'legend_select_scout_ticket',name:'레전드 선수 지정 스카우트권',stars:50000};
 export const SCOUT_CONFIG={legendTicketStars:20000,normalPoints:3000,advancedStars:100,slotStars:500,maxSlots:12,homeChance:.45};
 export const VENUES=[['삼성','대구'],['LG','LG 잠실'],['두산','두산 잠실'],['KIA','광주'],['키움','고척'],['롯데','사직'],['SSG','인천'],['한화','대전'],['KT','수원'],['NC','창원']];
 export const venueTeam=t=>({해태:'KIA',MBC:'LG',OB:'두산',SK:'SSG',빙그레:'한화',넥센:'키움',우리:'키움',히어로즈:'키움'}[t]||t);
@@ -48,3 +49,12 @@ export function recruitScout(state,targetId){busy(state);state=migrateScouting(s
 export function dismissScout(state,id){busy(state);state=migrateScouting(state);const sc=state.manager.scouting;return {...state,manager:{...state.manager,scouting:{...sc,queue:sc.queue.filter(c=>c.id!==id)}}};}
 
 export function availableLegendWilds(state){const pledges=Object.values(state.manager.scouting?.books||{}).flatMap(b=>b.pledges||[]),used=new Set(pledges),legacy=pledges.filter(v=>v==='item:'+CLASSIC.legendWild).length;return state.inventory.filter(i=>i.packId===CLASSIC.legendWild&&!used.has('wild:'+i.id)).slice(legacy);}
+
+export function scoutDesignatedLegend(state,database,targetId){
+ busy(state);state=migrateScouting(state);const sc=state.manager.scouting;
+ if(sc.queue.length>=sc.capacity)throw Error('스카우트 대기가 가득 찼습니다. 슬롯을 확장하거나 후보를 정리해주세요.');
+ const base=legendCandidates().find(c=>c.id===targetId);if(!base)throw Error('등장 목록에서 레전드 선수를 선택해주세요.');
+ const index=state.inventory.findIndex(i=>i.packId===LEGEND_SELECT_SCOUT.id);if(index<0)throw Error('레전드 선수 지정 스카우트권이 필요합니다.');
+ const card=playableCard(base,'LEGEND'),next=prepareLegend(state,card,database);
+ return {state:{...next,inventory:next.inventory.filter((_,i)=>i!==index),manager:{...next.manager,scouting:{...next.manager.scouting,queue:[...next.manager.scouting.queue,{id:crypto.randomUUID(),card,designated:true,foundAt:Date.now()}]}}},card,waiting:true};
+}
